@@ -1,0 +1,62 @@
+<html>
+    <head>
+        <title>Leaflet.Editable Tests</title>
+        <meta charset="utf-8">
+        <script src="../node_modules/leaflet/dist/leaflet-src.js"></script>
+        <script src="../src/Leaflet.Editable.js"></script>
+        <link rel="stylesheet" href="../node_modules/leaflet/dist/leaflet.css" />
+        <script src="../node_modules/mocha/mocha.js"></script>
+        <script src="../node_modules/happen/happen.js"></script>
+        <script src="../node_modules/chai/chai.js"></script>
+        <script src="../node_modules/effroi/dist/effroi.js"></script>
+        <link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
+        <script>mocha.setup({ui: 'bdd', bail: true})</script>
+        <script type="text/javascript">
+            expect = chai.expect;
+            assert = chai.assert;
+        </script>
+        <script src="./_pre.js"></script>
+        <script src="./Editable.js"></script>
+        <script src="./PolylineEditor.js"></script>
+        <script src="./PolygonEditor.js"></script>
+        <script src="./MarkerEditor.js"></script>
+        <style type="text/css">
+            #mocha {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                z-index: 10000;
+                background-color: white;
+                box-shadow: 0px 0px 8px 0px black;
+                overflow-y: auto;
+                display: none;
+            }
+            #mocha-stats {
+                position: absolute;
+            }
+            body { margin:0; padding:0; }
+            #map { position:absolute; top:0; bottom:0; right: 0; left: 0; width:100%; }
+        </style>
+    </head>
+    <body>
+        <div id="mocha"></div>
+        <div id="map"></div>
+        <script>
+            var startPoint = [43.1249, 1.254],
+                map = L.map('map').setView(startPoint, 16),
+                tilelayer = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 19, attribution: 'Data \u00a9 <a href="http://www.openstreetmap.org/copyright"> OpenStreetMap Contributors </a>'}).addTo(map);
+            var runner = mocha.run(function (failures) {
+                if (window.location.hash !== '#debug') qs('#mocha').style.display = 'block';
+                console.log(failures);
+            });
+            runner.on('fail', function(test, err) {
+                console.log(test.title, test.err);
+                console.log(test.err.expected, test.err.actual);
+                console.log(test.err.stack);
+            });
+
+        </script>
+    </body>
+</html>

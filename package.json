@@ -1,0 +1,23 @@
+{
+  "name": "leaflet-editable",
+  "version": "0.0.0",
+  "description": "Make geometries editable in Leaflet",
+  "main": "src/Leaflet.Editable.js",
+  "scripts": {
+    "test": "make test"
+  },
+  "keywords": [
+    "leaflet",
+    "map"
+  ],
+  "author": "Yohan Boniface",
+  "license": "WTFPL",
+  "devDependencies": {
+    "chai": "^1.9.1",
+    "happen": "^0.1.3",
+    "mocha": "^1.21.3"
+  },
+  "dependencies": {
+    "leaflet": "^0.7.3"
+  }
+}
