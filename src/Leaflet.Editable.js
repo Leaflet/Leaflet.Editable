@@ -218,7 +218,7 @@ L.Editable.VertexMarker = L.Marker.extend({
             latlng = this._map.layerPointToLatLng(iconPos);
         this.latlng.lat = latlng.lat;
         this.latlng.lng = latlng.lng;
-        this.editor.feature.redraw();
+        this.editor.refresh();
         if (this.middleMarker) {
             this.middleMarker.updateLatLng();
         }
@@ -347,7 +347,7 @@ L.Editable.MiddleMarker = L.Marker.extend({
 
     onMouseDown: function (e) {
         this.latlngs.splice(this.index(), 0, e.latlng);
-        this.editor.feature.redraw();
+        this.editor.refresh();
         this.editor.setPrimary();
         this.remove();
         var marker = this.editor.addVertexMarker(e.latlng, this.latlngs);
@@ -406,6 +406,10 @@ L.Editable.BaseEditor = L.Class.extend({
         this.map.fire('editable:disable', {layer: this.feature});
     },
 
+    onStartEditing: function () {
+        this.map.fire('editable:startediting', {layer: this.feature});
+    },
+
     onEditing: function () {
         this.map.fire('editable:editing', {layer: this.feature});
     },
@@ -417,7 +421,7 @@ L.Editable.BaseEditor = L.Class.extend({
     startDrawing: function () {
         if (!this.drawing) this.drawing = L.Editable.FORWARD;
         this.tools.registerForDrawing(this);
-        this.onEditing();
+        this.onStartEditing();
     },
 
     finishDrawing: function () {
@@ -545,7 +549,7 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
     onVertexRawMarkerClick: function (e, vertex, position) {
         vertex.remove();
         this.editLayer.removeLayer(vertex);
-        this.feature.redraw();
+        this.refresh();
     },
 
     onVertexMarkerCtrlClick: function (e, vertex, position) {
@@ -596,7 +600,7 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
         this.setActiveLatLngs(latlng);
         if (this.drawing === L.Editable.FORWARD) this.activeLatLngs.push(latlng);
         else this.activeLatLngs.unshift(latlng);
-        this.feature.redraw();
+        this.refresh();
         this.addVertexMarker(latlng, this.activeLatLngs);
     },
 
@@ -638,6 +642,11 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
             this.tools.moveForwardLineGuide(e.latlng);
             this.tools.moveBackwardLineGuide(e.latlng);
         }
+    },
+
+    refresh: function () {
+        this.feature.redraw();
+        this.onEditing();
     }
 
 });
