@@ -13,7 +13,7 @@ L.NewLineControl = L.Control.extend({
         link.innerHTML = '/\\/';
         L.DomEvent.on(link, 'click', L.DomEvent.stop)
                   .on(link, 'click', function () {
-                    map.editable.startLine();
+                    map.editable.startPolyline();
                   });
 
         return container;
@@ -90,7 +90,7 @@ L.NewMarkerControl = L.Control.extend({
         link.innerHTML = '⚫';
         L.DomEvent.on(link, 'click', L.DomEvent.stop)
                   .on(link, 'click', function () {
-                    map.editable.startNewMarker();
+                    map.editable.startMarker();
                   });
 
         return container;

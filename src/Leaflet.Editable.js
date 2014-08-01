@@ -23,33 +23,6 @@ L.Editable = L.Class.extend({
         this.forwardLineGuide = this.createLineGuide();
         this.backwardLineGuide = this.createLineGuide();
 
-        var activeEditor = null,
-            self = this;
-        try {
-            Object.defineProperty(this, 'activeEditor', {
-                get: function () {
-                    return activeEditor;
-                },
-                set: function (editor) {
-                    var oldEditor = activeEditor;  // prevent looping with editor.disable()
-                    activeEditor = editor;
-                    if (oldEditor && oldEditor != editor) {
-                        if (editor && editor.feature.multi && oldEditor.feature.multi === editor.feature.multi) {
-                            oldEditor.setSecondary();
-                        } else {
-                            oldEditor.disable();
-                        }
-                        if (oldEditor.feature.multi && (!editor || oldEditor.feature.multi !== editor.feature.multi)) {
-                            oldEditor.feature.multi.endEdit();
-                        }
-                    }
-                    self.map.fire('editable:editorchanged', {editor: editor});
-                }
-            });
-        }
-        catch (e) {
-            // Certainly IE8, which has a limited version of defineProperty
-        }
     },
 
     createLineGuide: function () {
@@ -68,16 +41,6 @@ L.Editable = L.Class.extend({
             this.backwardLineGuide._latlngs[1] = latlng;
             this.backwardLineGuide.redraw();
         }
-    },
-
-    newPointForward: function (latlng) {
-        this.activeEditor.addLatLng(latlng);
-        this.anchorForwardLineGuide(latlng);
-    },
-
-    newPointBackward: function (latlng) {
-        this.activeEditor.addLatLng(latlng);
-        this.anchorBackwardLineGuide(latlng);
     },
 
     anchorForwardLineGuide: function (latlng) {
@@ -108,18 +71,25 @@ L.Editable = L.Class.extend({
         this.editLayer.removeLayer(this.backwardLineGuide);
     },
 
-    onMouseMove: function (e) {
-        if (this.activeEditor) {
-            this.map.editable.newClickHandler.setLatLng(e.latlng);
-            this.activeEditor.onMouseMove(e);
-        }
+    registerForDrawing: function (editor) {
+        this.map.on('mousemove touchmove', editor.onMouseMove, editor);
+        if (this._drawingEditor) this.unregisterForDrawing(this._drawingEditor);
+        this._drawingEditor = editor;
+        this.editLayer.addLayer(this.newClickHandler);
+        this.newClickHandler.on('click', editor.onNewClickHandlerClicked, editor);
+        if (L.Browser.touch) this.map.on('click', editor.onTouch, editor);
+        this.map.fire('editable:registerededitor', {editor: editor});
     },
 
-    onTouch: function (e) {
-        this.onMouseMove(e);
-        if (this.activeEditor && this.activeEditor.drawing) {
-            this.newClickHandler._fireMouseEvent(e);
-        }
+    unregisterForDrawing: function (editor) {
+        this.map.off('mousemove touchmove', editor.onMouseMove, editor);
+        this.editLayer.removeLayer(this.newClickHandler);
+        this.newClickHandler.off('click', editor.onNewClickHandlerClicked, editor);
+        if (L.Browser.touch) this.map.off('click', editor.onTouch, editor);
+        if (editor !== this._drawingEditor) return;
+        delete this._drawingEditor;
+        this.map.fire('editable:unregisterededitor', {editor: editor});
+        if (editor.drawing) editor.finishDrawing();
     },
 
     startPolyline: function () {
@@ -136,9 +106,8 @@ L.Editable = L.Class.extend({
         return polygon;
     },
 
-    startHole: function () {
-        if (!this.activeEditor || !this.activeEditor instanceof L.Editable.PolygonEditor) return;
-        this.activeEditor.newHole();
+    startHole: function (editor) {
+        editor.newHole();
     },
 
     extendMultiPolygon: function () {
@@ -176,21 +145,6 @@ L.Editable = L.Class.extend({
         var marker = new this.options.markerClass(latlng);
         this.map.fire('editable:created', {layer: marker});
         return marker;
-    },
-
-    addNewClickHandler: function () {
-        if (!this.activeEditor) return;
-        this.editLayer.addLayer(this.newClickHandler);
-        this.newClickHandler.on('click', function (e) {
-            this.onNewClickHandlerClicked(e);
-        }, this.activeEditor);
-        if (L.Browser.touch) this.map.on('click', this.onTouch, this);
-    },
-
-    removeNewClickHandler: function () {
-        this.editLayer.removeLayer(this.newClickHandler);
-        this.newClickHandler.off();
-        if (L.Browser.touch) this.map.off('click', this.onTouch, this);
     }
 
 });
@@ -200,7 +154,6 @@ L.Map.addInitHook(function () {
     this.whenReady(function () {
         if (this.options.allowEdit) {
             this.editable = new L.Editable(this, this.editOptions);
-            this.on('mousemove touchmove', this.editable.onMouseMove, this.editable);
         }
     });
 
@@ -428,26 +381,6 @@ L.Editable.BaseEditor = L.Class.extend({
         this.feature = feature;
         this.feature.editor = this;
         this.editLayer = new L.LayerGroup();
-
-        var self = this;
-        try {
-            Object.defineProperty(this, 'active', {
-                get: function () {
-                    return self.map.editable.activeEditor === self;
-                },
-                set: function (status) {
-                    if (status && self.map.editable.activeEditor !== self) {
-                        self.map.editable.activeEditor = self;
-                    }
-                    if (!status && self.map.editable.activeEditor === self) {
-                        self.map.editable.activeEditor = null;
-                    }
-                }
-            });
-        }
-        catch (e) {
-            // Certainly IE8, which has a limited version of defineProperty
-        }
     },
 
     enable: function () {
@@ -481,14 +414,25 @@ L.Editable.BaseEditor = L.Class.extend({
 
     startDrawing: function () {
         if (!this.drawing) this.drawing = L.Editable.FORWARD;
-        this.map.editable.addNewClickHandler();
+        this.map.editable.registerForDrawing(this);
         this.onEditing();
     },
 
     finishDrawing: function () {
         this.onEdited();
         this.drawing = false;
-        this.map.editable.removeNewClickHandler();
+        this.map.editable.unregisterForDrawing(this);
+    },
+
+    onMouseMove: function (e) {
+        if (this.drawing) {
+            this.map.editable.newClickHandler.setLatLng(e.latlng);
+        }
+    },
+
+    onTouch: function (e) {
+        this.onMouseMove(e);
+        if (this.drawing) this.map.editable.newClickHandler._fireMouseEvent(e);
     }
 
 });
@@ -497,7 +441,6 @@ L.Editable.MarkerEditor = L.Editable.BaseEditor.extend({
 
     enable: function () {
         L.Editable.BaseEditor.prototype.enable.call(this);
-        this.active = true;
         this.feature.dragging.enable();
         this.feature.on('dragstart', this.onEditing, this);
         return this;
@@ -505,7 +448,6 @@ L.Editable.MarkerEditor = L.Editable.BaseEditor.extend({
 
     disable: function () {
         L.Editable.BaseEditor.prototype.disable.call(this);
-        this.active = false;
         this.feature.dragging.disable();
         this.feature.off('dragstart', this.onEditing, this);
         return this;
@@ -513,6 +455,7 @@ L.Editable.MarkerEditor = L.Editable.BaseEditor.extend({
 
     onMouseMove: function (e) {
         if (this.drawing) {
+            L.Editable.BaseEditor.prototype.onMouseMove.call(this, e);
             this.feature.setLatLng(e.latlng);
             this.map.editable.newClickHandler._bringToFront();
         }
@@ -537,13 +480,11 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
         if (this.feature) {
             this.initVertexMarkers();
         }
-        if (!this.secondary) this.active = true;
         return this;
     },
 
     disable: function () {
         L.Editable.BaseEditor.prototype.disable.call(this);
-        if (!this.secondary) this.active = false;
     },
 
     setPrimary: function () {
@@ -551,7 +492,6 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
             this.feature.multi.setSecondary(this.feature);
         }
         delete this.secondary;
-        this.active = true;
         this.editLayer.eachLayer(function (layer) {
             layer.setPrimary();
         });
@@ -658,12 +598,22 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
         this.addVertexMarker(latlng, this.activeLatLngs);
     },
 
+    newPointForward: function (latlng) {
+        this.addLatLng(latlng);
+        this.map.editable.anchorForwardLineGuide(latlng);
+    },
+
+    newPointBackward: function (latlng) {
+        this.addLatLng(latlng);
+        this.map.editable.anchorBackwardLineGuide(latlng);
+    },
+
     onNewClickHandlerClicked: function (e) {
         if (this.checkAddConstraints && !this.checkAddConstraints(e.latlng)) {
             return;
         }
-        if (this.drawing === L.Editable.FORWARD) this.map.editable.newPointForward(e.latlng);
-        else this.map.editable.newPointBackward(e.latlng);
+        if (this.drawing === L.Editable.FORWARD) this.newPointForward(e.latlng);
+        else this.newPointBackward(e.latlng);
         if (!this.map.editable.backwardLineGuide._latlngs[0]) {
             this.map.editable.anchorBackwardLineGuide(e.latlng);
         }
@@ -682,6 +632,7 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
 
     onMouseMove: function (e) {
         if (this.drawing) {
+            L.Editable.BaseEditor.prototype.onMouseMove.call(this, e);
             this.map.editable.moveForwardLineGuide(e.latlng);
             this.map.editable.moveBackwardLineGuide(e.latlng);
         }

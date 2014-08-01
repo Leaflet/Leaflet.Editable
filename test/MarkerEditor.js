@@ -13,8 +13,8 @@ describe('L.MarkerEditor', function() {
 
         it('should create feature and editor', function() {
             marker = this.map.editable.startMarker();
-            assert.ok(this.map.editable.activeEditor);
             assert.ok(marker);
+            assert.ok(marker.editor);
         });
 
         it('should update marker position on mousemove', function () {
@@ -37,7 +37,7 @@ describe('L.MarkerEditor', function() {
 
         it('should stop editing on disable() call', function () {
             marker.endEdit();
-            assert.notOk(this.map.editable.activeEditor);
+            assert.notOk(marker.editor);
         });
 
     });
@@ -46,7 +46,7 @@ describe('L.MarkerEditor', function() {
 
         it('should start editing on enable() call', function () {
             marker.edit();
-            assert.ok(this.map.editable.activeEditor);
+            assert.ok(marker.editor);
         });
 
     });
@@ -54,8 +54,7 @@ describe('L.MarkerEditor', function() {
     describe('#drag()', function () {
 
         it('should update latlng on marker drag', function (done) {
-            var before = marker._latlng.lat,
-                self = this;
+            var before = marker._latlng.lat;
             happen.drag(300, 299, 350, 350, function () {
                 assert.notEqual(before, marker._latlng.lat);
                 done();
