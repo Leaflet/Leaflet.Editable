@@ -110,13 +110,12 @@ L.Editable = L.Class.extend({
         editor.newHole();
     },
 
-    extendMultiPolygon: function () {
-        if (!this.multi) return;
+    extendMultiPolygon: function (multi) {
         var polygon = this.createPolygon([]);
-        this.multi.addLayer(polygon);
-        polygon.multi = this.multi;
+        multi.addLayer(polygon);
+        polygon.multi = multi;
         var editor = polygon.edit();
-        this.multi.setPrimary(polygon);
+        multi.setPrimary(polygon);
         editor.startDrawingForward();
         return polygon;
     },
@@ -153,7 +152,7 @@ L.Map.addInitHook(function () {
 
     this.whenReady(function () {
         if (this.options.allowEdit) {
-            this.editable = new L.Editable(this, this.editOptions);
+            this.editTools = new L.Editable(this, this.editOptions);
         }
     });
 
@@ -377,21 +376,23 @@ L.Editable.mergeOptions({
 L.Editable.BaseEditor = L.Class.extend({
 
     initialize: function (map, feature, options) {
+        L.setOptions(this, options);
         this.map = map;
         this.feature = feature;
         this.feature.editor = this;
         this.editLayer = new L.LayerGroup();
+        this.tools = this.options.tools || map.editTools;
     },
 
     enable: function () {
-        this.map.editable.editLayer.addLayer(this.editLayer);
+        this.tools.editLayer.addLayer(this.editLayer);
         this.onEnable();
         return this;
     },
 
     disable: function () {
         this.editLayer.clearLayers();
-        this.map.editable.editLayer.removeLayer(this.editLayer);
+        this.tools.editLayer.removeLayer(this.editLayer);
         this.onDisable();
         return this;
     },
@@ -414,25 +415,25 @@ L.Editable.BaseEditor = L.Class.extend({
 
     startDrawing: function () {
         if (!this.drawing) this.drawing = L.Editable.FORWARD;
-        this.map.editable.registerForDrawing(this);
+        this.tools.registerForDrawing(this);
         this.onEditing();
     },
 
     finishDrawing: function () {
         this.onEdited();
         this.drawing = false;
-        this.map.editable.unregisterForDrawing(this);
+        this.tools.unregisterForDrawing(this);
     },
 
     onMouseMove: function (e) {
         if (this.drawing) {
-            this.map.editable.newClickHandler.setLatLng(e.latlng);
+            this.tools.newClickHandler.setLatLng(e.latlng);
         }
     },
 
     onTouch: function (e) {
         this.onMouseMove(e);
-        if (this.drawing) this.map.editable.newClickHandler._fireMouseEvent(e);
+        if (this.drawing) this.tools.newClickHandler._fireMouseEvent(e);
     }
 
 });
@@ -457,7 +458,7 @@ L.Editable.MarkerEditor = L.Editable.BaseEditor.extend({
         if (this.drawing) {
             L.Editable.BaseEditor.prototype.onMouseMove.call(this, e);
             this.feature.setLatLng(e.latlng);
-            this.map.editable.newClickHandler._bringToFront();
+            this.tools.newClickHandler._bringToFront();
         }
     },
 
@@ -514,7 +515,7 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
     },
 
     addVertexMarker: function (latlng, latlngs) {
-        return new this.map.editable.options.vertexMarkerClass(latlng, latlngs, this);
+        return new this.tools.options.vertexMarkerClass(latlng, latlngs, this);
     },
 
     addVertexMarkers: function (latlngs) {
@@ -574,18 +575,18 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
     },
 
     addMiddleMarker: function (left, right, latlngs) {
-        return new this.map.editable.options.middleMarkerClass(left, right, latlngs, this);
+        return new this.tools.options.middleMarkerClass(left, right, latlngs, this);
     },
 
     startDrawingForward: function () {
         this.startDrawing();
-        this.map.editable.attachForwardLineGuide();
+        this.tools.attachForwardLineGuide();
     },
 
     finishDrawing: function () {
         L.Editable.BaseEditor.prototype.finishDrawing.call(this);
-        this.map.editable.detachForwardLineGuide();
-        this.map.editable.detachBackwardLineGuide();
+        this.tools.detachForwardLineGuide();
+        this.tools.detachBackwardLineGuide();
         this.unsetActiveLatLngs();
         delete this.checkConstraints;
     },
@@ -600,12 +601,12 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
 
     newPointForward: function (latlng) {
         this.addLatLng(latlng);
-        this.map.editable.anchorForwardLineGuide(latlng);
+        this.tools.anchorForwardLineGuide(latlng);
     },
 
     newPointBackward: function (latlng) {
         this.addLatLng(latlng);
-        this.map.editable.anchorBackwardLineGuide(latlng);
+        this.tools.anchorBackwardLineGuide(latlng);
     },
 
     onNewClickHandlerClicked: function (e) {
@@ -614,8 +615,8 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
         }
         if (this.drawing === L.Editable.FORWARD) this.newPointForward(e.latlng);
         else this.newPointBackward(e.latlng);
-        if (!this.map.editable.backwardLineGuide._latlngs[0]) {
-            this.map.editable.anchorBackwardLineGuide(e.latlng);
+        if (!this.tools.backwardLineGuide._latlngs[0]) {
+            this.tools.anchorBackwardLineGuide(e.latlng);
         }
         this.feature.fire('editable:newclick', e);
     },
@@ -633,8 +634,8 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
     onMouseMove: function (e) {
         if (this.drawing) {
             L.Editable.BaseEditor.prototype.onMouseMove.call(this, e);
-            this.map.editable.moveForwardLineGuide(e.latlng);
-            this.map.editable.moveBackwardLineGuide(e.latlng);
+            this.tools.moveForwardLineGuide(e.latlng);
+            this.tools.moveBackwardLineGuide(e.latlng);
         }
     }
 
@@ -653,16 +654,16 @@ L.Editable.PolylineEditor = L.Editable.PathEditor.extend({
     startDrawingBackward: function () {
         this.drawing = L.Editable.BACKWARD;
         this.startDrawing();
-        this.map.editable.attachBackwardLineGuide();
+        this.tools.attachBackwardLineGuide();
     },
 
     continueBackward: function () {
-        this.map.editable.anchorBackwardLineGuide(this.getFirstLatLng());
+        this.tools.anchorBackwardLineGuide(this.getFirstLatLng());
         this.startDrawingBackward();
     },
 
     continueForward: function () {
-        this.map.editable.anchorForwardLineGuide(this.getLastLatLng());
+        this.tools.anchorForwardLineGuide(this.getLastLatLng());
         this.startDrawingForward();
     },
 
@@ -692,12 +693,12 @@ L.Editable.PolygonEditor = L.Editable.PathEditor.extend({
 
     startDrawingForward: function () {
         L.Editable.PathEditor.prototype.startDrawingForward.call(this);
-        this.map.editable.attachBackwardLineGuide();
+        this.tools.attachBackwardLineGuide();
     },
 
     finishDrawing: function () {
         L.Editable.PathEditor.prototype.finishDrawing.call(this);
-        this.map.editable.detachBackwardLineGuide();
+        this.tools.detachBackwardLineGuide();
     },
 
     getLatLngs: function (latlng) {
@@ -735,15 +736,15 @@ L.Editable.PolygonEditor = L.Editable.PathEditor.extend({
 
 });
 
-L.Editable.mergeOptions({
+L.Map.mergeOptions({
     polylineEditorClass: L.Editable.PolylineEditor
 });
 
-L.Editable.mergeOptions({
+L.Map.mergeOptions({
     polygonEditorClass: L.Editable.PolygonEditor
 });
 
-L.Editable.mergeOptions({
+L.Map.mergeOptions({
     markerEditorClass: L.Editable.MarkerEditor
 });
 
@@ -812,7 +813,7 @@ L.Polyline.include({
     },
 
     getEditorClass: function (map) {
-        return map.editable.options.polylineEditorClass;
+        return map.options.polylineEditorClass;
     }
 
 });
@@ -851,7 +852,7 @@ L.Polygon.include({
     },
 
     getEditorClass: function (map) {
-        return map.editable.options.polygonEditorClass;
+        return map.options.polygonEditorClass;
     }
 
 });
@@ -859,7 +860,7 @@ L.Polygon.include({
 L.Marker.include({
 
     getEditorClass: function (map) {
-        return map.editable.options.markerEditorClass;
+        return map.options.markerEditorClass;
     }
 
 });
@@ -872,7 +873,6 @@ var MultiEditableMixin = {
             layer.endEdit();
             layer.edit(e.layer !== layer);
         }, this);
-        this._map.editable.multi = this;
     },
 
     endEdit: function () {

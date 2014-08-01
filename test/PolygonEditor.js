@@ -12,7 +12,7 @@ describe('L.PolygonEditor', function() {
     describe('#startNewPolygon()', function() {
 
         it('should create feature and editor', function() {
-            polygon = this.map.editable.startPolygon();
+            polygon = this.map.editTools.startPolygon();
             assert.ok(polygon);
             assert.ok(polygon.editor);
             assert.notOk(polygon._latlngs.length);

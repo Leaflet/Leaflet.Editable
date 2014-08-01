@@ -13,7 +13,7 @@ L.NewLineControl = L.Control.extend({
         link.innerHTML = '/\\/';
         L.DomEvent.on(link, 'click', L.DomEvent.stop)
                   .on(link, 'click', function () {
-                    map.editable.startPolyline();
+                    map.editTools.startPolyline();
                   });
 
         return container;
@@ -35,7 +35,7 @@ L.NewPolygonControl = L.Control.extend({
         link.innerHTML = '▱';
         L.DomEvent.on(link, 'click', L.DomEvent.stop)
                   .on(link, 'click', function () {
-                    map.editable.startPolygon();
+                    map.editTools.startPolygon();
                   });
 
         return container;
@@ -57,7 +57,7 @@ L.NewHoleControl = L.Control.extend({
         link.innerHTML = '▣';
         L.DomEvent.on(link, 'click', L.DomEvent.stop)
                   .on(link, 'click', function () {
-                    map.editable.startHole();
+                    map.editTools.startHole();
                   });
 
         var toggle = function (e) {
@@ -69,7 +69,7 @@ L.NewHoleControl = L.Control.extend({
         };
         toggle();
 
-        map.on('editable:editorchanged', toggle);
+        map.on('editable:enable', toggle);
 
         return container;
     }
@@ -90,7 +90,7 @@ L.NewMarkerControl = L.Control.extend({
         link.innerHTML = '⚫';
         L.DomEvent.on(link, 'click', L.DomEvent.stop)
                   .on(link, 'click', function () {
-                    map.editable.startMarker();
+                    map.editTools.startMarker();
                   });
 
         return container;
@@ -112,7 +112,7 @@ L.ExtendMultiControl = L.Control.extend({
         link.innerHTML = '⧉';
         L.DomEvent.on(link, 'click', L.DomEvent.stop)
                   .on(link, 'click', function () {
-                    map.editable.extendMultiPolygon();
+                    map.editTools.extendMultiPolygon();
                   });
 
         var toggle = function (e) {
@@ -124,7 +124,7 @@ L.ExtendMultiControl = L.Control.extend({
         };
         toggle();
 
-        map.on('editable:editorchanged', toggle);
+        map.on('editable:enable', toggle);
 
         return container;
     }

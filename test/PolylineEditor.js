@@ -12,7 +12,7 @@ describe('L.PolylineEditor', function() {
     describe('#startNewLine()', function() {
 
         it('should create feature and editor', function() {
-            polyline = this.map.editable.startPolyline();
+            polyline = this.map.editTools.startPolyline();
             assert.ok(polyline);
             assert.ok(polyline.editor);
             assert.notOk(polyline._latlngs.length);

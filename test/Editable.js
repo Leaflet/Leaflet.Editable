@@ -9,7 +9,7 @@ describe('L.Editable', function() {
     describe('#init', function() {
 
         it('should be initialized', function() {
-            assert.ok(this.map.editable);
+            assert.ok(this.map.editTools);
         });
 
     });
