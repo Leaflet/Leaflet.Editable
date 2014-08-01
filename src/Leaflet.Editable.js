@@ -209,6 +209,7 @@ L.Editable.VertexMarker = L.Marker.extend({
         L.Marker.prototype.onAdd.call(this, map);
         L.DomEvent.on(this.dragging._draggable, 'drag', this.onDrag, this);
         this.on('click', this.onClick);
+        this.on('contextmenu', this.onContextMenu);
         this.on('mousedown touchstart', this.onMouseDown);
         this.addMiddleMarkers();
     },
@@ -230,6 +231,10 @@ L.Editable.VertexMarker = L.Marker.extend({
 
     onClick: function (e) {
         this.editor.onVertexMarkerClick(e, this);
+    },
+
+    onContextMenu: function (e) {
+        this.editor.onVertexMarkerContextMenu(e, this);
     },
 
     onMouseDown: function (e) {
@@ -554,35 +559,32 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
         this.refresh();
     },
 
-    onVertexMarkerCtrlClick: function (e, vertex, position) {
-        this.feature.fire('editable:vertexctrlclick', {
+    _fireVertexMarkerEvent: function (type, e, vertex, position) {
+        var event = {
             originalEvent: e.originalEvent,
             latlng: e.latlng,
             vertex: vertex,
-            position: position
-        });
+            position: position,
+            layer: this.feature
+        };
+        this.feature.fire(type, event);
+        this.map.fire(type, event);
+    },
+
+    onVertexMarkerCtrlClick: function (e, vertex, position) {
+        this._fireVertexMarkerEvent('editable:vertex:ctrlclick', e, vertex, position);
     },
 
     onVertexMarkerShiftClick: function (e, vertex, position) {
-        this.feature.fire('editable:vertexshiftclick', {
-            originalEvent: e.originalEvent,
-            latlng: e.latlng,
-            vertex: vertex,
-            position: position
-        });
+        this._fireVertexMarkerEvent('editable:vertex:shiftclick', e, vertex, position);
     },
 
     onVertexMarkerAltClick: function (e, vertex, position) {
-        this.feature.fire('editable:vertexaltclick', {
-            originalEvent: e.originalEvent,
-            latlng: e.latlng,
-            vertex: vertex,
-            position: position
-        });
+        this._fireVertexMarkerEvent('editable:vertex:altclick', e, vertex, position);
     },
 
-    addMiddleMarker: function (left, right, latlngs) {
-        return new this.tools.options.middleMarkerClass(left, right, latlngs, this);
+    onVertexMarkerContextMenu: function (e, vertex) {
+        this._fireVertexMarkerEvent('editable:vertex:contextmenu', e, vertex, vertex.getPosition());
     },
 
     startDrawingForward: function () {

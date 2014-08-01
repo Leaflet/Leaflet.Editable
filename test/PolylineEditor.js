@@ -49,7 +49,7 @@ describe('L.PolylineEditor', function() {
 
         it('should start editing on enable() call', function () {
             polyline.enableEdit();
-            assert.ok(polyline.editor);
+            assert.ok(polyline.editor._enabled);
         });
 
     });
