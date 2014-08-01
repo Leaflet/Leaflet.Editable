@@ -388,6 +388,7 @@ L.Editable.BaseEditor = L.Class.extend({
     enable: function () {
         this.tools.editLayer.addLayer(this.editLayer);
         this.onEnable();
+        this._enabled = true;
         return this;
     },
 
@@ -395,6 +396,7 @@ L.Editable.BaseEditor = L.Class.extend({
         this.editLayer.clearLayers();
         this.tools.editLayer.removeLayer(this.editLayer);
         this.onDisable();
+        delete this._enabled;
         return this;
     },
 
@@ -772,6 +774,10 @@ var EditableMixin = {
             this.on('remove', this.disableEdit);
         }
         return this.editor;
+    },
+
+    editEnabled: function () {
+        return this.editor && this.editor._enabled;
     },
 
     disableEdit: function () {
