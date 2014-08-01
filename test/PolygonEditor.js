@@ -5,7 +5,6 @@ describe('L.PolygonEditor', function() {
         this.map = map;
     });
     after(function () {
-        polygon.disableEdit();
         this.map.removeLayer(polygon);
     });
 

@@ -5,7 +5,6 @@ describe('L.PolylineEditor', function() {
         this.map = map;
     });
     after(function () {
-        polyline.disableEdit();
         this.map.removeLayer(polyline);
     });
 

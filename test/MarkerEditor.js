@@ -5,7 +5,6 @@ describe('L.MarkerEditor', function() {
         this.map = map;
     });
     after(function () {
-        marker.disableEdit();
         this.map.removeLayer(marker);
     });
 

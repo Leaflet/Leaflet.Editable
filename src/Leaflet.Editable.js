@@ -757,13 +757,17 @@ var EditableMixin = {
     },
 
     enableEdit: function (secondary) {
-        if (!this.editor) this.createEditor().enable(secondary);
+        if (!this.editor) {
+            this.createEditor().enable(secondary);
+            this.on('remove', this.disableEdit);
+        }
         return this.editor;
     },
 
     disableEdit: function () {
         if (this.editor) {
             this.editor.disable();
+            this.off('remove', this.disableEdit);
             delete this.editor;
         }
     },
