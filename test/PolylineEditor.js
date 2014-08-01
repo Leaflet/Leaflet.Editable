@@ -5,7 +5,7 @@ describe('L.PolylineEditor', function() {
         this.map = map;
     });
     after(function () {
-        polyline.editor.disable();
+        polyline.disableEdit();
         this.map.removeLayer(polyline);
     });
 
@@ -40,7 +40,7 @@ describe('L.PolylineEditor', function() {
     describe('#disable()', function () {
 
         it('should stop editing on disable() call', function () {
-            polyline.endEdit();
+            polyline.disableEdit();
             assert.notOk(polyline.editor);
         });
 
@@ -49,7 +49,7 @@ describe('L.PolylineEditor', function() {
     describe('#enable()', function () {
 
         it('should start editing on enable() call', function () {
-            polyline.edit();
+            polyline.enableEdit();
             assert.ok(polyline.editor);
         });
 

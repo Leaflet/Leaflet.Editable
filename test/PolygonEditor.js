@@ -5,7 +5,7 @@ describe('L.PolygonEditor', function() {
         this.map = map;
     });
     after(function () {
-        polygon.editor.disable();
+        polygon.disableEdit();
         this.map.removeLayer(polygon);
     });
 
@@ -43,7 +43,7 @@ describe('L.PolygonEditor', function() {
     describe('#disable()', function () {
 
         it('should stop editing on disable() call', function () {
-            polygon.endEdit();
+            polygon.disableEdit();
             assert.notOk(polygon.editor);
         });
 
@@ -52,7 +52,7 @@ describe('L.PolygonEditor', function() {
     describe('#enable()', function () {
 
         it('should start editing on enable() call', function () {
-            polygon.edit();
+            polygon.enableEdit();
             assert.ok(polygon.editor);
         });
 

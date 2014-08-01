@@ -94,14 +94,14 @@ L.Editable = L.Class.extend({
 
     startPolyline: function () {
         var line = this.createPolyline([]).connectCreatedToMap(this.map),
-            editor = line.edit();
+            editor = line.enableEdit();
         editor.startDrawingForward();
         return line;
     },
 
     startPolygon: function () {
         var polygon = this.createPolygon([]).connectCreatedToMap(this.map),
-            editor = polygon.edit();
+            editor = polygon.enableEdit();
         editor.startDrawingForward();
         return polygon;
     },
@@ -114,7 +114,7 @@ L.Editable = L.Class.extend({
         var polygon = this.createPolygon([]);
         multi.addLayer(polygon);
         polygon.multi = multi;
-        var editor = polygon.edit();
+        var editor = polygon.enableEdit();
         multi.setPrimary(polygon);
         editor.startDrawingForward();
         return polygon;
@@ -123,7 +123,7 @@ L.Editable = L.Class.extend({
     startMarker: function (latlng) {
         latlng = latlng || this.map.getCenter();
         var marker = this.createMarker(latlng).connectCreatedToMap(this.map),
-            editor = marker.edit();
+            editor = marker.enableEdit();
         editor.startDrawing();
         return marker;
     },
@@ -756,11 +756,12 @@ var EditableMixin = {
         return new Klass(map, this);
     },
 
-    edit: function (secondary) {
-        return this.createEditor().enable(secondary);
+    enableEdit: function (secondary) {
+        if (!this.editor) this.createEditor().enable(secondary);
+        return this.editor;
     },
 
-    endEdit: function () {
+    disableEdit: function () {
         if (this.editor) {
             this.editor.disable();
             delete this.editor;
@@ -769,9 +770,9 @@ var EditableMixin = {
 
     toggleEdit: function () {
       if (this.editor) {
-        this.endEdit();
+        this.disableEdit();
       } else {
-        this.edit();
+        this.enableEdit();
       }
     },
 
@@ -867,25 +868,25 @@ L.Marker.include({
 
 var MultiEditableMixin = {
 
-    edit: function (e) {
+    enableEdit: function (e) {
         this.eachLayer(function(layer) {
             layer.multi = this;
-            layer.endEdit();
-            layer.edit(e.layer !== layer);
+            layer.disableEdit();
+            layer.enableEdit(e.layer !== layer);
         }, this);
     },
 
-    endEdit: function () {
+    disableEdit: function () {
         this.eachLayer(function(layer) {
-            layer.endEdit();
+            layer.disableEdit();
         });
     },
 
     toggleEdit: function (e) {
         if (!e.layer.editor || e.layer.editor.secondary) {
-            this.edit(e);
+            this.enableEdit(e);
         } else {
-            this.endEdit();
+            this.disableEdit();
         }
     },
 

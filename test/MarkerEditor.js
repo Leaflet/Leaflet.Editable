@@ -5,7 +5,7 @@ describe('L.MarkerEditor', function() {
         this.map = map;
     });
     after(function () {
-        marker.endEdit();
+        marker.disableEdit();
         this.map.removeLayer(marker);
     });
 
@@ -36,7 +36,7 @@ describe('L.MarkerEditor', function() {
     describe('#disable()', function () {
 
         it('should stop editing on disable() call', function () {
-            marker.endEdit();
+            marker.disableEdit();
             assert.notOk(marker.editor);
         });
 
@@ -45,7 +45,7 @@ describe('L.MarkerEditor', function() {
     describe('#enable()', function () {
 
         it('should start editing on enable() call', function () {
-            marker.edit();
+            marker.enableEdit();
             assert.ok(marker.editor);
         });
 
