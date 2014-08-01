@@ -892,7 +892,7 @@ var MultiEditableMixin = {
         this.eachLayer(function(layer) {
             layer.multi = this;
             layer.disableEdit();
-            layer.enableEdit(e.layer !== layer);
+            layer.enableEdit(!e || e.layer !== layer);
         }, this);
     },
 

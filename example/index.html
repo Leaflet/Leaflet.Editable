@@ -18,7 +18,7 @@
 
 <script type="text/javascript">
 var startPoint = [43.1249, 1.254];
-var map = L.map('map', {allowEdit: true}).setView(startPoint, 16),
+var map = L.map('map', {editable: true}).setView(startPoint, 16),
     tilelayer = L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {maxZoom: 20, attribution: 'Data \u00a9 <a href="http://www.openstreetmap.org/copyright"> OpenStreetMap Contributors </a> Tiles \u00a9 HOT'}).addTo(map);
 
     map.addControl(new L.NewMarkerControl());
@@ -32,6 +32,7 @@ var map = L.map('map', {allowEdit: true}).setView(startPoint, 16),
         [43.1295, 1.259],
         [43.1291, 1.261],
     ]).addTo(map);
+    line.enableEdit();
     line.on('dblclick', L.DomEvent.stop).on('dblclick', line.toggleEdit);
 
     var multi = L.multiPolygon([
@@ -63,6 +64,7 @@ var map = L.map('map', {allowEdit: true}).setView(startPoint, 16),
         ]
       ]
     ]).addTo(map);
+    multi.enableEdit();
     multi.on('dblclick', L.DomEvent.stop).on('dblclick', multi.toggleEdit);
 
     var poly = L.polygon([
@@ -78,6 +80,7 @@ var map = L.map('map', {allowEdit: true}).setView(startPoint, 16),
         [43.12475, 1.262]
       ]
     ]).addTo(map);
+    poly.enableEdit();
     poly.on('dblclick', L.DomEvent.stop).on('dblclick', poly.toggleEdit);
 
 </script>
