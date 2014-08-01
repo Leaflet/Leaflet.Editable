@@ -12,7 +12,8 @@ L.Editable = L.Class.extend({
         markerClass: L.Marker
     },
 
-    initialize: function (map) {
+    initialize: function (map, options) {
+        L.setOptions(this, options);
         this.map = map;
         this.editLayer = new L.LayerGroup().addTo(map);
         this.newClickHandler = L.marker(this.map.getCenter(), {
@@ -151,8 +152,8 @@ L.Editable = L.Class.extend({
 L.Map.addInitHook(function () {
 
     this.whenReady(function () {
-        if (this.options.allowEdit) {
-            this.editTools = new L.Editable(this, this.editOptions);
+        if (this.options.editable) {
+            this.editTools = new L.Editable(this, this.options.editOptions);
         }
     });
 
