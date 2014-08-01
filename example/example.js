@@ -13,7 +13,7 @@ L.NewLineControl = L.Control.extend({
         link.innerHTML = '/\\/';
         L.DomEvent.on(link, 'click', L.DomEvent.stop)
                   .on(link, 'click', function () {
-                    map.editable.startNewLine();
+                    map.editable.startLine();
                   });
 
         return container;
@@ -35,7 +35,7 @@ L.NewPolygonControl = L.Control.extend({
         link.innerHTML = '▱';
         L.DomEvent.on(link, 'click', L.DomEvent.stop)
                   .on(link, 'click', function () {
-                    map.editable.startNewPolygon();
+                    map.editable.startPolygon();
                   });
 
         return container;
@@ -57,7 +57,7 @@ L.NewHoleControl = L.Control.extend({
         link.innerHTML = '▣';
         L.DomEvent.on(link, 'click', L.DomEvent.stop)
                   .on(link, 'click', function () {
-                    map.editable.startNewHole();
+                    map.editable.startHole();
                   });
 
         var toggle = function (e) {
@@ -69,7 +69,7 @@ L.NewHoleControl = L.Control.extend({
         };
         toggle();
 
-        map.editable.on('editable:editorchanged', toggle);
+        map.on('editable:editorchanged', toggle);
 
         return container;
     }
@@ -124,7 +124,7 @@ L.ExtendMultiControl = L.Control.extend({
         };
         toggle();
 
-        map.editable.on('editable:editorchanged', toggle);
+        map.on('editable:editorchanged', toggle);
 
         return container;
     }

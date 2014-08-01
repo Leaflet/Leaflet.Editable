@@ -5,8 +5,6 @@ L.Editable = L.Class.extend({
         BACKWARD: -1
     },
 
-    includes: L.Mixin.Events,
-
     options: {
         zIndex: 10000,
         polygonClass: L.Polygon,
@@ -45,7 +43,7 @@ L.Editable = L.Class.extend({
                             oldEditor.feature.multi.endEdit();
                         }
                     }
-                    self.fire('editable:editorchanged', {editor: editor});
+                    self.map.fire('editable:editorchanged', {editor: editor});
                 }
             });
         }
@@ -124,21 +122,21 @@ L.Editable = L.Class.extend({
         }
     },
 
-    startNewLine: function () {
-        var line = this.createLine([]).connectToMap(this.map),
+    startPolyline: function () {
+        var line = this.createPolyline([]).connectCreatedToMap(this.map),
             editor = line.edit();
         editor.startDrawingForward();
         return line;
     },
 
-    startNewPolygon: function () {
-        var polygon = this.createPolygon([]).connectToMap(this.map),
+    startPolygon: function () {
+        var polygon = this.createPolygon([]).connectCreatedToMap(this.map),
             editor = polygon.edit();
         editor.startDrawingForward();
         return polygon;
     },
 
-    startNewHole: function () {
+    startHole: function () {
         if (!this.activeEditor || !this.activeEditor instanceof L.Editable.PolygonEditor) return;
         this.activeEditor.newHole();
     },
@@ -154,24 +152,30 @@ L.Editable = L.Class.extend({
         return polygon;
     },
 
-    startNewMarker: function (latlng) {
+    startMarker: function (latlng) {
         latlng = latlng || this.map.getCenter();
-        var marker = this.createMarker(latlng).connectToMap(this.map),
+        var marker = this.createMarker(latlng).connectCreatedToMap(this.map),
             editor = marker.edit();
         editor.startDrawing();
         return marker;
     },
 
-    createLine: function (latlngs) {
-        return new this.options.polylineClass(latlngs);
+    createPolyline: function (latlngs) {
+        var line = new this.options.polylineClass(latlngs);
+        this.map.fire('editable:created', {layer: line});
+        return line;
     },
 
     createPolygon: function (latlngs) {
-        return new this.options.polygonClass(latlngs);
+        var polygon = new this.options.polygonClass(latlngs);
+        this.map.fire('editable:created', {layer: polygon});
+        return polygon;
     },
 
     createMarker: function (latlng) {
-        return new this.options.markerClass(latlng);
+        var marker = new this.options.markerClass(latlng);
+        this.map.fire('editable:created', {layer: marker});
+        return marker;
     },
 
     addNewClickHandler: function () {
@@ -194,8 +198,10 @@ L.Editable = L.Class.extend({
 L.Map.addInitHook(function () {
 
     this.whenReady(function () {
-        this.editable = new L.Editable(this);
-        this.on('mousemove touchmove', this.editable.onMouseMove, this.editable);
+        if (this.options.allowEdit) {
+            this.editable = new L.Editable(this, this.editOptions);
+            this.on('mousemove touchmove', this.editable.onMouseMove, this.editable);
+        }
     });
 
 });
@@ -458,19 +464,19 @@ L.Editable.BaseEditor = L.Class.extend({
     },
 
     onEnable: function () {
-        this.feature.fire('editable:enable', {layer: this.feature});
+        this.map.fire('editable:enable', {layer: this.feature});
     },
 
     onDisable: function () {
-        this.feature.fire('editable:disable', {layer: this.feature});
+        this.map.fire('editable:disable', {layer: this.feature});
     },
 
     onEditing: function () {
-        this.feature.fire('editable:editing', {layer: this.feature});
+        this.map.fire('editable:editing', {layer: this.feature});
     },
 
     onEdited: function () {
-        this.feature.fire('editable:edited', {layer: this.feature});
+        this.map.fire('editable:edited', {layer: this.feature});
     },
 
     startDrawing: function () {
@@ -817,7 +823,7 @@ var EditableMixin = {
       }
     },
 
-    connectToMap: function (map) {
+    connectCreatedToMap: function (map) {
         return this.addTo(map);
     }
 

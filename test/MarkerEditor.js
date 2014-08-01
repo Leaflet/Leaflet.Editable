@@ -12,7 +12,7 @@ describe('L.MarkerEditor', function() {
     describe('#startNewPolygon()', function() {
 
         it('should create feature and editor', function() {
-            marker = this.map.editable.startNewMarker();
+            marker = this.map.editable.startMarker();
             assert.ok(this.map.editable.activeEditor);
             assert.ok(marker);
         });

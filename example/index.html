@@ -18,7 +18,7 @@
 
 <script type="text/javascript">
 var startPoint = [43.1249, 1.254];
-var map = L.map('map', {attributionControl: false, loadingControl: true}).setView(startPoint, 16),
+var map = L.map('map', {allowEdit: true}).setView(startPoint, 16),
     tilelayer = L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {maxZoom: 20, attribution: 'Data \u00a9 <a href="http://www.openstreetmap.org/copyright"> OpenStreetMap Contributors </a> Tiles \u00a9 HOT'}).addTo(map);
 
     map.addControl(new L.NewMarkerControl());
