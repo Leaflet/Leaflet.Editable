@@ -244,11 +244,16 @@ L.Editable.VertexMarker = L.Marker.extend({
     },
 
     remove: function () {
-        var next = this.getNext();
+        var next = this.getNext();  // Compute before changing latlng
+        this.latlngs.splice(this.latlngs.indexOf(this.latlng), 1);
+        this.editor.editLayer.removeLayer(this);
+        if (next) next.resetMiddleMarker();
+    },
+
+    onRemove: function (map) {
         if (this.middleMarker) this.middleMarker.remove();
         delete this.latlng.__vertex;
-        this.latlngs.splice(this.latlngs.indexOf(this.latlng), 1);
-        if (next) next.resetMiddleMarker();
+        L.Marker.prototype.onRemove.call(this, map);
     },
 
     getPosition: function () {
@@ -354,14 +359,18 @@ L.Editable.MiddleMarker = L.Marker.extend({
         this.latlngs.splice(this.index(), 0, e.latlng);
         this.editor.refresh();
         this.editor.setPrimary();
-        this.remove();
         var marker = this.editor.addVertexMarker(e.latlng, this.latlngs);
         marker.dragging._draggable._onDown(e.originalEvent);  // Transfer ongoing dragging to real marker
+        this.remove();
     },
 
     remove: function () {
         this.editor.editLayer.removeLayer(this);
+    },
+
+    onRemove: function (map) {
         delete this.right.middleMarker;
+        L.Marker.prototype.onRemove.call(this, map);
     },
 
     index: function () {
@@ -526,6 +535,11 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
         }
     },
 
+    reset: function () {
+        this.editLayer.clearLayers();
+        this.initVertexMarkers();
+    },
+
     addVertexMarker: function (latlng, latlngs) {
         return new this.tools.options.vertexMarkerClass(latlng, latlngs, this);
     },
@@ -534,6 +548,10 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
         for (var i = 0; i < latlngs.length; i++) {
             this.addVertexMarker(latlngs[i], latlngs);
         }
+    },
+
+    addMiddleMarker: function (left, right, latlngs) {
+        return new this.tools.options.middleMarkerClass(left, right, latlngs, this);
     },
 
     onVertexMarkerClick: function (e, vertex) {
@@ -555,7 +573,6 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
 
     onVertexRawMarkerClick: function (e, vertex, position) {
         vertex.remove();
-        this.editLayer.removeLayer(vertex);
         this.refresh();
     },
 
@@ -772,10 +789,10 @@ var EditableMixin = {
 
     enableEdit: function (secondary) {
         if (!this.editor) {
-            this.createEditor().enable(secondary);
+            this.createEditor();
             this.on('remove', this.disableEdit);
         }
-        return this.editor;
+        return this.editor.enable(secondary);
     },
 
     editEnabled: function () {
