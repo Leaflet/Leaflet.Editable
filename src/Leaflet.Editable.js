@@ -9,7 +9,8 @@ L.Editable = L.Class.extend({
         zIndex: 10000,
         polygonClass: L.Polygon,
         polylineClass: L.Polyline,
-        markerClass: L.Marker
+        markerClass: L.Marker,
+        drawingCSSClass: 'leaflet-editable-drawing'
     },
 
     initialize: function (map, options) {
@@ -79,18 +80,25 @@ L.Editable = L.Class.extend({
         this.editLayer.addLayer(this.newClickHandler);
         this.newClickHandler.on('click', editor.onNewClickHandlerClicked, editor);
         if (L.Browser.touch) this.map.on('click', editor.onTouch, editor);
-        this.map.fire('editable:registerededitor', {editor: editor});
+        L.DomUtil.addClass(this.map._container, this.options.drawingCSSClass);
     },
 
     unregisterForDrawing: function (editor) {
-        this.map.off('mousemove touchmove', editor.onMouseMove, editor);
+        editor = editor || this._drawingEditor;
         this.editLayer.removeLayer(this.newClickHandler);
+        if (!editor) return;
+        this.map.off('mousemove touchmove', editor.onMouseMove, editor);
         this.newClickHandler.off('click', editor.onNewClickHandlerClicked, editor);
         if (L.Browser.touch) this.map.off('click', editor.onTouch, editor);
         if (editor !== this._drawingEditor) return;
         delete this._drawingEditor;
         this.map.fire('editable:unregisterededitor', {editor: editor});
         if (editor.drawing) editor.finishDrawing();
+        L.DomUtil.removeClass(this.map._container, this.options.drawingCSSClass);
+    },
+
+    stopDrawing: function () {
+        this.unregisterForDrawing();
     },
 
     startPolyline: function () {
@@ -163,7 +171,7 @@ L.Editable.DivIcon = L.DivIcon.extend({
 
     options: {
         iconSize: new L.Point(8, 8),
-        className: 'leaflet-div-icon leaflet-editing-icon'
+        className: 'leaflet-div-icon leaflet-drawing-icon'
     }
 
 });
@@ -422,10 +430,6 @@ L.Editable.BaseEditor = L.Class.extend({
         this.map.fire('editable:disable', {layer: this.feature});
     },
 
-    onStartEditing: function () {
-        this.map.fire('editable:startediting', {layer: this.feature});
-    },
-
     onEditing: function () {
         this.map.fire('editable:editing', {layer: this.feature});
     },
@@ -434,16 +438,25 @@ L.Editable.BaseEditor = L.Class.extend({
         this.map.fire('editable:edited', {layer: this.feature});
     },
 
+    onStartDrawing: function () {
+        this.map.fire('editable:startdrawing', {layer: this.feature});
+    },
+
+    onFinishDrawing: function () {
+        this.map.fire('editable:enddrawing', {layer: this.feature});
+    },
+
     startDrawing: function () {
         if (!this.drawing) this.drawing = L.Editable.FORWARD;
         this.tools.registerForDrawing(this);
-        this.onStartEditing();
+        this.onStartDrawing();
     },
 
     finishDrawing: function () {
         this.onEdited();
         this.drawing = false;
         this.tools.unregisterForDrawing(this);
+        this.onFinishDrawing();
     },
 
     onMouseMove: function (e) {
