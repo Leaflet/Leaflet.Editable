@@ -33,9 +33,8 @@ L.Editable = L.Class.extend({
 
     createNewClickHandler: function () {
         return L.marker(this.map.getCenter(), {
-            icon: this.createVertexIcon(),
-            opacity: 0,
-            className: 'leaflet-div-icon leaflet-drawing-icon'
+            icon: this.createVertexIcon({className: 'leaflet-div-icon leaflet-drawing-icon'}),
+            opacity: 0
         });
     },
 
@@ -209,9 +208,8 @@ L.Editable.VertexMarker = L.Marker.extend({
         this.latlng = latlng;
         this.latlngs = latlngs;
         this.editor = editor;
-        options = options || {};
-        options.icon = options.icon || this.editor.tools.createVertexIcon();
         L.Marker.prototype.initialize.call(this, latlng, options);
+        this.options.icon = this.editor.tools.createVertexIcon({className: this.options.className});
         if (this.editor.secondary) this.setSecondary();
         this.latlng.__vertex = this;
         this.editor.editLayer.addLayer(this);
@@ -347,9 +345,8 @@ L.Editable.MiddleMarker = L.Marker.extend({
         this.right = right;
         this.editor = editor;
         this.latlngs = latlngs;
-        options = options || {};
-        options.icon = options.icon || this.editor.tools.createVertexIcon();
         L.Marker.prototype.initialize.call(this, this.computeLatLng(), options);
+        this.options.icon = this.editor.tools.createVertexIcon({className: this.options.className});
         if (this.editor.secondary) this.setSecondary();
         this.editor.editLayer.addLayer(this);
     },
