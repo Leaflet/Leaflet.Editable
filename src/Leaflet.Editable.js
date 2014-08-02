@@ -115,8 +115,8 @@ L.Editable = L.Class.extend({
         return polygon;
     },
 
-    startHole: function (editor) {
-        editor.newHole();
+    startHole: function (editor, latlng) {
+        editor.newHole(latlng);
     },
 
     extendMultiPolygon: function (multi) {
@@ -647,6 +647,9 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
     newPointForward: function (latlng) {
         this.addLatLng(latlng);
         this.tools.anchorForwardLineGuide(latlng);
+        if (!this.tools.backwardLineGuide._latlngs[0]) {
+            this.tools.anchorBackwardLineGuide(latlng);
+        }
     },
 
     newPointBackward: function (latlng) {
@@ -660,9 +663,6 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
         }
         if (this.drawing === L.Editable.FORWARD) this.newPointForward(e.latlng);
         else this.newPointBackward(e.latlng);
-        if (!this.tools.backwardLineGuide._latlngs[0]) {
-            this.tools.anchorBackwardLineGuide(e.latlng);
-        }
         this.feature.fire('editable:newclick', e);
     },
 
@@ -776,9 +776,10 @@ L.Editable.PolygonEditor = L.Editable.PathEditor.extend({
         this.checkAddConstraints = this.checkContains;
     },
 
-    newHole: function () {
+    newHole: function (latlng) {
         this.prepareForNewHole();
         this.startDrawingForward();
+        if (latlng) this.newPointForward(latlng);
     },
 
     checkContains: function (latlng) {
