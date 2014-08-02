@@ -16,12 +16,8 @@ L.Editable = L.Class.extend({
     initialize: function (map, options) {
         L.setOptions(this, options);
         this.map = map;
-        this.editLayer = this.options.editLayer || new L.LayerGroup().addTo(map);
-        this.newClickHandler = L.marker(this.map.getCenter(), {
-            icon: L.Browser.touch ? new L.Editable.TouchDivIcon() : new L.Editable.DivIcon(),
-            opacity: 0,
-            // zIndexOffset: this.options.zIndex
-        });
+        this.editLayer = this.createEditLayer();
+        this.newClickHandler = this.createNewClickHandler();
         this.forwardLineGuide = this.createLineGuide();
         this.backwardLineGuide = this.createLineGuide();
 
@@ -29,6 +25,22 @@ L.Editable = L.Class.extend({
 
     createLineGuide: function () {
         return L.polyline([], {dashArray: '5,10', weight: 1});
+    },
+
+    createVertexIcon: function (options) {
+        return L.Browser.touch ? new L.Editable.TouchVertexIcon(options) : new L.Editable.VertexIcon(options);
+    },
+
+    createNewClickHandler: function () {
+        return L.marker(this.map.getCenter(), {
+            icon: this.createVertexIcon(),
+            opacity: 0,
+            className: 'leaflet-div-icon leaflet-drawing-icon'
+        });
+    },
+
+    createEditLayer: function () {
+        return this.options.editLayer || new L.LayerGroup().addTo(this.map);
     },
 
     moveForwardLineGuide: function (latlng) {
@@ -167,16 +179,15 @@ L.Map.addInitHook(function () {
 
 });
 
-L.Editable.DivIcon = L.DivIcon.extend({
+L.Editable.VertexIcon = L.DivIcon.extend({
 
     options: {
-        iconSize: new L.Point(8, 8),
-        className: 'leaflet-div-icon leaflet-drawing-icon'
+        iconSize: new L.Point(8, 8)
     }
 
 });
 
-L.Editable.TouchDivIcon = L.Editable.DivIcon.extend({
+L.Editable.TouchVertexIcon = L.Editable.VertexIcon.extend({
 
     options: {
         iconSize: new L.Point(20, 20)
@@ -190,16 +201,17 @@ L.Editable.VertexMarker = L.Marker.extend({
     options: {
         draggable: true,
         riseOnOver: true,
-        icon: L.Browser.touch ? new L.Editable.TouchDivIcon() : new L.Editable.DivIcon(),
-        zIndex: 10001
+        zIndex: 10001,
+        className: 'leaflet-div-icon leaflet-vertex-icon'
     },
 
     initialize: function (latlng, latlngs, editor, options) {
         this.latlng = latlng;
         this.latlngs = latlngs;
         this.editor = editor;
-        L.setOptions(this, options);
-        L.Marker.prototype.initialize.call(this, latlng);
+        options = options || {};
+        options.icon = options.icon || this.editor.tools.createVertexIcon();
+        L.Marker.prototype.initialize.call(this, latlng, options);
         if (this.editor.secondary) this.setSecondary();
         this.latlng.__vertex = this;
         this.editor.editLayer.addLayer(this);
@@ -325,9 +337,9 @@ L.Editable.mergeOptions({
 L.Editable.MiddleMarker = L.Marker.extend({
 
     options: {
-        icon: L.Browser.touch ? new L.Editable.TouchDivIcon() : new L.Editable.DivIcon(),
         zIndex: 10000,
-        opacity: 0.5
+        opacity: 0.5,
+        className: 'leaflet-div-icon leaflet-middle-icon'
     },
 
     initialize: function (left, right, latlngs, editor, options) {
@@ -335,7 +347,9 @@ L.Editable.MiddleMarker = L.Marker.extend({
         this.right = right;
         this.editor = editor;
         this.latlngs = latlngs;
-        L.Marker.prototype.initialize.call(this, this.computeLatLng());
+        options = options || {};
+        options.icon = options.icon || this.editor.tools.createVertexIcon();
+        L.Marker.prototype.initialize.call(this, this.computeLatLng(), options);
         if (this.editor.secondary) this.setSecondary();
         this.editor.editLayer.addLayer(this);
     },
