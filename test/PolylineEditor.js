@@ -5,7 +5,7 @@ describe('L.PolylineEditor', function() {
         this.map = map;
     });
     after(function () {
-        // this.map.removeLayer(polyline);
+        this.map.removeLayer(polyline);
     });
 
     describe('#startNewLine()', function() {
