@@ -16,7 +16,7 @@ L.Editable = L.Class.extend({
     initialize: function (map, options) {
         L.setOptions(this, options);
         this.map = map;
-        this.editLayer = new L.LayerGroup().addTo(map);
+        this.editLayer = this.options.editLayer || new L.LayerGroup().addTo(map);
         this.newClickHandler = L.marker(this.map.getCenter(), {
             icon: L.Browser.touch ? new L.Editable.TouchDivIcon() : new L.Editable.DivIcon(),
             opacity: 0,
