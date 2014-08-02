@@ -37,6 +37,23 @@ describe('L.PolygonEditor', function() {
             assert.equal(polygon._latlngs.length, 4);
         });
 
+        it('should finish drawing also on first point', function() {
+            var other = this.map.editTools.startPolygon();
+            assert.notOk(other._latlngs.length);
+            happen.at('mousemove', 400, 450);
+            happen.at('click', 400, 450);
+            assert.equal(other._latlngs.length, 1);
+            happen.at('mousemove', 450, 500);
+            happen.at('click', 450, 500);
+            assert.equal(other._latlngs.length, 2);
+            happen.at('mousemove', 300, 450);
+            happen.at('click', 300, 450);
+            assert.equal(other._latlngs.length, 3);
+            happen.at('click', 400, 450);
+            assert.equal(other._latlngs.length, 3);
+            this.map.removeLayer(other);
+        });
+
     });
 
     describe('#disable()', function () {

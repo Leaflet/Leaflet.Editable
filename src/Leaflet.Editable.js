@@ -589,8 +589,10 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
             this.onVertexMarkerShiftClick(e, vertex, position);
         } else if (position >= 1 && position === vertex.getLastIndex() && this.drawing === L.Editable.FORWARD) {
             this.finishDrawing();
-        } else if (position === 0 && this.drawing === L.Editable.BACKWARD && this.activeLatLngs.length >= 2) {
+        } else if (position === 0 && this.drawing === L.Editable.BACKWARD && this.activeLatLngs.length >= this.MIN_VERTEX) {
             this.finishDrawing();
+        } else if (position === 0 && this.drawing === L.Editable.FORWARD && this.activeLatLngs.length >= this.MIN_VERTEX && this.CLOSED) {
+            this.finishDrawing();  // Allow to close on first point also for polygons
         } else {
             this.onVertexRawMarkerClick(e, vertex, position);
         }
