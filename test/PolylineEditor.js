@@ -5,7 +5,7 @@ describe('L.PolylineEditor', function() {
         this.map = map;
     });
     after(function () {
-        this.map.removeLayer(polyline);
+        // this.map.removeLayer(polyline);
     });
 
     describe('#startNewLine()', function() {
@@ -17,10 +17,19 @@ describe('L.PolylineEditor', function() {
             assert.notOk(polyline._latlngs.length);
         });
 
-        it('should create latlng on click', function () {
+        it('should create first latlng on first click', function () {
             happen.at('mousemove', 100, 150);
             happen.at('click', 100, 150);
             assert.equal(polyline._latlngs.length, 1);
+        });
+
+        it('should not finish line on first point click', function () {
+            happen.at('click', 100, 150);
+            assert.equal(polyline._latlngs.length, 1);
+            assert(polyline.editor.drawing);
+        });
+
+        it('should create more latlngs on more click', function () {
             happen.at('mousemove', 200, 350);
             happen.at('click', 200, 350);
             assert.equal(polyline._latlngs.length, 2);
@@ -104,7 +113,7 @@ describe('L.PolylineEditor', function() {
 
     });
 
-    describe('#dragMiddleMarker()', function (done) {
+    describe('#dragMiddleMarker()', function () {
 
         it('should insert new latlng on middle marker click', function (done) {
             var last = polyline._latlngs[3],
@@ -120,6 +129,27 @@ describe('L.PolylineEditor', function() {
                 assert.equal(third, polyline._latlngs[2]);
                 done();
             });
+        });
+
+    });
+
+
+    describe('#removeVertex', function () {
+
+        it('should remove vertex on click', function () {
+            happen.at('click', 400, 400);
+            assert.equal(polyline._latlngs.length, 4);
+            happen.at('click', 100, 150);
+            assert.equal(polyline._latlngs.length, 3);
+            happen.at('click', 400, 100);
+            assert.equal(polyline._latlngs.length, 2);
+        });
+
+        it('should not remove last two vertex', function () {
+            happen.at('click', 220, 360);
+            assert.equal(polyline._latlngs.length, 2);
+            happen.at('click', 300, 440);
+            assert.equal(polyline._latlngs.length, 2);
         });
 
     });

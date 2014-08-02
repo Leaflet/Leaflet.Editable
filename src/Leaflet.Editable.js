@@ -508,6 +508,7 @@ L.Editable.MarkerEditor = L.Editable.BaseEditor.extend({
 L.Editable.PathEditor = L.Editable.BaseEditor.extend({
 
     CLOSED: false,
+    MIN_VERTEX: 2,
 
     enable: function (secondary) {
         L.Editable.BaseEditor.prototype.enable.call(this);
@@ -585,8 +586,13 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
     },
 
     onVertexRawMarkerClick: function (e, vertex, position) {
+        if (!this.vertexCanBeRemoved(vertex, position)) return;
         vertex.remove();
         this.refresh();
+    },
+
+    vertexCanBeRemoved: function (vertex, position) {
+        return vertex.latlngs.length > this.MIN_VERTEX;
     },
 
     _fireVertexMarkerEvent: function (type, e, vertex, position) {
@@ -724,6 +730,7 @@ L.Editable.PolylineEditor = L.Editable.PathEditor.extend({
 L.Editable.PolygonEditor = L.Editable.PathEditor.extend({
 
     CLOSED: true,
+    MIN_VERTEX: 3,
 
     getLatLngsGroups: function () {
         var groups = [this.feature._latlngs];
@@ -776,7 +783,13 @@ L.Editable.PolygonEditor = L.Editable.PathEditor.extend({
 
     checkContains: function (latlng) {
         return this.feature._containsPoint(this.map.latLngToLayerPoint(latlng));
-    }
+    },
+
+    vertexCanBeRemoved: function (vertex) {
+        if (vertex.latlngs === this.feature._latlngs) return L.Editable.PathEditor.prototype.vertexCanBeRemoved.call(this, vertex);
+        else return true;  // Holes can be totally removed without removing the layer itself
+    },
+
 
 });
 
