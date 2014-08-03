@@ -75,7 +75,7 @@ Leaflet.Editable add options and events to the `L.Map` object.
 | editable:vertex:shiftclick | originalEvent, latlng, vertex, layer    |  Fired when a click having shiftKey is issued on a vertex  |
 | editable:vertex:altclick | originalEvent, latlng, vertex, layer    |  Fired when a click having altKey is issued on a vertex  |
 | editable:vertex:contextmenu | originalEvent, latlng, vertex, layer    |  Fired when a contextmenu is issued on a vertex  |
-| editable:vertex:removed | originalEvent, latlng, vertex, layer    |  Fired after a vertex has been removed  |
+| editable:vertex:deleted | originalEvent, latlng, vertex, layer    |  Fired after a vertex has been deleted by user |
 
 
 ### L.Editable

@@ -9,6 +9,7 @@
 - refactored internal events management
 - removed 'position' from event properties
 - renamed vertex.getPosition in vertex.getIndex
+- renamed vertex.remove in vertex.delete
 
 ## 0.1.0
 - initial release

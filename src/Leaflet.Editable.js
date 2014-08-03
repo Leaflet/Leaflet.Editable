@@ -252,16 +252,16 @@ L.Editable.VertexMarker = L.Marker.extend({
         this.editor.onVertexMarkerMouseDown(e);
     },
 
-    remove: function () {
+    delete: function () {
         var next = this.getNext();  // Compute before changing latlng
         this.latlngs.splice(this.latlngs.indexOf(this.latlng), 1);
         this.editor.editLayer.removeLayer(this);
-        this.editor.onVertexRemoved({latlng: this.latlng, vertex: this});
+        this.editor.onVertexDeleted({latlng: this.latlng, vertex: this});
         if (next) next.resetMiddleMarker();
     },
 
     onRemove: function (map) {
-        if (this.middleMarker) this.middleMarker.remove();
+        if (this.middleMarker) this.middleMarker.delete();
         delete this.latlng.__vertex;
         L.Marker.prototype.onRemove.call(this, map);
     },
@@ -309,7 +309,7 @@ L.Editable.VertexMarker = L.Marker.extend({
     },
 
     resetMiddleMarker: function () {
-        if (this.middleMarker) this.middleMarker.remove();
+        if (this.middleMarker) this.middleMarker.delete();
         this.addMiddleMarker();
     },
 
@@ -363,10 +363,10 @@ L.Editable.MiddleMarker = L.Marker.extend({
         this.editor.refresh();
         var marker = this.editor.addVertexMarker(e.latlng, this.latlngs);
         marker.dragging._draggable._onDown(e.originalEvent);  // Transfer ongoing dragging to real marker
-        this.remove();
+        this.delete();
     },
 
-    remove: function () {
+    delete: function () {
         this.editor.editLayer.removeLayer(this);
     },
 
@@ -580,17 +580,17 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
     },
 
     onVertexRawMarkerClick: function (e) {
-        if (!this.vertexCanBeRemoved(e.vertex)) return;
-        e.vertex.remove();
+        if (!this.vertexCanBeDeleted(e.vertex)) return;
+        e.vertex.delete();
         this.refresh();
     },
 
-    vertexCanBeRemoved: function (vertex) {
+    vertexCanBeDeleted: function (vertex) {
         return vertex.latlngs.length > this.MIN_VERTEX;
     },
 
-    onVertexRemoved: function (e) {
-        this._fireAndForward('editable:vertex:removed', e);
+    onVertexDeleted: function (e) {
+        this._fireAndForward('editable:vertex:deleted', e);
     },
 
     onVertexMarkerCtrlClick: function (e) {
@@ -765,9 +765,9 @@ L.Editable.PolygonEditor = L.Editable.PathEditor.extend({
         return this.feature._containsPoint(this.map.latLngToLayerPoint(latlng));
     },
 
-    vertexCanBeRemoved: function (vertex) {
-        if (vertex.latlngs === this.feature._latlngs) return L.Editable.PathEditor.prototype.vertexCanBeRemoved.call(this, vertex);
-        else return true;  // Holes can be totally removed without removing the layer itself
+    vertexCanBeDeleted: function (vertex) {
+        if (vertex.latlngs === this.feature._latlngs) return L.Editable.PathEditor.prototype.vertexCanBeDeleted.call(this, vertex);
+        else return true;  // Holes can be totally deleted without removing the layer itself
     },
 
     isNewClickValid: function (latlng) {
@@ -775,8 +775,8 @@ L.Editable.PolygonEditor = L.Editable.PathEditor.extend({
         return true;
     },
 
-    onVertexRemoved: function (e) {
-        L.Editable.PathEditor.prototype.onVertexRemoved.call(this, e);
+    onVertexDeleted: function (e) {
+        L.Editable.PathEditor.prototype.onVertexDeleted.call(this, e);
         if (!e.vertex.latlngs.length && e.vertex.latlngs !== this.feature._latlngs) {
             this.feature._holes.splice(this.feature._holes.indexOf(e.vertex.latlngs), 1);
         }
