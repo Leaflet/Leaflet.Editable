@@ -128,4 +128,22 @@ instance:
 | stopDrawing  | — | — | When you need to stop any ongoing drawing, without needing to know which editor is active. |
 
 
+### L.Editable.VertexMarker
+
+The marker used to handle path vertex. You will usually interact with a `VertexMarker`
+instance when listening for events like `editable:vertex:ctrlclick`.
+
+#### Methods
+
+Those are the public methods.
+
+|  method name   |  params | return |                      usage               |
+|----------------|---------|--------|---------------------------------|
+| delete  | —  | — | Delete a vertex and the related latlng. |
+| getIndex  | —  | int | Get the index of the current vertex among others of the same LatLngs group. |
+| getLastIndex  | —  | int | Get last vertex index of the LatLngs group of the current vertex. |
+| getPrevious  | —  | VertexMarker instance | Get the previous VertexMarker in the same LatLngs group. |
+| getNext  | —  | VertexMarker instance | Get the next VertexMarker in the same LatLngs group. |
+
+
 *TO BE CONTINUED…*
