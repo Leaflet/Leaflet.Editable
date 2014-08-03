@@ -238,22 +238,25 @@ L.Editable.VertexMarker = L.Marker.extend({
     },
 
     onClick: function (e) {
-        this.editor.onVertexMarkerClick(e, this);
+        e.vertex = this;
+        this.editor.onVertexMarkerClick(e);
     },
 
     onContextMenu: function (e) {
-        this.editor.onVertexMarkerContextMenu(e, this);
+        e.vertex = this;
+        this.editor.onVertexMarkerContextMenu(e);
     },
 
     onMouseDown: function (e) {
-        this.editor.onVertexMarkerMouseDown(e, this);
+        e.vertex = this;
+        this.editor.onVertexMarkerMouseDown(e);
     },
 
     remove: function () {
         var next = this.getNext();  // Compute before changing latlng
         this.latlngs.splice(this.latlngs.indexOf(this.latlng), 1);
         this.editor.editLayer.removeLayer(this);
-        this.editor.onVertexRemoved({latlng: this.latlng}, this);
+        this.editor.onVertexRemoved({latlng: this.latlng, vertex: this});
         if (next) next.resetMiddleMarker();
     },
 
@@ -558,66 +561,59 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
     },
 
     onVertexMarkerClick: function (e, vertex) {
-        var position = vertex.getPosition();
+        var position = e.vertex.getPosition();
         if (e.originalEvent.ctrlKey) {
-            this.onVertexMarkerCtrlClick(e, vertex, position);
+            this.onVertexMarkerCtrlClick(e);
         } else if (e.originalEvent.altKey) {
-            this.onVertexMarkerAltClick(e, vertex, position);
+            this.onVertexMarkerAltClick(e);
         } else if (e.originalEvent.shiftKey) {
-            this.onVertexMarkerShiftClick(e, vertex, position);
-        } else if (position >= 1 && position === vertex.getLastIndex() && this.drawing === L.Editable.FORWARD) {
+            this.onVertexMarkerShiftClick(e);
+        } else if (position >= 1 && position === e.vertex.getLastIndex() && this.drawing === L.Editable.FORWARD) {
             this.finishDrawing();
         } else if (position === 0 && this.drawing === L.Editable.BACKWARD && this._drawnLatLngs.length >= this.MIN_VERTEX) {
             this.finishDrawing();
         } else if (position === 0 && this.drawing === L.Editable.FORWARD && this._drawnLatLngs.length >= this.MIN_VERTEX && this.CLOSED) {
             this.finishDrawing();  // Allow to close on first point also for polygons
         } else {
-            this.onVertexRawMarkerClick(e, vertex, position);
+            this.onVertexRawMarkerClick(e);
         }
     },
 
-    onVertexRawMarkerClick: function (e, vertex, position) {
-        if (!this.vertexCanBeRemoved(vertex, position)) return;
-        vertex.remove();
+    onVertexRawMarkerClick: function (e) {
+        if (!this.vertexCanBeRemoved(e.vertex)) return;
+        e.vertex.remove();
         this.refresh();
     },
 
-    vertexCanBeRemoved: function (vertex, position) {
+    vertexCanBeRemoved: function (vertex) {
         return vertex.latlngs.length > this.MIN_VERTEX;
     },
 
-    onVertexRemoved: function (e, vertex) {
-        e.vertex = vertex;
+    onVertexRemoved: function (e) {
         this._fireAndForward('editable:vertex:removed', e);
     },
 
-    onVertexMarkerCtrlClick: function (e, vertex) {
-        e.vertex = vertex;
+    onVertexMarkerCtrlClick: function (e) {
         this._fireAndForward('editable:vertex:ctrlclick', e);
     },
 
-    onVertexMarkerShiftClick: function (e, vertex) {
-        e.vertex = vertex;
+    onVertexMarkerShiftClick: function (e) {
         this._fireAndForward('editable:vertex:shiftclick', e);
     },
 
-    onVertexMarkerAltClick: function (e, vertex) {
-        e.vertex = vertex;
+    onVertexMarkerAltClick: function (e) {
         this._fireAndForward('editable:vertex:altclick', e);
     },
 
-    onVertexMarkerContextMenu: function (e, vertex) {
-        e.vertex = vertex;
+    onVertexMarkerContextMenu: function (e) {
         this._fireAndForward('editable:vertex:contextmenu', e);
     },
 
-    onVertexMarkerMouseDown: function (e, vertex) {
-        e.vertex = vertex;
+    onVertexMarkerMouseDown: function (e) {
         this._fireAndForward('editable:vertex:mousedown', e);
     },
 
-    onMiddleMarkerMouseDown: function (e, marker) {
-        e.middleMarker = marker;
+    onMiddleMarkerMouseDown: function (e) {
         this._fireAndForward('editable:middlemarker:mousedown', e);
     },
 
@@ -779,10 +775,10 @@ L.Editable.PolygonEditor = L.Editable.PathEditor.extend({
         return true;
     },
 
-    onVertexRemoved: function (e, vertex) {
-        L.Editable.PathEditor.prototype.onVertexRemoved.call(this, e, vertex);
-        if (!vertex.latlngs.length && vertex.latlngs !== this.feature._latlngs) {
-            this.feature._holes.splice(this.feature._holes.indexOf(vertex.latlngs), 1);
+    onVertexRemoved: function (e) {
+        L.Editable.PathEditor.prototype.onVertexRemoved.call(this, e);
+        if (!e.vertex.latlngs.length && e.vertex.latlngs !== this.feature._latlngs) {
+            this.feature._holes.splice(this.feature._holes.indexOf(e.vertex.latlngs), 1);
         }
     }
 

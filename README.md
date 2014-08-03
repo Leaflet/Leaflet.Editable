@@ -71,11 +71,11 @@ Leaflet.Editable add options and events to the `L.Map` object.
 | editable:edited     | layer     |  Fired when a feature previously drawn has been finished  |
 | editable:drawing:start | layer   |  Fired when a feature is to be drawn  |
 | editable:drawing:end | layer    |  Fired when a feature is not drawn anymore  |
-| editable:vertex:ctrlclick | originalEvent, latlng, vertex, position, layer    |  Fired when a click having ctrlKey is issued on a vertex  |
-| editable:vertex:shiftclick | originalEvent, latlng, vertex, position, layer    |  Fired when a click having shiftKey is issued on a vertex  |
-| editable:vertex:altclick | originalEvent, latlng, vertex, position, layer    |  Fired when a click having altKey is issued on a vertex  |
-| editable:vertex:contextmenu | originalEvent, latlng, vertex, position, layer    |  Fired when a contextmenu is issued on a vertex  |
-| editable:vertex:removed | originalEvent, latlng, vertex, position, layer    |  Fired after a vertex has been removed  |
+| editable:vertex:ctrlclick | originalEvent, latlng, vertex, layer    |  Fired when a click having ctrlKey is issued on a vertex  |
+| editable:vertex:shiftclick | originalEvent, latlng, vertex, layer    |  Fired when a click having shiftKey is issued on a vertex  |
+| editable:vertex:altclick | originalEvent, latlng, vertex, layer    |  Fired when a click having altKey is issued on a vertex  |
+| editable:vertex:contextmenu | originalEvent, latlng, vertex, layer    |  Fired when a contextmenu is issued on a vertex  |
+| editable:vertex:removed | originalEvent, latlng, vertex, layer    |  Fired after a vertex has been removed  |
 
 
 ### L.Editable

@@ -6,6 +6,8 @@
 - forward events to multipolygon/multipolyline
 - refactored drawn latlngs validation
 - remove hole array when deleting last point
+- refactored internal events management
+- removed 'position' from event properties
 
 ## 0.1.0
 - initial release
