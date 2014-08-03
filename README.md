@@ -6,9 +6,9 @@ This is not a plug and play UI, and will not. This is a minimal, lightweight,
 and fully extendable API to control editing of geometries. So you can easily
 build your own UI with your own needs and choices.
 
-See the [demo UI](http://yohanboniface.github.io/Leaflet.Editable/example/index.html).
+See the [demo UI](http://yohanboniface.github.io/Leaflet.Editable/example/index.html), an more [examples below](#examples).
 This is also the drawing engine behind [uMap](http://wiki.openstreetmap.org/wiki/UMap).
-See also [the examples below](#examples)
+
 
 Design keys:
 
@@ -20,8 +20,12 @@ Design keys:
 - touch support
 - tests
 
-Note: only geojson features are supported for now: Marker, Polyline, Polygon,
-and MultiPolygon/MultiPolylines (no Rectangle, Circle…)
+Note: only [geojson](http://geojson.org/) features are supported for now:
+Marker, Polyline, Polygon, and MultiPolygon/MultiPolylines (no Rectangle, Circle…)
+
+## Install
+
+You need Leaflet >= 0.7.3, and then include `src/Leaflet.Editable.js`.
 
 
 ## Quick start
@@ -56,7 +60,7 @@ If you want to continue an existing line:
 
 ## API
 
-Leaflet.Editable is made to be extendable, and you have three ways to customize
+Leaflet.Editable is made to be fully extendable. You have three ways to customize
 the behaviour: using options, listening to events, or extending.
 
 ### L.Map
@@ -93,7 +97,7 @@ Leaflet.Editable add options and events to the `L.Map` object.
 
 You will usually have only one instance of L.Editable, and generally the one
 created automatically at map init: `map.editTools`. It's the toolbox you will
-use to create new feature, and also the object you will configure with options.
+use to create new features, and also the object you will configure with options.
 Let's see them.
 
 #### Options
@@ -133,7 +137,7 @@ instance:
 The marker used to handle path vertex. You will usually interact with a `VertexMarker`
 instance when listening for events like `editable:vertex:ctrlclick`.
 
-Those are the public methods you may use.
+Those are its public methods.
 
 |  method name   |  params | return |                      usage               |
 |----------------|---------|--------|---------------------------------|
@@ -153,14 +157,13 @@ It has some public methods:
 
 |  method name   |  params | return |                      usage               |
 |----------------|---------|--------|---------------------------------|
-| enable  | —  | this | Make the related feature editable. |
-| disable  | —  | this | Make the related feature no more editable. |
+| enable  | —  | this | Set up the drawing tools for the feature to be editable. |
+| disable  | —  | this | Remove editing tools. |
 
 
 ### L.Editable.MarkerEditor
 
 Inherit from `L.Editable.BaseEditor`.
-
 
 ### L.Editable.PathEditor
 
@@ -200,8 +203,8 @@ Inherit from `L.Editable.PathEditor`.
 `EditableMixin` is included to `L.Polyline`, `L.Polygon` and `L.Marker`. It
 adds the following methods to them.
 
-When editing is enabled, the editor is accessible on the instance with the
-`editor` property.
+*When editing is enabled, the editor is accessible on the instance with the
+`editor` property.*
 
 #### Methods
 
@@ -228,3 +231,7 @@ Some events are also fired on the feature itself.
 | editable:vertex:contextmenu | originalEvent, latlng, vertex, layer    |  Fired when a contextmenu is issued on a vertex  |
 | editable:vertex:deleted | originalEvent, latlng, vertex, layer    |  Fired after a vertex has been deleted by user |
 
+
+## Licence
+
+`Leaflet.Editable` is released under the WTFPL licence.
