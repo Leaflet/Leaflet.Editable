@@ -412,28 +412,36 @@ L.Editable.BaseEditor = L.Class.extend({
         return this;
     },
 
+    _fireAndForward: function (type, e) {
+        e = e || {};
+        e.layer = this.feature;
+        this.feature.fire(type, e);
+        if (this.feature.multi) this.feature.multi.fire(type, e);
+        this.map.fire(type, e);
+    },
+
     onEnable: function () {
-        this.map.fire('editable:enable', {layer: this.feature});
+        this._fireAndForward('editable:enable');
     },
 
     onDisable: function () {
-        this.map.fire('editable:disable', {layer: this.feature});
+        this._fireAndForward('editable:disable');
     },
 
     onEditing: function () {
-        this.map.fire('editable:editing', {layer: this.feature});
+        this._fireAndForward('editable:editing');
     },
 
     onEdited: function () {
-        this.map.fire('editable:edited', {layer: this.feature});
+        this._fireAndForward('editable:edited');
     },
 
     onStartDrawing: function () {
-        this.map.fire('editable:startdrawing', {layer: this.feature});
+        this._fireAndForward('editable:drawing:start');
     },
 
     onFinishDrawing: function () {
-        this.map.fire('editable:enddrawing', {layer: this.feature});
+        this._fireAndForward('editable:drawing:end');
     },
 
     startDrawing: function () {
@@ -458,6 +466,10 @@ L.Editable.BaseEditor = L.Class.extend({
     onTouch: function (e) {
         this.onMouseMove(e);
         if (this.drawing) this.tools.newClickHandler._fireMouseEvent(e);
+    },
+
+    onNewClickHandlerClicked: function (e) {
+        this._fireAndForward('editable:drawing:click', e);
     }
 
 });
@@ -490,6 +502,7 @@ L.Editable.MarkerEditor = L.Editable.BaseEditor.extend({
         if (this.checkAddConstraints && !this.checkAddConstraints(e.latlng)) {
             return;
         }
+        L.Editable.BaseEditor.prototype.onNewClickHandlerClicked.call(this, e);
         this.finishDrawing();
     }
 
@@ -569,13 +582,6 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
         return vertex.latlngs.length > this.MIN_VERTEX;
     },
 
-    _fireAndForward: function (type, e) {
-        e.layer = this.feature;
-        this.feature.fire(type, e);
-        if (this.feature.multi) this.feature.multi.fire(type, e);
-        this.map.fire(type, e);
-    },
-
     onVertexMarkerCtrlClick: function (e, vertex) {
         e.vertex = vertex;
         this._fireAndForward('editable:vertex:ctrlclick', e);
@@ -644,9 +650,9 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
         if (this.checkAddConstraints && !this.checkAddConstraints(e.latlng)) {
             return;
         }
+        L.Editable.BaseEditor.prototype.onNewClickHandlerClicked.call(this, e);
         if (this.drawing === L.Editable.FORWARD) this.newPointForward(e.latlng);
         else this.newPointBackward(e.latlng);
-        this.feature.fire('editable:newclick', e);
     },
 
     setActiveLatLngs: function (latlng) {

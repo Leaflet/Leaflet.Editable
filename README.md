@@ -69,8 +69,8 @@ Leaflet.Editable add options and events to the `L.Map` object.
 | editable:disable    | layer     |  Fired when an existing feature is not ready anymore to be edited  |
 | editable:editing    | layer     |  Fired as soon as any change is made to the feature geometry  |
 | editable:edited     | layer     |  Fired when a feature previously drawn has been finished  |
-| editable:startdrawing | layer   |  Fired when a feature is to be drawn  |
-| editable:enddrawing | layer    |  Fired when a feature is not drawn anymore  |
+| editable:drawing:start | layer   |  Fired when a feature is to be drawn  |
+| editable:drawing:end | layer    |  Fired when a feature is not drawn anymore  |
 | editable:vertex:ctrlclick | originalEvent, latlng, vertex, position, layer    |  Fired when a click having ctrlKey is issued on a vertex  |
 | editable:vertex:shiftclick | originalEvent, latlng, vertex, position, layer    |  Fired when a click having shiftKey is issued on a vertex  |
 | editable:vertex:altclick | originalEvent, latlng, vertex, position, layer    |  Fired when a click having altKey is issued on a vertex  |
