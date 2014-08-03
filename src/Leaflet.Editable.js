@@ -554,6 +554,14 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
         }
     },
 
+    getLatLngsGroups: function () {
+        return [this.getLatLngs()];
+    },
+
+    getLatLngs: function () {
+        return this.feature.getLatLngs();
+    },
+
     reset: function () {
         this.editLayer.clearLayers();
         this.initVertexMarkers();
@@ -631,7 +639,7 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
     },
 
     startDrawing: function () {
-        if (!this._drawnLatLngs) this._drawnLatLngs = this.feature._latlngs;
+        if (!this._drawnLatLngs) this._drawnLatLngs = this.getLatLngs();
         L.Editable.BaseEditor.prototype.startDrawing.call(this);
     },
 
@@ -690,14 +698,6 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
 
 L.Editable.PolylineEditor = L.Editable.PathEditor.extend({
 
-    getLatLngsGroups: function () {
-        return [this.getLatLngs()];
-    },
-
-    getLatLngs: function () {
-        return this.feature.getLatLngs();
-    },
-
     startDrawingBackward: function () {
         this.drawing = L.Editable.BACKWARD;
         this.startDrawing();
@@ -730,7 +730,7 @@ L.Editable.PolygonEditor = L.Editable.PathEditor.extend({
     MIN_VERTEX: 3,
 
     getLatLngsGroups: function () {
-        var groups = [this.feature._latlngs];
+        var groups = L.Editable.PathEditor.prototype.getLatLngsGroups.call(this);
         if (this.feature._holes) {
             for (var i = 0; i < this.feature._holes.length; i++) {
                 groups.push(this.feature._holes[i]);
@@ -742,16 +742,6 @@ L.Editable.PolygonEditor = L.Editable.PathEditor.extend({
     startDrawingForward: function () {
         L.Editable.PathEditor.prototype.startDrawingForward.call(this);
         this.tools.attachBackwardLineGuide();
-    },
-
-    getLatLngs: function (latlng) {
-        if (latlng) {
-            var p = this.map.latLngToLayerPoint(latlng);
-            if (this.feature._latlngs && this.feature._holes && this.feature._containsPoint(p)) {
-                return this.addNewEmptyHole();
-            }
-        }
-        return this.feature._latlngs;
     },
 
     addNewEmptyHole: function () {
@@ -774,18 +764,18 @@ L.Editable.PolygonEditor = L.Editable.PathEditor.extend({
     },
 
     vertexCanBeDeleted: function (vertex) {
-        if (vertex.latlngs === this.feature._latlngs) return L.Editable.PathEditor.prototype.vertexCanBeDeleted.call(this, vertex);
+        if (vertex.latlngs === this.getLatLngs()) return L.Editable.PathEditor.prototype.vertexCanBeDeleted.call(this, vertex);
         else return true;  // Holes can be totally deleted without removing the layer itself
     },
 
     isNewClickValid: function (latlng) {
-        if (this._drawnLatLngs !== this.feature._latlngs) return this.checkContains(latlng);
+        if (this._drawnLatLngs !== this.getLatLngs()) return this.checkContains(latlng);
         return true;
     },
 
     onVertexDeleted: function (e) {
         L.Editable.PathEditor.prototype.onVertexDeleted.call(this, e);
-        if (!e.vertex.latlngs.length && e.vertex.latlngs !== this.feature._latlngs) {
+        if (!e.vertex.latlngs.length && e.vertex.latlngs !== this.getLatLngs()) {
             this.feature._holes.splice(this.feature._holes.indexOf(e.vertex.latlngs), 1);
         }
     }
