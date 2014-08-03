@@ -469,7 +469,13 @@ L.Editable.BaseEditor = L.Class.extend({
     },
 
     onNewClickHandlerClicked: function (e) {
+        if (!this.isNewClickValid(e.latlng)) return;
         this._fireAndForward('editable:drawing:click', e);
+        return true;
+    },
+
+    isNewClickValid: function (latlng) {
+        return true;
     }
 
 });
@@ -499,10 +505,7 @@ L.Editable.MarkerEditor = L.Editable.BaseEditor.extend({
     },
 
     onNewClickHandlerClicked: function (e) {
-        if (this.checkAddConstraints && !this.checkAddConstraints(e.latlng)) {
-            return;
-        }
-        L.Editable.BaseEditor.prototype.onNewClickHandlerClicked.call(this, e);
+        if (!L.Editable.BaseEditor.prototype.onNewClickHandlerClicked.call(this, e)) return;
         this.finishDrawing();
     }
 
@@ -563,9 +566,9 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
             this.onVertexMarkerShiftClick(e, vertex, position);
         } else if (position >= 1 && position === vertex.getLastIndex() && this.drawing === L.Editable.FORWARD) {
             this.finishDrawing();
-        } else if (position === 0 && this.drawing === L.Editable.BACKWARD && this.activeLatLngs.length >= this.MIN_VERTEX) {
+        } else if (position === 0 && this.drawing === L.Editable.BACKWARD && this._drawnLatLngs.length >= this.MIN_VERTEX) {
             this.finishDrawing();
-        } else if (position === 0 && this.drawing === L.Editable.FORWARD && this.activeLatLngs.length >= this.MIN_VERTEX && this.CLOSED) {
+        } else if (position === 0 && this.drawing === L.Editable.FORWARD && this._drawnLatLngs.length >= this.MIN_VERTEX && this.CLOSED) {
             this.finishDrawing();  // Allow to close on first point also for polygons
         } else {
             this.onVertexRawMarkerClick(e, vertex, position);
@@ -612,6 +615,11 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
         this._fireAndForward('editable:middlemarker:mousedown', e);
     },
 
+    startDrawing: function () {
+        if (!this._drawnLatLngs) this._drawnLatLngs = this.feature._latlngs;
+        L.Editable.BaseEditor.prototype.startDrawing.call(this);
+    },
+
     startDrawingForward: function () {
         this.startDrawing();
         this.tools.attachForwardLineGuide();
@@ -621,16 +629,14 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
         L.Editable.BaseEditor.prototype.finishDrawing.call(this);
         this.tools.detachForwardLineGuide();
         this.tools.detachBackwardLineGuide();
-        this.unsetActiveLatLngs();
-        delete this.checkConstraints;
+        delete this._drawnLatLngs;
     },
 
     addLatLng: function (latlng) {
-        this.setActiveLatLngs(latlng);
-        if (this.drawing === L.Editable.FORWARD) this.activeLatLngs.push(latlng);
-        else this.activeLatLngs.unshift(latlng);
+        if (this.drawing === L.Editable.FORWARD) this._drawnLatLngs.push(latlng);
+        else this._drawnLatLngs.unshift(latlng);
         this.refresh();
-        this.addVertexMarker(latlng, this.activeLatLngs);
+        this.addVertexMarker(latlng, this._drawnLatLngs);
     },
 
     newPointForward: function (latlng) {
@@ -647,22 +653,9 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
     },
 
     onNewClickHandlerClicked: function (e) {
-        if (this.checkAddConstraints && !this.checkAddConstraints(e.latlng)) {
-            return;
-        }
-        L.Editable.BaseEditor.prototype.onNewClickHandlerClicked.call(this, e);
+        if (!L.Editable.BaseEditor.prototype.onNewClickHandlerClicked.call(this, e)) return;
         if (this.drawing === L.Editable.FORWARD) this.newPointForward(e.latlng);
         else this.newPointBackward(e.latlng);
-    },
-
-    setActiveLatLngs: function (latlng) {
-        if (!this.activeLatLngs) {
-            this.activeLatLngs = this.getLatLngs(latlng);
-        }        
-    },
-
-    unsetActiveLatLngs: function () {
-        delete this.activeLatLngs;
     },
 
     onMouseMove: function (e) {
@@ -760,13 +753,8 @@ L.Editable.PolygonEditor = L.Editable.PathEditor.extend({
         return holes;
     },
 
-    prepareForNewHole: function () {
-        this.activeLatLngs = this.addNewEmptyHole();
-        this.checkAddConstraints = this.checkContains;
-    },
-
     newHole: function (latlng) {
-        this.prepareForNewHole();
+        this._drawnLatLngs = this.addNewEmptyHole();
         this.startDrawingForward();
         if (latlng) this.newPointForward(latlng);
     },
@@ -780,6 +768,10 @@ L.Editable.PolygonEditor = L.Editable.PathEditor.extend({
         else return true;  // Holes can be totally removed without removing the layer itself
     },
 
+    isNewClickValid: function (latlng) {
+        if (this._drawnLatLngs !== this.feature._latlngs) return this.checkContains(latlng);
+        return true;
+    }
 
 });
 
