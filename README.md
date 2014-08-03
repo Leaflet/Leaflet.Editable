@@ -8,6 +8,7 @@ build your own UI with your own needs and choices.
 
 See the [demo UI](http://yohanboniface.github.io/Leaflet.Editable/example/index.html).
 This is also the drawing engine behind [uMap](http://wiki.openstreetmap.org/wiki/UMap).
+See also [the examples below](#examples)
 
 Design keys:
 
