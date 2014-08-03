@@ -103,8 +103,7 @@ L.Editable = L.Class.extend({
         if (L.Browser.touch) this.map.off('click', editor.onTouch, editor);
         if (editor !== this._drawingEditor) return;
         delete this._drawingEditor;
-        this.map.fire('editable:unregisterededitor', {editor: editor});
-        if (editor.drawing) editor.finishDrawing();
+        if (editor.drawing) editor.cancelDrawing();
         L.DomUtil.removeClass(this.map._container, this.options.drawingCSSClass);
     },
 
@@ -413,6 +412,7 @@ L.Editable.BaseEditor = L.Class.extend({
         this.tools.editLayer.removeLayer(this.editLayer);
         this.onDisable();
         delete this._enabled;
+        if (this.drawing) this.cancelDrawing();
         return this;
     },
 
@@ -436,16 +436,20 @@ L.Editable.BaseEditor = L.Class.extend({
         this._fireAndForward('editable:editing');
     },
 
-    onEdited: function () {
-        this._fireAndForward('editable:edited');
-    },
-
     onStartDrawing: function () {
         this._fireAndForward('editable:drawing:start');
     },
 
-    onFinishDrawing: function () {
+    onEndDrawing: function () {
         this._fireAndForward('editable:drawing:end');
+    },
+
+    onCancelDrawing: function () {
+        this._fireAndForward('editable:drawing:cancel');
+    },
+
+    onFinishDrawing: function () {
+        this._fireAndForward('editable:drawing:finish');
     },
 
     startDrawing: function () {
@@ -455,10 +459,19 @@ L.Editable.BaseEditor = L.Class.extend({
     },
 
     finishDrawing: function () {
-        this.onEdited();
+        this.endDrawing();
+        this.onFinishDrawing();
+    },
+
+    cancelDrawing: function () {
+        this.endDrawing();
+        this.onCancelDrawing();
+    },
+
+    endDrawing: function () {
         this.drawing = false;
         this.tools.unregisterForDrawing(this);
-        this.onFinishDrawing();
+        this.onEndDrawing();
     },
 
     onMouseMove: function (e) {
@@ -627,8 +640,8 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
         this.tools.attachForwardLineGuide();
     },
 
-    finishDrawing: function () {
-        L.Editable.BaseEditor.prototype.finishDrawing.call(this);
+    endDrawing: function () {
+        L.Editable.BaseEditor.prototype.endDrawing.call(this);
         this.tools.detachForwardLineGuide();
         this.tools.detachBackwardLineGuide();
         delete this._drawnLatLngs;
@@ -729,11 +742,6 @@ L.Editable.PolygonEditor = L.Editable.PathEditor.extend({
     startDrawingForward: function () {
         L.Editable.PathEditor.prototype.startDrawingForward.call(this);
         this.tools.attachBackwardLineGuide();
-    },
-
-    finishDrawing: function () {
-        L.Editable.PathEditor.prototype.finishDrawing.call(this);
-        this.tools.detachBackwardLineGuide();
     },
 
     getLatLngs: function (latlng) {

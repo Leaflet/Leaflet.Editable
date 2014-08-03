@@ -62,4 +62,72 @@ describe('L.MarkerEditor', function() {
 
     });
 
+
+    describe('#events', function () {
+
+        it('should fire editable:drawing:start on startMarker call', function () {
+            var called = 0,
+                call = function () {called++;};
+            this.map.on('editable:drawing:start', call);
+            var other = this.map.editTools.startMarker();
+            assert.equal(called, 1);
+            this.map.off('editable:drawing:start', call);
+            this.map.removeLayer(other);
+            assert.notOk(this.map.editTools._drawingEditor);
+        });
+
+        it('should fire editable:drawing:end on click', function () {
+            var called = 0,
+                call = function () {called++;};
+            this.map.on('editable:drawing:end', call);
+            var other = this.map.editTools.startMarker();
+            assert.equal(called, 0);
+            happen.at('mousemove', 450, 450);
+            happen.at('click', 450, 450);
+            assert.equal(called, 1);
+            this.map.off('editable:drawing:end', call);
+            this.map.removeLayer(other);
+            assert.equal(called, 1);
+        });
+
+        it('should fire editable:drawing:finish on finish', function () {
+            var called = 0,
+                call = function () {called++;};
+            this.map.on('editable:drawing:finish', call);
+            var other = this.map.editTools.startMarker();
+            assert.equal(called, 0);
+            happen.at('mousemove', 450, 450);
+            happen.at('click', 450, 450);
+            assert.equal(called, 1);
+            this.map.off('editable:drawing:finish', call);
+            this.map.removeLayer(other);
+            assert.equal(called, 1);
+        });
+
+        it('should fire editable:drawing:end on stopDrawing', function () {
+            var called = 0,
+                call = function () {called++;};
+            this.map.on('editable:drawing:end', call);
+            var other = this.map.editTools.startMarker();
+            this.map.editTools.stopDrawing();
+            assert.equal(called, 1);
+            this.map.off('editable:drawing:end', call);
+            this.map.removeLayer(other);
+            assert.equal(called, 1);
+        });
+
+        it('should not fire editable:drawing:finish on stopDrawing', function () {
+            var called = 0,
+                call = function () {called++;};
+            this.map.on('editable:drawing:finish', call);
+            var other = this.map.editTools.startMarker();
+            this.map.editTools.stopDrawing();
+            assert.equal(called, 0);
+            this.map.off('editable:drawing:finish', call);
+            this.map.removeLayer(other);
+            assert.equal(called, 0);
+        });
+
+    });
+
 });
