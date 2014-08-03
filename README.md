@@ -35,8 +35,8 @@ Then, to start editing an existing feature, call the `enableEdit` method on it:
 
 If you want to draw a new line:
 
-    map.editTools.statPolyline();  // map.editTools has been created
-                                   // by passing editable: true option to the map
+    map.editTools.startPolyline();  // map.editTools has been created
+                                    // by passing editable: true option to the map
 
 If you want to continue an existing line:
 
