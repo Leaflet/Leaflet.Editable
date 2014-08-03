@@ -133,9 +133,7 @@ instance:
 The marker used to handle path vertex. You will usually interact with a `VertexMarker`
 instance when listening for events like `editable:vertex:ctrlclick`.
 
-#### Methods
-
-Those are the public methods.
+Those are the public methods you may use.
 
 |  method name   |  params | return |                      usage               |
 |----------------|---------|--------|---------------------------------|
@@ -146,10 +144,66 @@ Those are the public methods.
 | getNext  | —  | VertexMarker instance | Get the next VertexMarker in the same LatLngs group. |
 
 
+### L.Editable.BaseEditor
+
+When editing a feature (marker, polyline…), an editor is attached to it. This
+editor basically knows how to handle the edition.
+
+It has some public methods:
+
+|  method name   |  params | return |                      usage               |
+|----------------|---------|--------|---------------------------------|
+| enable  | —  | this | Make the related feature editable. |
+| disable  | —  | this | Make the related feature no more editable. |
+
+
+### L.Editable.MarkerEditor
+
+Inherit from `L.Editable.BaseEditor`.
+
+
+### L.Editable.PathEditor
+
+Inherit from `L.Editable.BaseEditor`.
+
+Inherited by `L.Editable.PolylineEditor` and `L.Editable.PolygonEditor`.
+
+Interesting new method:
+
+|  method name   |  params | return |                      usage               |
+|----------------|---------|--------|---------------------------------|
+| reset  | —  | — | Rebuild edit elements (vertex, middlemarker, etc.) |
+
+
+### L.Editable.PolylineEditor
+
+Inherit from `L.Editable.PathEditor`.
+
+Useful specific methods:
+
+|  method name   |  params | return |              usage              |
+|----------------|---------|--------|---------------------------------|
+| continueForward  | —  | — | Set up drawing tools to continue the line forward |
+| continueBackward  | —  | — | Set up drawing tools to continue the line backward |
+
+### L.Editable.PolygonEditor
+
+Inherit from `L.Editable.PathEditor`.
+
+|  method name   |  params | return |              usage              |
+|----------------|---------|--------|---------------------------------|
+| newHole  | latlng\*  | — | Set up drawing tools for creating a new hole on the polygon. If the latlng param is given, a first point is created. |
+
+
 ### EditableMixin
 
-`EditableMixin` is included to `L.Polyline`, `L.Polygon` and `L.Marker`. This
-adds the following methods to them:
+`EditableMixin` is included to `L.Polyline`, `L.Polygon` and `L.Marker`. It
+adds the following methods to them.
+
+When editing is enabled, the editor is accessible on the instance with the
+`editor` property.
+
+#### Methods
 
 |  method name   |  params | return |                      usage               |
 |----------------|---------|--------|---------------------------------|
@@ -158,7 +212,19 @@ adds the following methods to them:
 | toggleEdit  | —  | — | Enable or disable editing, according to current status. |
 | editEnabled  | —  | boolean | Return true if current instance has an editor attached, and this editor is enabled. |
 
+#### Events
 
+Some events are also fired on the feature itself.
 
+|    event name      |  properties  |                      usage               |
+|---------------------|-----------|------------------------------------------|
+| editable:drawing:start | layer   |  Fired when a feature is to be drawn  |
+| editable:drawing:end | layer    |  Fired when a feature is not drawn anymore  |
+| editable:drawing:cancel | layer    |  Fired when user cancel drawing while a feature is being drawn  |
+| editable:drawing:finish | layer    |  Fired when user finish drawing a feature  |
+| editable:vertex:ctrlclick | originalEvent, latlng, vertex, layer    |  Fired when a click having ctrlKey is issued on a vertex  |
+| editable:vertex:shiftclick | originalEvent, latlng, vertex, layer    |  Fired when a click having shiftKey is issued on a vertex  |
+| editable:vertex:altclick | originalEvent, latlng, vertex, layer    |  Fired when a click having altKey is issued on a vertex  |
+| editable:vertex:contextmenu | originalEvent, latlng, vertex, layer    |  Fired when a contextmenu is issued on a vertex  |
+| editable:vertex:deleted | originalEvent, latlng, vertex, layer    |  Fired after a vertex has been deleted by user |
 
-*TO BE CONTINUED…*
