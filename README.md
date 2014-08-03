@@ -7,6 +7,7 @@ and fully extendable API to control editing of geometries. So you can easily
 build your own UI with your own needs and choices.
 
 See the [demo UI](http://yohanboniface.github.io/Leaflet.Editable/example/index.html).
+This is also the drawing engine behind [uMap](http://wiki.openstreetmap.org/wiki/UMap).
 
 Design keys:
 
@@ -49,6 +50,7 @@ If you want to continue an existing line:
 - [Basic controls](http://yohanboniface.github.io/Leaflet.Editable/example/index.html)
 - [Continue line by ctrl-clicking on first/last point](http://yohanboniface.github.io/Leaflet.Editable/example/continue-line.html)
 - [Create hole in a polygon by ctrl-clicking on it](http://yohanboniface.github.io/Leaflet.Editable/example/create-hole-on-click.html)
+- [Change line colour on editing](http://yohanboniface.github.io/Leaflet.Editable/example/change-line-colour-on-editing.html)
 
 
 ## API
