@@ -546,7 +546,7 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
     },
 
     disable: function () {
-        L.Editable.BaseEditor.prototype.disable.call(this);
+        return L.Editable.BaseEditor.prototype.disable.call(this);
     },
 
     initVertexMarkers: function () {
