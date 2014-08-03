@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <title>Leaflet.Editable continue line demo</title>
+  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+  <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+  <script src="../src/Leaflet.Editable.js"></script>
+  <script src="example.js"></script>
+
+  <style type='text/css'>
+      body { margin:0; padding:0; }
+      #map { position:absolute; top:0; bottom:0; right: 0; left: 0; width:100%; }
+</style>
+</head>
+<body>
+  <div id='map'></div>
+
+<script type="text/javascript">
+var startPoint = [43.1249, 1.254];
+var map = L.map('map', {editable: true}).setView(startPoint, 16),
+    tilelayer = L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {maxZoom: 20, attribution: 'Data \u00a9 <a href="http://www.openstreetmap.org/copyright"> OpenStreetMap Contributors </a> Tiles \u00a9 HOT'}).addTo(map);
+
+    var poly = L.polygon([
+      [
+        [43.1239, 1.25],
+        [43.122, 1.263],
+        [43.128, 1.265],
+        [43.126, 1.255]
+      ],
+      [
+        [43.124, 1.263],
+        [43.1236, 1.261],
+        [43.12475, 1.262]
+      ]
+    ]).addTo(map);
+    poly.enableEdit();
+    poly.on('click', function (e) {
+        if (e.originalEvent.ctrlKey && this.editEnabled()) {
+          this.editor.newHole(e.latlng);
+        }
+    });
+
+</script>
+</body>
+</html>

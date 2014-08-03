@@ -47,7 +47,8 @@ If you want to continue an existing line:
 ## Examples
 
 - [Basic controls](http://yohanboniface.github.io/Leaflet.Editable/example/index.html)
-- [Continue line by ctrl-click on first/last point](http://yohanboniface.github.io/Leaflet.Editable/example/continue-line.html)
+- [Continue line by ctrl-clicking on first/last point](http://yohanboniface.github.io/Leaflet.Editable/example/continue-line.html)
+- [Create hole in a polygon by ctrl-clicking on it](http://yohanboniface.github.io/Leaflet.Editable/example/create-hole-on-click.html)
 
 
 ## API
