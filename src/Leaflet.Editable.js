@@ -266,7 +266,7 @@ L.Editable.VertexMarker = L.Marker.extend({
         L.Marker.prototype.onRemove.call(this, map);
     },
 
-    getPosition: function () {
+    getIndex: function () {
         return this.latlngs.indexOf(this.latlng);
     },
 
@@ -276,19 +276,19 @@ L.Editable.VertexMarker = L.Marker.extend({
 
     getPrevious: function () {
         if (this.latlngs.length < 2) return;
-        var position = this.getPosition(),
-            previousPosition = position - 1;
-        if (position === 0 && this.editor.CLOSED) previousPosition = this.getLastIndex();
-        var previous = this.latlngs[previousPosition];
+        var index = this.getIndex(),
+            previousIndex = index - 1;
+        if (index === 0 && this.editor.CLOSED) previousIndex = this.getLastIndex();
+        var previous = this.latlngs[previousIndex];
         if (previous) return previous.__vertex;
     },
 
     getNext: function () {
         if (this.latlngs.length < 2) return;
-        var position = this.getPosition(),
-            nextPosition = position + 1;
-        if (position === this.getLastIndex() && this.editor.CLOSED) nextPosition = 0;
-        var next = this.latlngs[nextPosition];
+        var index = this.getIndex(),
+            nextIndex = index + 1;
+        if (index === this.getLastIndex() && this.editor.CLOSED) nextIndex = 0;
+        var next = this.latlngs[nextIndex];
         if (next) return next.__vertex;
     },
 
@@ -561,18 +561,18 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
     },
 
     onVertexMarkerClick: function (e, vertex) {
-        var position = e.vertex.getPosition();
+        var index = e.vertex.getIndex();
         if (e.originalEvent.ctrlKey) {
             this.onVertexMarkerCtrlClick(e);
         } else if (e.originalEvent.altKey) {
             this.onVertexMarkerAltClick(e);
         } else if (e.originalEvent.shiftKey) {
             this.onVertexMarkerShiftClick(e);
-        } else if (position >= 1 && position === e.vertex.getLastIndex() && this.drawing === L.Editable.FORWARD) {
+        } else if (index >= 1 && index === e.vertex.getLastIndex() && this.drawing === L.Editable.FORWARD) {
             this.finishDrawing();
-        } else if (position === 0 && this.drawing === L.Editable.BACKWARD && this._drawnLatLngs.length >= this.MIN_VERTEX) {
+        } else if (index === 0 && this.drawing === L.Editable.BACKWARD && this._drawnLatLngs.length >= this.MIN_VERTEX) {
             this.finishDrawing();
-        } else if (position === 0 && this.drawing === L.Editable.FORWARD && this._drawnLatLngs.length >= this.MIN_VERTEX && this.CLOSED) {
+        } else if (index === 0 && this.drawing === L.Editable.FORWARD && this._drawnLatLngs.length >= this.MIN_VERTEX && this.CLOSED) {
             this.finishDrawing();  // Allow to close on first point also for polygons
         } else {
             this.onVertexRawMarkerClick(e);
