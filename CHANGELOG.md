@@ -2,6 +2,7 @@
 
 ## dev
 - added optional latlng param to L.Editable.startPolyline and startPolygon
+- move listening of feature remove to editor.enable/disable
 
 ## 0.2.0
 - removed multi primary/secondary management
