@@ -146,4 +146,19 @@ Those are the public methods.
 | getNext  | —  | VertexMarker instance | Get the next VertexMarker in the same LatLngs group. |
 
 
+### EditableMixin
+
+`EditableMixin` is included to `L.Polyline`, `L.Polygon` and `L.Marker`. This
+adds the following methods to them:
+
+|  method name   |  params | return |                      usage               |
+|----------------|---------|--------|---------------------------------|
+| enableEdit  | —  | related editor instance | Enable editing, by creating an editor if not existing, and then calling `enable` on it |
+| disableEdit  | —  | — | Disable editing, also remove the editor property reference. |
+| toggleEdit  | —  | — | Enable or disable editing, according to current status. |
+| editEnabled  | —  | boolean | Return true if current instance has an editor attached, and this editor is enabled. |
+
+
+
+
 *TO BE CONTINUED…*
