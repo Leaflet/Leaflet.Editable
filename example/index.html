@@ -6,7 +6,6 @@
   <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
   <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
   <script src="../src/Leaflet.Editable.js"></script>
-  <script src="example.js"></script>
 
   <style type='text/css'>
       body { margin:0; padding:0; }
@@ -21,11 +20,75 @@ var startPoint = [43.1249, 1.254];
 var map = L.map('map', {editable: true}).setView(startPoint, 16),
     tilelayer = L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {maxZoom: 20, attribution: 'Data \u00a9 <a href="http://www.openstreetmap.org/copyright"> OpenStreetMap Contributors </a> Tiles \u00a9 HOT'}).addTo(map);
 
+    L.NewLineControl = L.Control.extend({
+
+        options: {
+            position: 'topleft'
+        },
+
+        onAdd: function (map) {
+            var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar'),
+                link = L.DomUtil.create('a', '', container);
+
+            link.href = '#';
+            link.title = 'Create a new line';
+            link.innerHTML = '/\\/';
+            L.DomEvent.on(link, 'click', L.DomEvent.stop)
+                      .on(link, 'click', function () {
+                        map.editTools.startPolyline();
+                      });
+
+            return container;
+        }
+    });
+
+    L.NewPolygonControl = L.Control.extend({
+
+        options: {
+            position: 'topleft'
+        },
+
+        onAdd: function (map) {
+            var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar'),
+                link = L.DomUtil.create('a', '', container);
+
+            link.href = '#';
+            link.title = 'Create a new polygon';
+            link.innerHTML = '▱';
+            L.DomEvent.on(link, 'click', L.DomEvent.stop)
+                      .on(link, 'click', function () {
+                        map.editTools.startPolygon();
+                      });
+
+            return container;
+        }
+    });
+
+    L.NewMarkerControl = L.Control.extend({
+
+        options: {
+            position: 'topleft'
+        },
+
+        onAdd: function (map) {
+            var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar'),
+                link = L.DomUtil.create('a', '', container);
+
+            link.href = '#';
+            link.title = 'Add a new marker';
+            link.innerHTML = '⚫';
+            L.DomEvent.on(link, 'click', L.DomEvent.stop)
+                      .on(link, 'click', function () {
+                        map.editTools.startMarker();
+                      });
+
+            return container;
+        }
+    });
+
     map.addControl(new L.NewMarkerControl());
     map.addControl(new L.NewLineControl());
     map.addControl(new L.NewPolygonControl());
-    map.addControl(new L.NewHoleControl());
-    map.addControl(new L.ExtendMultiControl());
 
     var line = L.polyline([
         [43.1292, 1.256],

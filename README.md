@@ -44,6 +44,12 @@ If you want to continue an existing line:
     // or
     polyline.continueBackward();
 
+## Examples
+
+- [Basic controls](http://yohanboniface.github.io/Leaflet.Editable/example/index.html)
+- [Continue line by ctrl-click on first/last point](http://yohanboniface.github.io/Leaflet.Editable/example/continue-line.html)
+
+
 ## API
 
 Leaflet.Editable is made to be extendable, and you have three ways to customize
