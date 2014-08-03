@@ -825,7 +825,7 @@ var EditableMixin = {
     },
 
     toggleEdit: function () {
-      if (this.editor) {
+      if (this.editEnabled()) {
         this.disableEdit();
       } else {
         this.enableEdit();
