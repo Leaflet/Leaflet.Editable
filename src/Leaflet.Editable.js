@@ -569,40 +569,41 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
         return vertex.latlngs.length > this.MIN_VERTEX;
     },
 
-    _fireVertexMarkerEvent: function (type, e) {
+    _fireAndForward: function (type, e) {
         e.layer = this.feature;
         this.feature.fire(type, e);
+        if (this.feature.multi) this.feature.multi.fire(type, e);
         this.map.fire(type, e);
     },
 
     onVertexMarkerCtrlClick: function (e, vertex) {
         e.vertex = vertex;
-        this._fireVertexMarkerEvent('editable:vertex:ctrlclick', e);
+        this._fireAndForward('editable:vertex:ctrlclick', e);
     },
 
     onVertexMarkerShiftClick: function (e, vertex) {
         e.vertex = vertex;
-        this._fireVertexMarkerEvent('editable:vertex:shiftclick', e);
+        this._fireAndForward('editable:vertex:shiftclick', e);
     },
 
     onVertexMarkerAltClick: function (e, vertex) {
         e.vertex = vertex;
-        this._fireVertexMarkerEvent('editable:vertex:altclick', e);
+        this._fireAndForward('editable:vertex:altclick', e);
     },
 
     onVertexMarkerContextMenu: function (e, vertex) {
         e.vertex = vertex;
-        this._fireVertexMarkerEvent('editable:vertex:contextmenu', e);
+        this._fireAndForward('editable:vertex:contextmenu', e);
     },
 
     onVertexMarkerMouseDown: function (e, vertex) {
         e.vertex = vertex;
-        this._fireVertexMarkerEvent('editable:vertex:mousedown', e);
+        this._fireAndForward('editable:vertex:mousedown', e);
     },
 
     onMiddleMarkerMouseDown: function (e, marker) {
         e.middleMarker = marker;
-        this._fireVertexMarkerEvent('editable:middlemarker:mousedown', e);
+        this._fireAndForward('editable:middlemarker:mousedown', e);
     },
 
     startDrawingForward: function () {
