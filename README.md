@@ -95,6 +95,9 @@ You will usually have only one instance of L.Editable, and generally the one
 created automatically at map init: `map.editTools`. It's the toolbox you will
 use to create new feature, and also the object you will configure with options.
 Let's see them.
+
+#### Options
+
 *Note: you can pass them when creating a map using the `editOptions` key.*
 
 |    option name      |  default  |                      usage               |
@@ -109,6 +112,20 @@ Let's see them.
 | polylineEditorClass | L.Editable.PolylineEditor | Class to be used as Polyline editor  |
 | polygonEditorClass | L.Editable.PolygonEditor | Class to be used as Polygon editor  |
 | markerEditorClass | L.Editable.MarkerEditor | Class to be used as Marker editor  |
+
+#### Methods
+
+Those are the public methods. You will generally access them by the `map.editTools`
+instance:
+
+    map.editTools.startPolyline();
+
+|  method name   |  params | return |                      usage               |
+|----------------|---------|------------------------------------------|
+| startPolyline  | latlng\*  | created L.Polyline instance | Start drawing a polyline. If latlng is given, a first point will be added. In any case, continuing on user click. |
+| startPolygon  | latlng\*  | created L.Polygon instance | Start drawing a polygon. If latlng is given, a first point will be added. In any case, continuing on user click. |
+| startMarker  | latlng\*  | created L.Marker instance | Start adding a marker. If latlng is given, the marker will be shown first at this point. In any case, it will follow the user mouse, and will have a final latlng on next click (or touch). |
+| stopDrawing  | — | — | When you need to stop any ongoing drawing, without needing to know which editor is active. |
 
 
 *TO BE CONTINUED…*
