@@ -1,6 +1,9 @@
 # CHANGELOG
 
-## dev
+## dev
+- added optional latlng param to L.Editable.startPolyline and startPolygon
+
+## 0.2.0
 - removed multi primary/secondary management
 - added 'editable:middlemarker:onmousedown' event
 - forward events to multipolygon/multipolyline

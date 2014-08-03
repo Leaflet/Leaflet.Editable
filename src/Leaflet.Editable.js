@@ -111,18 +111,28 @@ L.Editable = L.Class.extend({
         this.unregisterForDrawing();
     },
 
-    startPolyline: function () {
+    startPolyline: function (latlng) {
         var line = this.createPolyline([]).connectCreatedToMap(this.map),
             editor = line.enableEdit();
         editor.startDrawingForward();
+        if (latlng) editor.newPointForward(latlng);
         return line;
     },
 
-    startPolygon: function () {
+    startPolygon: function (latlng) {
         var polygon = this.createPolygon([]).connectCreatedToMap(this.map),
             editor = polygon.enableEdit();
         editor.startDrawingForward();
+        if (latlng) editor.newPointForward(latlng);
         return polygon;
+    },
+
+    startMarker: function (latlng) {
+        latlng = latlng || this.map.getCenter();
+        var marker = this.createMarker(latlng).connectCreatedToMap(this.map),
+            editor = marker.enableEdit();
+        editor.startDrawing();
+        return marker;
     },
 
     startHole: function (editor, latlng) {
@@ -136,14 +146,6 @@ L.Editable = L.Class.extend({
         var editor = polygon.enableEdit();
         editor.startDrawingForward();
         return polygon;
-    },
-
-    startMarker: function (latlng) {
-        latlng = latlng || this.map.getCenter();
-        var marker = this.createMarker(latlng).connectCreatedToMap(this.map),
-            editor = marker.enableEdit();
-        editor.startDrawing();
-        return marker;
     },
 
     createPolyline: function (latlngs) {
