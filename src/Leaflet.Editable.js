@@ -135,7 +135,6 @@ L.Editable = L.Class.extend({
         multi.addLayer(polygon);
         polygon.multi = multi;
         var editor = polygon.enableEdit();
-        multi.setPrimary(polygon);
         editor.startDrawingForward();
         return polygon;
     },
@@ -210,17 +209,8 @@ L.Editable.VertexMarker = L.Marker.extend({
         this.editor = editor;
         L.Marker.prototype.initialize.call(this, latlng, options);
         this.options.icon = this.editor.tools.createVertexIcon({className: this.options.className});
-        if (this.editor.secondary) this.setSecondary();
         this.latlng.__vertex = this;
         this.editor.editLayer.addLayer(this);
-    },
-
-    setSecondary: function () {
-        this.setOpacity(0.3);
-    },
-
-    setPrimary: function () {
-        this.setOpacity(1);
     },
 
     onAdd: function (map) {
@@ -256,9 +246,7 @@ L.Editable.VertexMarker = L.Marker.extend({
     },
 
     onMouseDown: function (e) {
-        if (this.editor.secondary) {
-            this.editor.setPrimary();
-        }
+        this.editor.onVertexMarkerMouseDown(e, this);
     },
 
     remove: function () {
@@ -347,16 +335,7 @@ L.Editable.MiddleMarker = L.Marker.extend({
         this.latlngs = latlngs;
         L.Marker.prototype.initialize.call(this, this.computeLatLng(), options);
         this.options.icon = this.editor.tools.createVertexIcon({className: this.options.className});
-        if (this.editor.secondary) this.setSecondary();
         this.editor.editLayer.addLayer(this);
-    },
-
-    setSecondary: function () {
-        this.setOpacity(0.2);
-    },
-
-    setPrimary: function () {
-        this.setOpacity(this.options.opacity);
     },
 
     updateLatLng: function () {
@@ -375,9 +354,9 @@ L.Editable.MiddleMarker = L.Marker.extend({
     },
 
     onMouseDown: function (e) {
+        this.editor.onMiddleMarkerMouseDown(e, this);
         this.latlngs.splice(this.index(), 0, e.latlng);
         this.editor.refresh();
-        this.editor.setPrimary();
         var marker = this.editor.addVertexMarker(e.latlng, this.latlngs);
         marker.dragging._draggable._onDown(e.originalEvent);  // Transfer ongoing dragging to real marker
         this.remove();
@@ -521,9 +500,8 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
     CLOSED: false,
     MIN_VERTEX: 2,
 
-    enable: function (secondary) {
+    enable: function () {
         L.Editable.BaseEditor.prototype.enable.call(this);
-        this.secondary = secondary;
         if (this.feature) {
             this.initVertexMarkers();
         }
@@ -532,23 +510,6 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
 
     disable: function () {
         L.Editable.BaseEditor.prototype.disable.call(this);
-    },
-
-    setPrimary: function () {
-        if (this.feature.multi) {
-            this.feature.multi.setSecondary(this.feature);
-        }
-        delete this.secondary;
-        this.editLayer.eachLayer(function (layer) {
-            layer.setPrimary();
-        });
-    },
-
-    setSecondary: function () {
-        this.secondary = true;
-        this.editLayer.eachLayer(function (layer) {
-            if (layer.setSecondary) layer.setSecondary();
-        });
     },
 
     initVertexMarkers: function () {
@@ -608,32 +569,40 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
         return vertex.latlngs.length > this.MIN_VERTEX;
     },
 
-    _fireVertexMarkerEvent: function (type, e, vertex, position) {
-        var event = {
-            originalEvent: e.originalEvent,
-            latlng: e.latlng,
-            vertex: vertex,
-            position: position,
-            layer: this.feature
-        };
-        this.feature.fire(type, event);
-        this.map.fire(type, event);
+    _fireVertexMarkerEvent: function (type, e) {
+        e.layer = this.feature;
+        this.feature.fire(type, e);
+        this.map.fire(type, e);
     },
 
-    onVertexMarkerCtrlClick: function (e, vertex, position) {
-        this._fireVertexMarkerEvent('editable:vertex:ctrlclick', e, vertex, position);
+    onVertexMarkerCtrlClick: function (e, vertex) {
+        e.vertex = vertex;
+        this._fireVertexMarkerEvent('editable:vertex:ctrlclick', e);
     },
 
-    onVertexMarkerShiftClick: function (e, vertex, position) {
-        this._fireVertexMarkerEvent('editable:vertex:shiftclick', e, vertex, position);
+    onVertexMarkerShiftClick: function (e, vertex) {
+        e.vertex = vertex;
+        this._fireVertexMarkerEvent('editable:vertex:shiftclick', e);
     },
 
-    onVertexMarkerAltClick: function (e, vertex, position) {
-        this._fireVertexMarkerEvent('editable:vertex:altclick', e, vertex, position);
+    onVertexMarkerAltClick: function (e, vertex) {
+        e.vertex = vertex;
+        this._fireVertexMarkerEvent('editable:vertex:altclick', e);
     },
 
     onVertexMarkerContextMenu: function (e, vertex) {
-        this._fireVertexMarkerEvent('editable:vertex:contextmenu', e, vertex, vertex.getPosition());
+        e.vertex = vertex;
+        this._fireVertexMarkerEvent('editable:vertex:contextmenu', e);
+    },
+
+    onVertexMarkerMouseDown: function (e, vertex) {
+        e.vertex = vertex;
+        this._fireVertexMarkerEvent('editable:vertex:mousedown', e);
+    },
+
+    onMiddleMarkerMouseDown: function (e, marker) {
+        e.middleMarker = marker;
+        this._fireVertexMarkerEvent('editable:middlemarker:mousedown', e);
     },
 
     startDrawingForward: function () {
@@ -827,12 +796,12 @@ var EditableMixin = {
         return new Klass(map, this);
     },
 
-    enableEdit: function (secondary) {
+    enableEdit: function () {
         if (!this.editor) {
             this.createEditor();
             this.on('remove', this.disableEdit);
         }
-        return this.editor.enable(secondary);
+        return this.editor.enable();
     },
 
     editEnabled: function () {
@@ -950,8 +919,7 @@ var MultiEditableMixin = {
     enableEdit: function (e) {
         this.eachLayer(function(layer) {
             layer.multi = this;
-            layer.disableEdit();
-            layer.enableEdit(!e || e.layer !== layer);
+            layer.enableEdit();
         }, this);
     },
 
@@ -962,24 +930,11 @@ var MultiEditableMixin = {
     },
 
     toggleEdit: function (e) {
-        if (!e.layer.editor || e.layer.editor.secondary) {
+        if (!e.layer.editor) {
             this.enableEdit(e);
         } else {
             this.disableEdit();
         }
-    },
-
-    setPrimary: function (primary) {
-        this.eachLayer(function (layer) {
-            if (layer === primary) layer.editor.setPrimary();
-            else layer.editor.setSecondary();
-        });
-    },
-
-    setSecondary: function (except) {
-        this.eachLayer(function (layer) {
-            if (layer !== except) layer.editor.setSecondary();
-        });
     }
 
 };
