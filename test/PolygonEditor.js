@@ -147,6 +147,24 @@ describe('L.PolygonEditor', function() {
             assert.equal(polygon._holes[0].length, 4);
         });
 
+        it('should remove hole latlngs on click', function () {
+            happen.at('mousemove', 150, 170);
+            happen.at('click', 150, 170);
+            assert.equal(polygon._holes[0].length, 3);
+            happen.at('mousemove', 200, 250);
+            happen.at('click', 200, 250);
+            assert.equal(polygon._holes[0].length, 2);
+            happen.at('mousemove', 250, 250);
+            happen.at('click', 250, 250);
+            assert.equal(polygon._holes[0].length, 1);
+        });
+
+        it('should remove hole array on last click', function () {
+            happen.at('mousemove', 250, 200);
+            happen.at('click', 250, 200);
+            assert.notOk(polygon._holes[0]);
+        });
+
     });
 
 });

@@ -253,6 +253,7 @@ L.Editable.VertexMarker = L.Marker.extend({
         var next = this.getNext();  // Compute before changing latlng
         this.latlngs.splice(this.latlngs.indexOf(this.latlng), 1);
         this.editor.editLayer.removeLayer(this);
+        this.editor.onVertexRemoved({latlng: this.latlng}, this);
         if (next) next.resetMiddleMarker();
     },
 
@@ -585,6 +586,11 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
         return vertex.latlngs.length > this.MIN_VERTEX;
     },
 
+    onVertexRemoved: function (e, vertex) {
+        e.vertex = vertex;
+        this._fireAndForward('editable:vertex:removed', e);
+    },
+
     onVertexMarkerCtrlClick: function (e, vertex) {
         e.vertex = vertex;
         this._fireAndForward('editable:vertex:ctrlclick', e);
@@ -771,6 +777,13 @@ L.Editable.PolygonEditor = L.Editable.PathEditor.extend({
     isNewClickValid: function (latlng) {
         if (this._drawnLatLngs !== this.feature._latlngs) return this.checkContains(latlng);
         return true;
+    },
+
+    onVertexRemoved: function (e, vertex) {
+        L.Editable.PathEditor.prototype.onVertexRemoved.call(this, e, vertex);
+        if (!vertex.latlngs.length && vertex.latlngs !== this.feature._latlngs) {
+            this.feature._holes.splice(this.feature._holes.indexOf(vertex.latlngs), 1);
+        }
     }
 
 });
