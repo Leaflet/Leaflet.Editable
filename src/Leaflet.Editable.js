@@ -200,7 +200,7 @@ L.Editable.VertexMarker = L.Marker.extend({
     options: {
         draggable: true,
         riseOnOver: true,
-        zIndex: 10001,
+        zIndexOffset: 100,
         className: 'leaflet-div-icon leaflet-vertex-icon'
     },
 
@@ -328,7 +328,6 @@ L.Editable.mergeOptions({
 L.Editable.MiddleMarker = L.Marker.extend({
 
     options: {
-        zIndex: 10000,
         opacity: 0.5,
         className: 'leaflet-div-icon leaflet-middle-icon'
     },
