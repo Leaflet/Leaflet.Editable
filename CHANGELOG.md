@@ -3,6 +3,7 @@
 ## dev
 - added optional latlng param to L.Editable.startPolyline and startPolygon
 - move listening of feature remove to editor.enable/disable
+- fire editable:drawing:click after the click has been processed
 
 ## 0.2.0
 - removed multi primary/secondary management

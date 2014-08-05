@@ -76,8 +76,7 @@ var map = L.map('map', {editable: true}).setView(startPoint, 16),
     }
 
     function updateTooltip (e) {
-      // Event is fired before click action is processed, hence the counts
-      if (!e.layer._latlngs.length) {
+      if (e.layer.editor._drawnLatLngs.length < e.layer.editor.MIN_VERTEX) {
         tooltip.innerHTML = 'Click on the map to continue line.';
       }
       else {

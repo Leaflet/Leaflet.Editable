@@ -490,8 +490,8 @@ L.Editable.BaseEditor = L.Class.extend({
 
     onNewClickHandlerClicked: function (e) {
         if (!this.isNewClickValid(e.latlng)) return;
+        this.processNewClickHandlerClicked(e);
         this._fireAndForward('editable:drawing:click', e);
-        return true;
     },
 
     isNewClickValid: function (latlng) {
@@ -524,8 +524,7 @@ L.Editable.MarkerEditor = L.Editable.BaseEditor.extend({
         }
     },
 
-    onNewClickHandlerClicked: function (e) {
-        if (!L.Editable.BaseEditor.prototype.onNewClickHandlerClicked.call(this, e)) return;
+    processNewClickHandlerClicked: function (e) {
         this.finishDrawing();
     }
 
@@ -678,8 +677,7 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
         this.tools.anchorBackwardLineGuide(latlng);
     },
 
-    onNewClickHandlerClicked: function (e) {
-        if (!L.Editable.BaseEditor.prototype.onNewClickHandlerClicked.call(this, e)) return;
+    processNewClickHandlerClicked: function (e) {
         if (this.drawing === L.Editable.FORWARD) this.newPointForward(e.latlng);
         else this.newPointBackward(e.latlng);
     },
