@@ -56,6 +56,7 @@ If you want to continue an existing line:
 - [Continue line by ctrl-clicking on first/last point](http://yohanboniface.github.io/Leaflet.Editable/example/continue-line.html)
 - [Create hole in a polygon by ctrl-clicking on it](http://yohanboniface.github.io/Leaflet.Editable/example/create-hole-on-click.html)
 - [Change line colour on editing](http://yohanboniface.github.io/Leaflet.Editable/example/change-line-colour-on-editing.html)
+- [Display a tooltip near cursor while drawing](http://yohanboniface.github.io/Leaflet.Editable/example/tooltip-when-drawing.html)
 
 
 ## API
@@ -86,6 +87,7 @@ Leaflet.Editable add options and events to the `L.Map` object.
 | editable:drawing:end | layer    |  Fired when a feature is not drawn anymore  |
 | editable:drawing:cancel | layer    |  Fired when user cancel drawing while a feature is being drawn  |
 | editable:drawing:finish | layer    |  Fired when user finish drawing a feature  |
+| editable:drawing:click | layer    |  Fired when user click while drawing  |
 | editable:vertex:ctrlclick | originalEvent, latlng, vertex, layer    |  Fired when a click having ctrlKey is issued on a vertex  |
 | editable:vertex:shiftclick | originalEvent, latlng, vertex, layer    |  Fired when a click having shiftKey is issued on a vertex  |
 | editable:vertex:altclick | originalEvent, latlng, vertex, layer    |  Fired when a click having altKey is issued on a vertex  |
