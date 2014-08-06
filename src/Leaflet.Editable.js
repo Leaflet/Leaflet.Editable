@@ -451,8 +451,8 @@ L.Editable.BaseEditor = L.Class.extend({
         this._fireAndForward('editable:drawing:cancel');
     },
 
-    onFinishDrawing: function () {
-        this._fireAndForward('editable:drawing:finish');
+    onCommitDrawing: function () {
+        this._fireAndForward('editable:drawing:commit');
     },
 
     startDrawing: function () {
@@ -461,14 +461,14 @@ L.Editable.BaseEditor = L.Class.extend({
         this.onStartDrawing();
     },
 
-    finishDrawing: function () {
+    commitDrawing: function () {
+        this.onCommitDrawing();
         this.endDrawing();
-        this.onFinishDrawing();
     },
 
     cancelDrawing: function () {
-        this.endDrawing();
         this.onCancelDrawing();
+        this.endDrawing();
     },
 
     endDrawing: function () {
@@ -489,8 +489,6 @@ L.Editable.BaseEditor = L.Class.extend({
     },
 
     onNewClickHandlerClicked: function (e) {
-        if (!this.isNewClickValid(e.latlng)) return;
-        this.processNewClickHandlerClicked(e);
         this._fireAndForward('editable:drawing:click', e);
     },
 
@@ -524,8 +522,11 @@ L.Editable.MarkerEditor = L.Editable.BaseEditor.extend({
         }
     },
 
-    processNewClickHandlerClicked: function (e) {
-        this.finishDrawing();
+    onNewClickHandlerClicked: function (e) {
+        if (!this.isNewClickValid(e.latlng)) return;
+        // Send event before finishing drawing
+        L.Editable.BaseEditor.prototype.onNewClickHandlerClicked.call(this, e);
+        this.commitDrawing();
     }
 
 });
@@ -592,11 +593,11 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
         } else if (e.originalEvent.shiftKey) {
             this.onVertexMarkerShiftClick(e);
         } else if (index >= 1 && index === e.vertex.getLastIndex() && this.drawing === L.Editable.FORWARD) {
-            this.finishDrawing();
+            this.commitDrawing();
         } else if (index === 0 && this.drawing === L.Editable.BACKWARD && this._drawnLatLngs.length >= this.MIN_VERTEX) {
-            this.finishDrawing();
+            this.commitDrawing();
         } else if (index === 0 && this.drawing === L.Editable.FORWARD && this._drawnLatLngs.length >= this.MIN_VERTEX && this.CLOSED) {
-            this.finishDrawing();  // Allow to close on first point also for polygons
+            this.commitDrawing();  // Allow to close on first point also for polygons
         } else {
             this.onVertexRawMarkerClick(e);
         }
@@ -677,9 +678,11 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
         this.tools.anchorBackwardLineGuide(latlng);
     },
 
-    processNewClickHandlerClicked: function (e) {
+    onNewClickHandlerClicked: function (e) {
+        if (!this.isNewClickValid(e.latlng)) return;
         if (this.drawing === L.Editable.FORWARD) this.newPointForward(e.latlng);
         else this.newPointBackward(e.latlng);
+        L.Editable.BaseEditor.prototype.onNewClickHandlerClicked.call(this, e);
     },
 
     onMouseMove: function (e) {

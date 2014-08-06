@@ -154,4 +154,70 @@ describe('L.PolylineEditor', function() {
 
     });
 
+
+    describe('#events', function () {
+
+        it('should fire editable:drawing:start on startPolyline call', function () {
+            var called = 0,
+                call = function () {called++;};
+            this.map.on('editable:drawing:start', call);
+            var other = this.map.editTools.startPolyline();
+            assert.equal(called, 1);
+            this.map.off('editable:drawing:start', call);
+            this.map.removeLayer(other);
+            assert.notOk(this.map.editTools._drawingEditor);
+        });
+
+        it('should fire editable:drawing:click on click', function () {
+            var called = 0,
+                call = function () {called++;};
+            this.map.on('editable:drawing:click', call);
+            var other = this.map.editTools.startPolyline();
+            assert.equal(called, 0);
+            happen.at('mousemove', 450, 450);
+            happen.at('click', 450, 450);
+            assert.equal(called, 1);
+            happen.at('mousemove', 500, 500);
+            happen.at('click', 500, 500);
+            assert.equal(called, 2);
+            this.map.off('editable:drawing:click', call);
+            this.map.removeLayer(other);
+            assert.equal(called, 2);
+        });
+
+        it('should fire editable:drawing:click/commit/end on last click', function () {
+            var second = 0, first = null, last,
+                setFirst = function (e) {if(first === null) first = e.type;},
+                setLast = function (e) {last = e.type;},
+                setSecond = function () {second++;};
+            this.map.on('editable:drawing:end', setFirst);
+            this.map.on('editable:drawing:click', setFirst);
+            this.map.on('editable:drawing:commit', setFirst);
+            this.map.on('editable:drawing:end', setLast);
+            this.map.on('editable:drawing:click', setLast);
+            this.map.on('editable:drawing:commit', setLast);
+            this.map.on('editable:drawing:commit', setSecond);
+            var other = this.map.editTools.startPolyline();
+            assert.equal(second, 0);
+            happen.at('mousemove', 450, 450);
+            happen.at('click', 450, 450);
+            assert.equal(second, 0);
+            happen.at('mousemove', 500, 500);
+            happen.at('click', 500, 500);
+            happen.at('click', 500, 500);
+            assert.equal(second, 1);  // commit has been called
+            assert.equal(first, 'editable:drawing:click');
+            assert.equal(last, 'editable:drawing:end');
+            this.map.off('editable:drawing:end', setFirst);
+            this.map.off('editable:drawing:click', setFirst);
+            this.map.off('editable:drawing:commit', setFirst);
+            this.map.off('editable:drawing:end', setLast);
+            this.map.off('editable:drawing:click', setLast);
+            this.map.off('editable:drawing:commit', setLast);
+            this.map.off('editable:drawing:commit', setSecond);
+            this.map.removeLayer(other);
+        });
+
+    });
+
 });

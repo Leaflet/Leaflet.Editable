@@ -90,16 +90,16 @@ describe('L.MarkerEditor', function() {
             assert.equal(called, 1);
         });
 
-        it('should fire editable:drawing:finish on finish', function () {
+        it('should fire editable:drawing:commit on finish', function () {
             var called = 0,
                 call = function () {called++;};
-            this.map.on('editable:drawing:finish', call);
+            this.map.on('editable:drawing:commit', call);
             var other = this.map.editTools.startMarker();
             assert.equal(called, 0);
             happen.at('mousemove', 450, 450);
             happen.at('click', 450, 450);
             assert.equal(called, 1);
-            this.map.off('editable:drawing:finish', call);
+            this.map.off('editable:drawing:commit', call);
             this.map.removeLayer(other);
             assert.equal(called, 1);
         });
@@ -116,14 +116,38 @@ describe('L.MarkerEditor', function() {
             assert.equal(called, 1);
         });
 
-        it('should not fire editable:drawing:finish on stopDrawing', function () {
+        it('should fire editable:drawing:click before end/commit on click', function () {
+            var first = null, last,
+                setFirst = function (e) {if(first === null) first = e.type;},
+                setLast = function (e) {last = e.type;};
+            this.map.on('editable:drawing:end', setFirst);
+            this.map.on('editable:drawing:click', setFirst);
+            this.map.on('editable:drawing:commit', setFirst);
+            this.map.on('editable:drawing:end', setLast);
+            this.map.on('editable:drawing:click', setLast);
+            this.map.on('editable:drawing:commit', setLast);
+            var other = this.map.editTools.startMarker();
+            happen.at('mousemove', 450, 450);
+            happen.at('click', 450, 450);
+            assert.equal(first, 'editable:drawing:click');
+            assert.equal(last, 'editable:drawing:end');
+            this.map.off('editable:drawing:end', setFirst);
+            this.map.off('editable:drawing:click', setFirst);
+            this.map.off('editable:drawing:commit', setFirst);
+            this.map.off('editable:drawing:end', setLast);
+            this.map.off('editable:drawing:click', setLast);
+            this.map.off('editable:drawing:commit', setLast);
+            this.map.removeLayer(other);
+        });
+
+        it('should not fire editable:drawing:commit on stopDrawing', function () {
             var called = 0,
                 call = function () {called++;};
-            this.map.on('editable:drawing:finish', call);
+            this.map.on('editable:drawing:commit', call);
             var other = this.map.editTools.startMarker();
             this.map.editTools.stopDrawing();
             assert.equal(called, 0);
-            this.map.off('editable:drawing:finish', call);
+            this.map.off('editable:drawing:commit', call);
             this.map.removeLayer(other);
             assert.equal(called, 0);
         });

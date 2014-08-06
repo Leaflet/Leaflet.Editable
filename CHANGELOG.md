@@ -4,6 +4,8 @@
 - added optional latlng param to L.Editable.startPolyline and startPolygon
 - move listening of feature remove to editor.enable/disable
 - fire editable:drawing:click after the click has been processed
+- renamed editable:drawing:finish in editable:drawing:commit
+- fixed that editable:drawing:click was fired after editable:drawing:end for MarkerEditor
 
 ## 0.2.0
 - removed multi primary/secondary management

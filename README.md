@@ -86,7 +86,7 @@ Leaflet.Editable add options and events to the `L.Map` object.
 | editable:drawing:start | layer   |  Fired when a feature is to be drawn  |
 | editable:drawing:end | layer    |  Fired when a feature is not drawn anymore  |
 | editable:drawing:cancel | layer    |  Fired when user cancel drawing while a feature is being drawn  |
-| editable:drawing:finish | layer    |  Fired when user finish drawing a feature  |
+| editable:drawing:commit | layer    |  Fired when user finish drawing a feature  |
 | editable:drawing:click | layer    |  Fired when user click while drawing  |
 | editable:vertex:ctrlclick | originalEvent, latlng, vertex, layer    |  Fired when a click having ctrlKey is issued on a vertex  |
 | editable:vertex:shiftclick | originalEvent, latlng, vertex, layer    |  Fired when a click having shiftKey is issued on a vertex  |
@@ -226,7 +226,8 @@ Some events are also fired on the feature itself.
 | editable:drawing:start | layer   |  Fired when a feature is to be drawn  |
 | editable:drawing:end | layer    |  Fired when a feature is not drawn anymore  |
 | editable:drawing:cancel | layer    |  Fired when user cancel drawing while a feature is being drawn  |
-| editable:drawing:finish | layer    |  Fired when user finish drawing a feature  |
+| editable:drawing:commit | layer    |  Fired when user finish drawing a feature  |
+| editable:drawing:click | layer    |  Fired when user click while drawing  |
 | editable:vertex:ctrlclick | originalEvent, latlng, vertex, layer    |  Fired when a click having ctrlKey is issued on a vertex  |
 | editable:vertex:shiftclick | originalEvent, latlng, vertex, layer    |  Fired when a click having shiftKey is issued on a vertex  |
 | editable:vertex:altclick | originalEvent, latlng, vertex, layer    |  Fired when a click having altKey is issued on a vertex  |
