@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## dev
+## 0.3.0
 - added optional latlng param to L.Editable.startPolyline and startPolygon
 - move listening of feature remove to editor.enable/disable
 - fire editable:drawing:click after the click has been processed
