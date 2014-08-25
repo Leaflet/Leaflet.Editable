@@ -33,7 +33,8 @@ L.Editable = L.Class.extend({
     },
 
     createLineGuide: function () {
-        return L.polyline([], {dashArray: '5,10', weight: 1});
+        var options = L.extend({dashArray: '5,10', weight: 1}, this.options.lineGuideOptions);
+        return L.polyline([], options);
     },
 
     createVertexIcon: function (options) {
@@ -604,7 +605,7 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
         return new this.tools.options.middleMarkerClass(left, right, latlngs, this);
     },
 
-    onVertexMarkerClick: function (e, vertex) {
+    onVertexMarkerClick: function (e) {
         var index = e.vertex.getIndex();
         if (e.originalEvent.ctrlKey) {
             this.onVertexMarkerCtrlClick(e);

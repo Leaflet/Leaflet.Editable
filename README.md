@@ -113,11 +113,13 @@ Let's see them.
 | markerClass         | L.Marker |  Class to be used when creating a new Marker  |
 | drawingCSSClass     | leaflet-editable-drawing |  CSS class to be added to the map container while drawing  |
 | editLayer     | new L.LayerGroup() |  Layer used to store edit tools (vertex, line guide…)  |
+| featuresLayer     | new L.LayerGroup() | Default layer used to store drawn features (marker, polyline…)  |
 | vertexMarkerClass | L.Editable.VertexMarker | Class to be used as vertex, for path editing  |
 | middleMarkerClass | L.Editable.MiddleMarker | Class to be used as middle vertex, pulled by the user to create a new point in the middle of a path  |
 | polylineEditorClass | L.Editable.PolylineEditor | Class to be used as Polyline editor  |
 | polygonEditorClass | L.Editable.PolygonEditor | Class to be used as Polygon editor  |
 | markerEditorClass | L.Editable.MarkerEditor | Class to be used as Marker editor  |
+| lineGuideOptions | {} | Options to be passed to the line guide  |
 
 #### Methods
 
