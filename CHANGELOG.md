@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## dev
+## 0.4.0
 - Marker/Polygon/Polyline.createEditor now pass this.options.editOptions to
   the created editor
 - fire editable events on the L.Editable instance also
