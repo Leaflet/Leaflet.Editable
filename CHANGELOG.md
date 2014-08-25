@@ -4,6 +4,8 @@
 - Marker/Polygon/Polyline.createEditor now pass this.options.editOptions to
   the created editor
 - fire editable events on the L.Editable instance also
+- added featuresLayer option to L.Editable, and by default add features to
+  this layer instead of the map directly
 
 ## 0.3.0
 - added optional latlng param to L.Editable.startPolyline and startPolygon

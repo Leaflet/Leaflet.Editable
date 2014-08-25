@@ -19,6 +19,7 @@ L.Editable = L.Class.extend({
         L.setOptions(this, options);
         this.map = map;
         this.editLayer = this.createEditLayer();
+        this.featuresLayer = this.createFeaturesLayer();
         this.newClickHandler = this.createNewClickHandler();
         this.forwardLineGuide = this.createLineGuide();
         this.backwardLineGuide = this.createLineGuide();
@@ -48,6 +49,10 @@ L.Editable = L.Class.extend({
 
     createEditLayer: function () {
         return this.options.editLayer || new L.LayerGroup().addTo(this.map);
+    },
+
+    createFeaturesLayer: function () {
+        return this.options.featuresLayer || new L.LayerGroup().addTo(this.map);
     },
 
     moveForwardLineGuide: function (latlng) {
@@ -119,17 +124,23 @@ L.Editable = L.Class.extend({
         this.unregisterForDrawing();
     },
 
+    connectCreatedToMap: function (layer) {
+        return this.featuresLayer.addLayer(layer);
+    },
+
     startPolyline: function (latlng) {
-        var line = this.createPolyline([]).connectCreatedToMap(this.map),
-            editor = line.enableEdit();
+        var line = this.createPolyline([]);
+        this.connectCreatedToMap(line);
+        var editor = line.enableEdit();
         editor.startDrawingForward();
         if (latlng) editor.newPointForward(latlng);
         return line;
     },
 
     startPolygon: function (latlng) {
-        var polygon = this.createPolygon([]).connectCreatedToMap(this.map),
-            editor = polygon.enableEdit();
+        var polygon = this.createPolygon([]);
+        this.connectCreatedToMap(polygon);
+        var editor = polygon.enableEdit();
         editor.startDrawingForward();
         if (latlng) editor.newPointForward(latlng);
         return polygon;
@@ -137,8 +148,9 @@ L.Editable = L.Class.extend({
 
     startMarker: function (latlng) {
         latlng = latlng || this.map.getCenter();
-        var marker = this.createMarker(latlng).connectCreatedToMap(this.map),
-            editor = marker.enableEdit();
+        var marker = this.createMarker(latlng);
+        this.connectCreatedToMap(marker);
+        var editor = marker.enableEdit();
         editor.startDrawing();
         return marker;
     },
@@ -838,10 +850,6 @@ var EditableMixin = {
       } else {
         this.enableEdit();
       }
-    },
-
-    connectCreatedToMap: function (map) {
-        return this.addTo(map);
     }
 
 };
