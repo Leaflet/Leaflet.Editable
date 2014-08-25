@@ -138,7 +138,7 @@ instance:
 
 #### Events
 
-Same a L.Map.
+Same as L.Map.
 
 
 ### L.Editable.VertexMarker
