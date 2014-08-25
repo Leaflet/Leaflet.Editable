@@ -119,7 +119,8 @@ Let's see them.
 | polylineEditorClass | L.Editable.PolylineEditor | Class to be used as Polyline editor  |
 | polygonEditorClass | L.Editable.PolygonEditor | Class to be used as Polygon editor  |
 | markerEditorClass | L.Editable.MarkerEditor | Class to be used as Marker editor  |
-| lineGuideOptions | {} | Options to be passed to the line guide  |
+| lineGuideOptions | {} | Options to be passed to the line guides  |
+| skipMiddleMarkers | null | Set this to true if you don't want middle markers |
 
 #### Methods
 

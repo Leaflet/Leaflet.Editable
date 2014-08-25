@@ -6,7 +6,8 @@
 - fire editable events on the L.Editable instance also
 - added featuresLayer option to L.Editable, and by default add features to
   this layer instead of the map directly
-- added lineGuideOptions
+- added lineGuideOptions to L.Editable options
+- added skipMiddleMarkers to L.Editable options
 
 ## 0.3.0
 - added optional latlng param to L.Editable.startPolyline and startPolygon

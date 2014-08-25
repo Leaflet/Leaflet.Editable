@@ -241,7 +241,7 @@ L.Editable.VertexMarker = L.Marker.extend({
         this.on('click', this.onClick);
         this.on('contextmenu', this.onContextMenu);
         this.on('mousedown touchstart', this.onMouseDown);
-        this.addMiddleMarkers();
+        if (!this.editor.tools.options.skipMiddleMarkers) this.addMiddleMarkers();
     },
 
     onDrag: function (e) {
