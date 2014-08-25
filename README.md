@@ -46,9 +46,9 @@ If you want to draw a new line:
 
 If you want to continue an existing line:
 
-    polyline.continueForward();
+    polyline.editor.continueForward();
     // or
-    polyline.continueBackward();
+    polyline.editor.continueBackward();
 
 ## Examples
 
