@@ -3,6 +3,7 @@
 ## dev
 - Marker/Polygon/Polyline.createEditor now pass this.options.editOptions to
   the created editor
+- fire editable events on the L.Editable instance also
 
 ## 0.3.0
 - added optional latlng param to L.Editable.startPolyline and startPolygon

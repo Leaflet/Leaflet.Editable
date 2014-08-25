@@ -1,5 +1,7 @@
 L.Editable = L.Class.extend({
 
+    includes: [L.Mixin.Events],
+
     statics: {
         FORWARD: 1,
         BACKWARD: -1
@@ -20,7 +22,13 @@ L.Editable = L.Class.extend({
         this.newClickHandler = this.createNewClickHandler();
         this.forwardLineGuide = this.createLineGuide();
         this.backwardLineGuide = this.createLineGuide();
+    },
 
+    fireAndForward: function (type, e) {
+        e = e || {};
+        e.editTools = this;
+        this.fire(type, e);
+        this.map.fire(type, e);
     },
 
     createLineGuide: function () {
@@ -149,20 +157,20 @@ L.Editable = L.Class.extend({
     },
 
     createPolyline: function (latlngs) {
-        var line = new this.options.polylineClass(latlngs);
-        this.map.fire('editable:created', {layer: line});
+        var line = new this.options.polylineClass(latlngs, {editOptions: {editTools: this}});
+        this.fireAndForward('editable:created', {layer: line});
         return line;
     },
 
     createPolygon: function (latlngs) {
-        var polygon = new this.options.polygonClass(latlngs);
-        this.map.fire('editable:created', {layer: polygon});
+        var polygon = new this.options.polygonClass(latlngs, {editOptions: {editTools: this}});
+        this.fireAndForward('editable:created', {layer: polygon});
         return polygon;
     },
 
     createMarker: function (latlng) {
-        var marker = new this.options.markerClass(latlng);
-        this.map.fire('editable:created', {layer: marker});
+        var marker = new this.options.markerClass(latlng, {editOptions: {editTools: this}});
+        this.fireAndForward('editable:created', {layer: marker});
         return marker;
     }
 
@@ -419,40 +427,40 @@ L.Editable.BaseEditor = L.Class.extend({
         return this;
     },
 
-    _fireAndForward: function (type, e) {
+    fireAndForward: function (type, e) {
         e = e || {};
         e.layer = this.feature;
         this.feature.fire(type, e);
         if (this.feature.multi) this.feature.multi.fire(type, e);
-        this.map.fire(type, e);
+        this.tools.fireAndForward(type, e);
     },
 
     onEnable: function () {
-        this._fireAndForward('editable:enable');
+        this.fireAndForward('editable:enable');
     },
 
     onDisable: function () {
-        this._fireAndForward('editable:disable');
+        this.fireAndForward('editable:disable');
     },
 
     onEditing: function () {
-        this._fireAndForward('editable:editing');
+        this.fireAndForward('editable:editing');
     },
 
     onStartDrawing: function () {
-        this._fireAndForward('editable:drawing:start');
+        this.fireAndForward('editable:drawing:start');
     },
 
     onEndDrawing: function () {
-        this._fireAndForward('editable:drawing:end');
+        this.fireAndForward('editable:drawing:end');
     },
 
     onCancelDrawing: function () {
-        this._fireAndForward('editable:drawing:cancel');
+        this.fireAndForward('editable:drawing:cancel');
     },
 
     onCommitDrawing: function () {
-        this._fireAndForward('editable:drawing:commit');
+        this.fireAndForward('editable:drawing:commit');
     },
 
     startDrawing: function () {
@@ -489,7 +497,7 @@ L.Editable.BaseEditor = L.Class.extend({
     },
 
     onNewClickHandlerClicked: function (e) {
-        this._fireAndForward('editable:drawing:click', e);
+        this.fireAndForward('editable:drawing:click', e);
     },
 
     isNewClickValid: function (latlng) {
@@ -614,31 +622,31 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
     },
 
     onVertexDeleted: function (e) {
-        this._fireAndForward('editable:vertex:deleted', e);
+        this.fireAndForward('editable:vertex:deleted', e);
     },
 
     onVertexMarkerCtrlClick: function (e) {
-        this._fireAndForward('editable:vertex:ctrlclick', e);
+        this.fireAndForward('editable:vertex:ctrlclick', e);
     },
 
     onVertexMarkerShiftClick: function (e) {
-        this._fireAndForward('editable:vertex:shiftclick', e);
+        this.fireAndForward('editable:vertex:shiftclick', e);
     },
 
     onVertexMarkerAltClick: function (e) {
-        this._fireAndForward('editable:vertex:altclick', e);
+        this.fireAndForward('editable:vertex:altclick', e);
     },
 
     onVertexMarkerContextMenu: function (e) {
-        this._fireAndForward('editable:vertex:contextmenu', e);
+        this.fireAndForward('editable:vertex:contextmenu', e);
     },
 
     onVertexMarkerMouseDown: function (e) {
-        this._fireAndForward('editable:vertex:mousedown', e);
+        this.fireAndForward('editable:vertex:mousedown', e);
     },
 
     onMiddleMarkerMouseDown: function (e) {
-        this._fireAndForward('editable:middlemarker:mousedown', e);
+        this.fireAndForward('editable:middlemarker:mousedown', e);
     },
 
     startDrawing: function () {
