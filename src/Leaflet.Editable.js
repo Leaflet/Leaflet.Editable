@@ -398,7 +398,7 @@ L.Editable.BaseEditor = L.Class.extend({
         this.feature = feature;
         this.feature.editor = this;
         this.editLayer = new L.LayerGroup();
-        this.tools = this.options.tools || map.editTools;
+        this.tools = this.options.editTools || map.editTools;
     },
 
     enable: function () {
@@ -803,7 +803,7 @@ var EditableMixin = {
     createEditor: function (map) {
         map = map || this._map;
         var Klass = this.options.editorClass || this.getEditorClass(map);
-        return new Klass(map, this);
+        return new Klass(map, this, this.options.editOptions);
     },
 
     enableEdit: function () {

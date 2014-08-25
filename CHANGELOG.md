@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## dev
+- Marker/Polygon/Polyline.createEditor now pass this.options.editOptions to
+  the created editor
+
 ## 0.3.0
 - added optional latlng param to L.Editable.startPolyline and startPolygon
 - move listening of feature remove to editor.enable/disable
