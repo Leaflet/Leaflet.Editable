@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## dev
+- added editable:vertex:drag event
+- added editable:vertex:dragstart event
+- added editable:vertex:dragend event
+
 ## 0.4.0
 - Marker/Polygon/Polyline.createEditor now pass this.options.editOptions to
   the created editor

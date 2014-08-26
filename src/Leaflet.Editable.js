@@ -237,7 +237,9 @@ L.Editable.VertexMarker = L.Marker.extend({
 
     onAdd: function (map) {
         L.Marker.prototype.onAdd.call(this, map);
-        L.DomEvent.on(this.dragging._draggable, 'drag', this.onDrag, this);
+        this.on('drag', this.onDrag);
+        this.on('dragstart', this.onDragStart);
+        this.on('dragend', this.onDragEnd);
         this.on('click', this.onClick);
         this.on('contextmenu', this.onContextMenu);
         this.on('mousedown touchstart', this.onMouseDown);
@@ -245,6 +247,8 @@ L.Editable.VertexMarker = L.Marker.extend({
     },
 
     onDrag: function (e) {
+        e.vertex = this;
+        this.editor.onVertexMarkerDrag(e);
         var iconPos = L.DomUtil.getPosition(this._icon),
             latlng = this._map.layerPointToLatLng(iconPos);
         this.latlng.lat = latlng.lat;
@@ -257,6 +261,16 @@ L.Editable.VertexMarker = L.Marker.extend({
         if (next && next.middleMarker) {
             next.middleMarker.updateLatLng();
         }
+    },
+
+    onDragStart: function (e) {
+        e.vertex = this;
+        this.editor.onVertexMarkerDragStart(e);
+    },
+
+    onDragEnd: function (e) {
+        e.vertex = this;
+        this.editor.onVertexMarkerDragEnd(e);
     },
 
     onClick: function (e) {
@@ -660,6 +674,18 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
 
     onMiddleMarkerMouseDown: function (e) {
         this.fireAndForward('editable:middlemarker:mousedown', e);
+    },
+
+    onVertexMarkerDrag: function (e) {
+        this.fireAndForward('editable:vertex:drag', e);
+    },
+
+    onVertexMarkerDragStart: function (e) {
+        this.fireAndForward('editable:vertex:dragstart', e);
+    },
+
+    onVertexMarkerDragEnd: function (e) {
+        this.fireAndForward('editable:vertex:dragend', e);
     },
 
     startDrawing: function () {
