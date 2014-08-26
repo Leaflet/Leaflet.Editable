@@ -57,6 +57,7 @@ If you want to continue an existing line:
 - [Create hole in a polygon by ctrl-clicking on it](http://yohanboniface.github.io/Leaflet.Editable/example/create-hole-on-click.html)
 - [Change line colour on editing](http://yohanboniface.github.io/Leaflet.Editable/example/change-line-colour-on-editing.html)
 - [Display a tooltip near cursor while drawing](http://yohanboniface.github.io/Leaflet.Editable/example/tooltip-when-drawing.html)
+- Example of [Leaflet.Snap](https://github.com/makinacorpus/Leaflet.Snap/) integration [to enable snapping](http://yohanboniface.github.io/Leaflet.Editable/example/snapping.html)
 
 
 ## API

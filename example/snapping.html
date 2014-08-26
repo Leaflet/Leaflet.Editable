@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <title>Example of Leaflet.Snap integration to enable snapping</title>
+  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+  <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+  <script src="../src/Leaflet.Editable.js"></script>
+  <script src="http://makinacorpus.github.io/Leaflet.Snap/Leaflet.GeometryUtil/dist/leaflet.geometryutil.js"></script>
+  <script src="http://makinacorpus.github.io/Leaflet.Snap/leaflet.snap.js"></script>
+
+  <style type='text/css'>
+      body { margin:0; padding:0; }
+      #map { position:absolute; top:0; bottom:0; right: 0; left: 0; width:100%; }
+      .leaflet-vertex-icon.marker-snapped,
+      .leaflet-drawing-icon.marker-snapped {
+        opacity: 1!important;
+      }
+  </style>
+</head>
+<body>
+  <div id='map'></div>
+
+<script type="text/javascript">
+var startPoint = [43.1249, 1.254];
+var map = L.map('map', {editable: true}).setView(startPoint, 16),
+    tilelayer = L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {maxZoom: 20, attribution: 'Data \u00a9 <a href="http://www.openstreetmap.org/copyright"> OpenStreetMap Contributors </a> Tiles \u00a9 HOT'}).addTo(map);
+
+    L.NewLineControl = L.Control.extend({
+
+        options: {
+            position: 'topleft'
+        },
+
+        onAdd: function (map) {
+            var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar'),
+                link = L.DomUtil.create('a', '', container);
+
+            link.href = '#';
+            link.title = 'Create a new line';
+            link.innerHTML = '/\\/';
+            L.DomEvent.on(link, 'click', L.DomEvent.stop)
+                      .on(link, 'click', function () {
+                        map.editTools.startPolyline();
+                      });
+            return container;
+        }
+    });
+    map.addControl(new L.NewLineControl());
+
+    var line = L.polyline([
+        [43.1292, 1.256],
+        [43.1295, 1.259],
+        [43.1291, 1.261],
+    ]).addTo(map);
+    line.enableEdit();
+    var line2 = L.polyline([
+          [43.1239, 1.244],
+          [43.123, 1.253],
+          [43.1252, 1.255],
+          [43.1250, 1.251],
+    ]).addTo(map);
+    line2.enableEdit();
+
+    var road = L.polyline([
+      [43.120407284575116, 1.2492871284484863],
+      [43.12117473538689, 1.2496089935302734],
+      [43.12191085263059, 1.2504887580871582],
+      [43.12236504821365, 1.2518835067749023],
+      [43.12263129922914, 1.2540292739868164],
+      [43.124213119605685, 1.2568402290344238],
+      [43.125685272120755, 1.2606382369995117],
+      [43.126718889950894, 1.2616252899169922],
+      [43.127815132201, 1.2649726867675781]
+    ], {color: 'red'}).addTo(map);
+
+  var snap = new L.Handler.MarkerSnap(map);
+  snap.addGuideLayer(road);
+  snap.watchMarker(map.editTools.newClickHandler);
+
+  map.on('editable:vertex:dragstart', function (e) {
+    snap.watchMarker(e.vertex);
+  });
+  map.on('editable:vertex:dragend', function (e) {
+    snap.unwatchMarker(e.vertex);
+  });
+
+</script>
+</body>
+</html>
