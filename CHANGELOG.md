@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## dev
+## 0.5.0
 - added editable:vertex:drag event
 - added editable:vertex:dragstart event
 - added editable:vertex:dragend event
