@@ -1,5 +1,8 @@
 # CHANGELOG
 
+# dev
+- hide middle markers if there is not enough space
+
 ## 0.5.0
 - added editable:vertex:drag event
 - added editable:vertex:dragstart event

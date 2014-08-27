@@ -220,7 +220,6 @@ L.Editable.VertexMarker = L.Marker.extend({
 
     options: {
         draggable: true,
-        riseOnOver: true,
         zIndexOffset: 100,
         className: 'leaflet-div-icon leaflet-vertex-icon'
     },
@@ -243,7 +242,19 @@ L.Editable.VertexMarker = L.Marker.extend({
         this.on('click', this.onClick);
         this.on('contextmenu', this.onContextMenu);
         this.on('mousedown touchstart', this.onMouseDown);
-        if (!this.editor.tools.options.skipMiddleMarkers) this.addMiddleMarkers();
+        this.addMiddleMarkers();
+    },
+
+    onRemove: function (map) {
+        if (this.middleMarker) this.middleMarker.delete();
+        delete this.latlng.__vertex;
+        this.off('drag', this.onDrag);
+        this.off('dragstart', this.onDragStart);
+        this.off('dragend', this.onDragEnd);
+        this.off('click', this.onClick);
+        this.off('contextmenu', this.onContextMenu);
+        this.off('mousedown touchstart', this.onMouseDown);
+        L.Marker.prototype.onRemove.call(this, map);
     },
 
     onDrag: function (e) {
@@ -296,12 +307,6 @@ L.Editable.VertexMarker = L.Marker.extend({
         if (next) next.resetMiddleMarker();
     },
 
-    onRemove: function (map) {
-        if (this.middleMarker) this.middleMarker.delete();
-        delete this.latlng.__vertex;
-        L.Marker.prototype.onRemove.call(this, map);
-    },
-
     getIndex: function () {
         return this.latlngs.indexOf(this.latlng);
     },
@@ -334,6 +339,7 @@ L.Editable.VertexMarker = L.Marker.extend({
     },
 
     addMiddleMarkers: function () {
+        if (this.editor.tools.options.skipMiddleMarkers) return;
         var previous = this.getPrevious();
         if (previous) {
             this.addMiddleMarker(previous);
@@ -373,12 +379,34 @@ L.Editable.MiddleMarker = L.Marker.extend({
         this.editor = editor;
         this.latlngs = latlngs;
         L.Marker.prototype.initialize.call(this, this.computeLatLng(), options);
+        this._opacity = this.options.opacity;
         this.options.icon = this.editor.tools.createVertexIcon({className: this.options.className});
         this.editor.editLayer.addLayer(this);
+        this.setVisibility();
+    },
+
+    setVisibility: function () {
+        var leftPoint = this._map.latLngToContainerPoint(this.left.latlng),
+            rightPoint = this._map.latLngToContainerPoint(this.right.latlng),
+            size = L.point(this.options.icon.options.iconSize);
+        if (leftPoint.distanceTo(rightPoint) < size.x * 3) {
+            this.hide();
+        } else {
+            this.show();
+        }
+    },
+
+    show: function () {
+        this.setOpacity(this._opacity);
+    },
+
+    hide: function () {
+        this.setOpacity(0);
     },
 
     updateLatLng: function () {
         this.setLatLng(this.computeLatLng());
+        this.setVisibility();
     },
 
     computeLatLng: function () {
@@ -390,6 +418,14 @@ L.Editable.MiddleMarker = L.Marker.extend({
     onAdd: function (map) {
         L.Marker.prototype.onAdd.call(this, map);
         this.on('mousedown touchstart', this.onMouseDown);
+        map.on('zoomend', this.setVisibility, this);
+    },
+
+    onRemove: function (map) {
+        delete this.right.middleMarker;
+        this.off('mousedown touchstart', this.onMouseDown);
+        map.off('zoomend', this.setVisibility, this);
+        L.Marker.prototype.onRemove.call(this, map);
     },
 
     onMouseDown: function (e) {
@@ -403,11 +439,6 @@ L.Editable.MiddleMarker = L.Marker.extend({
 
     delete: function () {
         this.editor.editLayer.removeLayer(this);
-    },
-
-    onRemove: function (map) {
-        delete this.right.middleMarker;
-        L.Marker.prototype.onRemove.call(this, map);
     },
 
     index: function () {
