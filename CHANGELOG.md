@@ -2,6 +2,8 @@
 
 # dev
 - hide middle markers if there is not enough space
+- make possible to add new vertex on top of other
+  paths vertex
 
 ## 0.5.0
 - added editable:vertex:drag event

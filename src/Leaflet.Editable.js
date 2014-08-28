@@ -8,7 +8,7 @@ L.Editable = L.Class.extend({
     },
 
     options: {
-        zIndex: 10000,
+        zIndex: 1000,
         polygonClass: L.Polygon,
         polylineClass: L.Polyline,
         markerClass: L.Marker,
@@ -17,6 +17,7 @@ L.Editable = L.Class.extend({
 
     initialize: function (map, options) {
         L.setOptions(this, options);
+        this._lastZIndex = this.options.zIndex;
         this.map = map;
         this.editLayer = this.createEditLayer();
         this.featuresLayer = this.createFeaturesLayer();
@@ -44,7 +45,8 @@ L.Editable = L.Class.extend({
     createNewClickHandler: function () {
         return L.marker(this.map.getCenter(), {
             icon: this.createVertexIcon({className: 'leaflet-div-icon leaflet-drawing-icon'}),
-            opacity: 0
+            opacity: 0,
+            zIndexOffset: this._lastZIndex
         });
     },
 
@@ -98,6 +100,11 @@ L.Editable = L.Class.extend({
         this.editLayer.removeLayer(this.backwardLineGuide);
     },
 
+    updateNewClickHandlerZIndex: function () {
+        this._lastZIndex += 2;
+        this.newClickHandler.setZIndexOffset(this._lastZIndex);
+    },
+
     registerForDrawing: function (editor) {
         this.map.on('mousemove touchmove', editor.onMouseMove, editor);
         if (this._drawingEditor) this.unregisterForDrawing(this._drawingEditor);
@@ -106,6 +113,7 @@ L.Editable = L.Class.extend({
         this.newClickHandler.on('click', editor.onNewClickHandlerClicked, editor);
         if (L.Browser.touch) this.map.on('click', editor.onTouch, editor);
         L.DomUtil.addClass(this.map._container, this.options.drawingCSSClass);
+        this.updateNewClickHandlerZIndex();
     },
 
     unregisterForDrawing: function (editor) {
@@ -220,7 +228,6 @@ L.Editable.VertexMarker = L.Marker.extend({
 
     options: {
         draggable: true,
-        zIndexOffset: 100,
         className: 'leaflet-div-icon leaflet-vertex-icon'
     },
 
@@ -232,6 +239,7 @@ L.Editable.VertexMarker = L.Marker.extend({
         this.options.icon = this.editor.tools.createVertexIcon({className: this.options.className});
         this.latlng.__vertex = this;
         this.editor.editLayer.addLayer(this);
+        this.setZIndexOffset(editor.tools._lastZIndex + 1);
     },
 
     onAdd: function (map) {
