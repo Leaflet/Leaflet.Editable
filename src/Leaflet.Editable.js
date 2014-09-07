@@ -476,6 +476,7 @@ L.Editable.BaseEditor = L.Class.extend({
     },
 
     enable: function () {
+        if (this._enabled) return;
         this.tools.editLayer.addLayer(this.editLayer);
         this.onEnable();
         this._enabled = true;
