@@ -896,9 +896,8 @@ var EditableMixin = {
     },
 
     enableEdit: function () {
-        if (!this.editor) {
-            this.createEditor();
-        }
+        if (!this.editor) this.createEditor();
+        if (this.multi) this.multi.onEditEnabled();
         return this.editor.enable();
     },
 
@@ -908,6 +907,7 @@ var EditableMixin = {
 
     disableEdit: function () {
         if (this.editor) {
+            if (this.multi) this.multi.onEditDisabled();
             this.editor.disable();
             delete this.editor;
         }
@@ -1009,7 +1009,7 @@ L.Marker.include({
 
 var MultiEditableMixin = {
 
-    enableEdit: function (e) {
+    enableEdit: function () {
         this.eachLayer(function(layer) {
             layer.multi = this;
             layer.enableEdit();
@@ -1028,6 +1028,24 @@ var MultiEditableMixin = {
         } else {
             this.disableEdit();
         }
+    },
+
+    onEditEnabled: function () {
+        if (!this._editEnabled) {
+            this._editEnabled = true;
+            this.fire('editable:multi:edit:enabled');
+        }
+    },
+
+    onEditDisabled: function () {
+        if (this._editEnabled) {
+            this._editEnabled = false;
+            this.fire('editable:multi:edit:disabled');
+        }
+    },
+
+    editEnabled: function () {
+        return !!this._editEnabled;
     }
 
 };
