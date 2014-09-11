@@ -476,7 +476,7 @@ L.Editable.BaseEditor = L.Class.extend({
     },
 
     enable: function () {
-        if (this._enabled) return;
+        if (this._enabled) return this;
         this.tools.editLayer.addLayer(this.editLayer);
         this.onEnable();
         this._enabled = true;
@@ -576,6 +576,7 @@ L.Editable.BaseEditor = L.Class.extend({
 L.Editable.MarkerEditor = L.Editable.BaseEditor.extend({
 
     enable: function () {
+        if (this._enabled) return this;
         L.Editable.BaseEditor.prototype.enable.call(this);
         this.feature.dragging.enable();
         this.feature.on('dragstart', this.onEditing, this);
@@ -612,6 +613,7 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
     MIN_VERTEX: 2,
 
     enable: function () {
+        if (this._enabled) return this;
         L.Editable.BaseEditor.prototype.enable.call(this);
         if (this.feature) {
             this.initVertexMarkers();
