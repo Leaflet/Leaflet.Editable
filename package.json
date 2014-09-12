@@ -4,7 +4,8 @@
   "description": "Make geometries editable in Leaflet",
   "main": "src/Leaflet.Editable.js",
   "scripts": {
-    "test": "make test"
+    "test": "make test",
+    "install": "napa"
   },
   "keywords": [
     "leaflet",
@@ -26,6 +27,9 @@
   },
   "homepage": "https://github.com/yohanboniface/Leaflet.Editable/",
   "dependencies": {
-    "leaflet": "^0.7.3"
+    "napa": "^0.4.1"
+  },
+  "napa": {
+    "leaflet": "Leaflet/Leaflet"
   }
 }

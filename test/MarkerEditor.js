@@ -8,7 +8,7 @@ describe('L.MarkerEditor', function() {
         this.map.removeLayer(marker);
     });
 
-    describe('#startNewPolygon()', function() {
+    describe('#startNewMarker()', function() {
 
         it('should create feature and editor', function() {
             marker = this.map.editTools.startMarker();

@@ -1,6 +1,4 @@
-L.Editable = L.Class.extend({
-
-    includes: [L.Mixin.Events],
+L.Editable = L.Evented.extend({
 
     statics: {
         FORWARD: 1,
@@ -74,11 +72,13 @@ L.Editable = L.Class.extend({
 
     anchorForwardLineGuide: function (latlng) {
         this.forwardLineGuide._latlngs[0] = latlng;
+        this.forwardLineGuide._bounds.extend(latlng);
         this.forwardLineGuide.redraw();
     },
 
     anchorBackwardLineGuide: function (latlng) {
         this.backwardLineGuide._latlngs[0] = latlng;
+        this.backwardLineGuide._bounds.extend(latlng);
         this.backwardLineGuide.redraw();
     },
 
@@ -625,17 +625,15 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
         return L.Editable.BaseEditor.prototype.disable.call(this);
     },
 
-    initVertexMarkers: function () {
-        // groups can be only latlngs (for polyline or symple polygon,
-        // or latlngs plus many holes, in case of a complex polygon)
-        var latLngGroups = this.getLatLngsGroups();
-        for (var i = 0; i < latLngGroups.length; i++) {
-            this.addVertexMarkers(latLngGroups[i]);
+    initVertexMarkers: function (latlngs) {
+        latlngs = latlngs || this.getLatLngs();
+        if (this.feature._flat(latlngs)) {
+            this.addVertexMarkers(latlngs);
+        } else {
+            for (var i = 0; i < latlngs.length; i++) {
+                this.initVertexMarkers(latlngs[i]);
+            }
         }
-    },
-
-    getLatLngsGroups: function () {
-        return [this.getLatLngs()];
     },
 
     getLatLngs: function () {
@@ -730,8 +728,12 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
         this.fireAndForward('editable:vertex:dragend', e);
     },
 
+    setDrawnLatLngs: function (latlngs) {
+        this._drawnLatLngs = latlngs || this.getDefaultLatLngs();
+    },
+
     startDrawing: function () {
-        if (!this._drawnLatLngs) this._drawnLatLngs = this.getLatLngs();
+        if (!this._drawnLatLngs) this.setDrawnLatLngs();
         L.Editable.BaseEditor.prototype.startDrawing.call(this);
     },
 
@@ -750,6 +752,7 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
     addLatLng: function (latlng) {
         if (this.drawing === L.Editable.FORWARD) this._drawnLatLngs.push(latlng);
         else this._drawnLatLngs.unshift(latlng);
+        this.feature._bounds.extend(latlng);
         this.refresh();
         this.addVertexMarker(latlng, this._drawnLatLngs);
     },
@@ -791,28 +794,30 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
 
 L.Editable.PolylineEditor = L.Editable.PathEditor.extend({
 
-    startDrawingBackward: function () {
+    startDrawingBackward: function (latlngs) {
         this.drawing = L.Editable.BACKWARD;
-        this.startDrawing();
+        this.startDrawing(latlngs);
         this.tools.attachBackwardLineGuide();
     },
 
-    continueBackward: function () {
-        this.tools.anchorBackwardLineGuide(this.getFirstLatLng());
+    continueBackward: function (latlngs) {
+        latlngs = latlngs || this.getDefaultLatLngs();
+        this.setDrawnLatLngs(latlngs);
+        this.tools.anchorBackwardLineGuide(latlngs[0]);
         this.startDrawingBackward();
     },
 
-    continueForward: function () {
-        this.tools.anchorForwardLineGuide(this.getLastLatLng());
+    continueForward: function (latlngs) {
+        latlngs = latlngs || this.getDefaultLatLngs();
+        this.setDrawnLatLngs(latlngs);
+        this.tools.anchorForwardLineGuide(latlngs[latlngs.length - 1]);
         this.startDrawingForward();
     },
 
-    getLastLatLng: function () {
-        return this.getLatLngs()[this.getLatLngs().length - 1];
-    },
-
-    getFirstLatLng: function () {
-        return this.getLatLngs()[0];
+    getDefaultLatLngs: function (latlngs) {
+        latlngs = latlngs || this.feature._latlngs;
+        if (!latlngs.length || latlngs[0] instanceof L.LatLng) return latlngs;
+        else return this.getDefaultLatLngs(latlngs[0]);
     }
 
 });
@@ -822,32 +827,23 @@ L.Editable.PolygonEditor = L.Editable.PathEditor.extend({
     CLOSED: true,
     MIN_VERTEX: 3,
 
-    getLatLngsGroups: function () {
-        var groups = L.Editable.PathEditor.prototype.getLatLngsGroups.call(this);
-        if (this.feature._holes) {
-            for (var i = 0; i < this.feature._holes.length; i++) {
-                groups.push(this.feature._holes[i]);
-            }
-        }
-        return groups;
-    },
-
     startDrawingForward: function () {
         L.Editable.PathEditor.prototype.startDrawingForward.call(this);
         this.tools.attachBackwardLineGuide();
     },
 
-    addNewEmptyHole: function () {
-        var holes = Array();
-        if (!this.feature._holes) {
-            this.feature._holes = [];
-        }
-        this.feature._holes.push(holes);
+    addNewEmptyHole: function (latlng) {
+        var latlngs = this.feature.polygonFromLatLng(latlng);
+        if (!latlngs) return;
+        var holes = [];
+        latlngs.push(holes);
         return holes;
     },
 
     newHole: function (latlng) {
-        this._drawnLatLngs = this.addNewEmptyHole();
+        var holes = this.addNewEmptyHole(latlng);
+        if (!holes) return;
+        this.setDrawnLatLngs(holes);
         this.startDrawingForward();
         if (latlng) this.newPointForward(latlng);
     },
@@ -862,15 +858,30 @@ L.Editable.PolygonEditor = L.Editable.PathEditor.extend({
     },
 
     isNewClickValid: function (latlng) {
-        if (this._drawnLatLngs !== this.getLatLngs()) return this.checkContains(latlng);
+        // if (this._drawnLatLngs !== this.getLatLngs()) return this.checkContains(latlng);
         return true;
     },
 
     onVertexDeleted: function (e) {
         L.Editable.PathEditor.prototype.onVertexDeleted.call(this, e);
-        if (!e.vertex.latlngs.length && e.vertex.latlngs !== this.getLatLngs()) {
-            this.feature._holes.splice(this.feature._holes.indexOf(e.vertex.latlngs), 1);
+        if (!e.vertex.latlngs.length) {
+            // Never keep an empty latlngs ring
+            this.deleteRing(e.vertex.latlngs);
         }
+    },
+
+    deleteRing: function (ring, latlngs) {
+        latlngs = latlngs || this.getLatLngs();
+        if (this.feature._flat(latlngs) || !latlngs.length) return;
+        for (var i = 0; i < latlngs.length; i++) {
+            if (latlngs[i] === ring) return latlngs.splice(latlngs.indexOf(ring), 1);
+            else this.deleteRing(ring, latlngs[i]);
+        }
+    },
+
+    getDefaultLatLngs: function () {
+        if (!this.feature._latlngs.length) this.feature._latlngs.push([]);
+        return this.feature._latlngs[0];
     }
 
 });
@@ -929,72 +940,30 @@ L.Marker.include(EditableMixin);
 
 L.Polyline.include({
 
-    _containsPoint: function (p, closed) {  // Copy-pasted from Leaflet
-        var i, j, k, len, len2, dist, part,
-            w = this.options.weight / 2;
-
-        if (L.Browser.touch) {
-            w += 10; // polyline click tolerance on touch devices
-        }
-
-        for (i = 0, len = this._parts.length; i < len; i++) {
-            part = this._parts[i];
-            for (j = 0, len2 = part.length, k = len2 - 1; j < len2; k = j++) {
-                if (!closed && (j === 0)) {
-                    continue;
-                }
-
-                dist = L.LineUtil.pointToSegmentDistance(p, part[k], part[j]);
-
-                if (dist <= w) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    },
-
     getEditorClass: function (map) {
         return map.options.polylineEditorClass;
     }
 
 });
+
 L.Polygon.include({
-
-    _containsPoint: function (p) {  // Copy-pasted from Leaflet
-        var inside = false,
-            part, p1, p2,
-            i, j, k,
-            len, len2;
-
-        // TODO optimization: check if within bounds first
-
-        if (L.Polyline.prototype._containsPoint.call(this, p, true)) {
-            // click on polygon border
-            return true;
-        }
-
-        // ray casting algorithm for detecting if point is in polygon
-
-        for (i = 0, len = this._parts.length; i < len; i++) {
-            part = this._parts[i];
-
-            for (j = 0, len2 = part.length, k = len2 - 1; j < len2; k = j++) {
-                p1 = part[j];
-                p2 = part[k];
-
-                if (((p1.y > p.y) !== (p2.y > p.y)) &&
-                        (p.x < (p2.x - p1.x) * (p.y - p1.y) / (p2.y - p1.y) + p1.x)) {
-                    inside = !inside;
-                }
-            }
-        }
-
-        return inside;
-    },
 
     getEditorClass: function (map) {
         return map.options.polygonEditorClass;
+    },
+
+    polygonFromLatLng: function (latlng, latlngs) {
+        // So we can have those cases:
+        // - latlngs are just a flat array of latlngs, use this
+        // - latlngs is an array of array of latlngs, this is a simple polygon (maybe with holes), use the first
+        // - latlngs is an array of array of array, this is a multi, loop over
+        var polygon = false;
+        latlngs = latlngs || this._latlngs;
+        if (!latlngs.length) return polygon;
+        else if (this._flat(latlngs) && L.Polygon.isInLatLngs(latlng, latlngs)) polygon = latlngs;
+        else if (this._flat(latlngs[0]) && L.Polygon.isInLatLngs(latlng, latlngs[0])) polygon = latlngs;
+        else for (var i = 0; i < latlngs.length; i++) if (L.Polygon.isInLatLngs(latlng, latlngs[i][0])) return latlngs[i];
+        return polygon;
     }
 
 });
@@ -1007,47 +976,22 @@ L.Marker.include({
 
 });
 
-var MultiEditableMixin = {
+L.extend(L.Polygon, {
 
-    enableEdit: function () {
-        this.eachLayer(function(layer) {
-            layer.multi = this;
-            layer.enableEdit();
-        }, this);
-    },
+    isInLatLngs: function (l, latlngs) {
+        var inside = false, l1, l2, j, k, len, len2;
 
-    disableEdit: function () {
-        this.eachLayer(function(layer) {
-            layer.disableEdit();
-        });
-    },
+        for (j = 0, len2 = latlngs.length, k = len2 - 1; j < len2; k = j++) {
+            l1 = latlngs[j];
+            l2 = latlngs[k];
 
-    toggleEdit: function (e) {
-        if (!e.layer.editor) {
-            this.enableEdit(e);
-        } else {
-            this.disableEdit();
+            if (((l1.lat > l.lat) !== (l2.lat > l.lat)) &&
+                    (l.lng < (l2.lng - l1.lng) * (l.lat - l1.lat) / (l2.lat - l1.lat) + l1.lng)) {
+                inside = !inside;
+            }
         }
-    },
 
-    onEditEnabled: function () {
-        if (!this._editEnabled) {
-            this._editEnabled = true;
-            this.fire('editable:multi:edit:enabled');
-        }
-    },
-
-    onEditDisabled: function () {
-        if (this._editEnabled) {
-            this._editEnabled = false;
-            this.fire('editable:multi:edit:disabled');
-        }
-    },
-
-    editEnabled: function () {
-        return !!this._editEnabled;
+        return inside;
     }
 
-};
-L.MultiPolygon.include(MultiEditableMixin);
-L.MultiPolyline.include(MultiEditableMixin);
+});
