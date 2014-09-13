@@ -140,18 +140,14 @@ L.Editable = L.Evented.extend({
     startPolyline: function (latlng) {
         var line = this.createPolyline([]);
         this.connectCreatedToMap(line);
-        var editor = line.enableEdit();
-        editor.startDrawingForward();
-        if (latlng) editor.newPointForward(latlng);
+        line.enableEdit().newShape(latlng);
         return line;
     },
 
     startPolygon: function (latlng) {
         var polygon = this.createPolygon([]);
         this.connectCreatedToMap(polygon);
-        var editor = polygon.enableEdit();
-        editor.startDrawingForward();
-        if (latlng) editor.newPointForward(latlng);
+        polygon.enableEdit().newShape(latlng);
         return polygon;
     },
 
@@ -312,6 +308,7 @@ L.Editable.VertexMarker = L.Marker.extend({
         this.latlngs.splice(this.latlngs.indexOf(this.latlng), 1);
         this.editor.editLayer.removeLayer(this);
         this.editor.onVertexDeleted({latlng: this.latlng, vertex: this});
+        if (!this.latlngs.length) this.editor.deleteShape(this.latlngs);
         if (next) next.resetMiddleMarker();
     },
 
@@ -788,6 +785,24 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
     refresh: function () {
         this.feature.redraw();
         this.onEditing();
+    },
+
+    newShape: function (latlng) {
+        var shape = this.addNewEmptyShape();
+        if (!shape) return;
+        this.setDrawnLatLngs(shape);
+        this.startDrawingForward();
+        this.fireAndForward('editable:shape:new', {shape: shape});
+        if (latlng) this.newPointForward(latlng);
+    },
+
+    deleteShape: function (shape, latlngs) {
+        latlngs = latlngs || this.getLatLngs();
+        if (this.feature._flat(latlngs) || !latlngs.length) return;
+        for (var i = 0; i < latlngs.length; i++) {
+            if (latlngs[i] === shape) return latlngs.splice(latlngs.indexOf(shape), 1);
+            else this.deleteShape(shape, latlngs[i]);
+        }
     }
 
 });
@@ -818,6 +833,23 @@ L.Editable.PolylineEditor = L.Editable.PathEditor.extend({
         latlngs = latlngs || this.feature._latlngs;
         if (!latlngs.length || latlngs[0] instanceof L.LatLng) return latlngs;
         else return this.getDefaultLatLngs(latlngs[0]);
+    },
+
+    ensureMulti: function () {
+        if (this.feature._latlngs.length && this.feature._flat(this.feature._latlngs)) {
+            this.feature._latlngs = [this.feature._latlngs];
+        }
+    },
+
+    addNewEmptyShape: function () {
+        if (this.feature._latlngs.length) {
+            var shape = [];
+            this.ensureMulti();
+            this.feature._latlngs.push(shape);
+            return shape;
+        } else {
+            return this.feature._latlngs;
+        }
     }
 
 });
@@ -848,6 +880,23 @@ L.Editable.PolygonEditor = L.Editable.PathEditor.extend({
         if (latlng) this.newPointForward(latlng);
     },
 
+    addNewEmptyShape: function () {
+        var ring = [];
+        if (this.feature._latlngs.length) {
+            this.ensureMulti();
+            this.feature._latlngs.push([ring]);
+        } else {
+            this.feature._latlngs.push(ring);
+        }
+        return ring;
+    },
+
+    ensureMulti: function () {
+        if (this.feature._latlngs.length && this.feature._flat(this.feature._latlngs[0])) {
+            this.feature._latlngs = [[this.feature._latlngs]];
+        }
+    },
+
     checkContains: function (latlng) {
         return this.feature._containsPoint(this.map.latLngToLayerPoint(latlng));
     },
@@ -860,23 +909,6 @@ L.Editable.PolygonEditor = L.Editable.PathEditor.extend({
     isNewClickValid: function (latlng) {
         // if (this._drawnLatLngs !== this.getLatLngs()) return this.checkContains(latlng);
         return true;
-    },
-
-    onVertexDeleted: function (e) {
-        L.Editable.PathEditor.prototype.onVertexDeleted.call(this, e);
-        if (!e.vertex.latlngs.length) {
-            // Never keep an empty latlngs ring
-            this.deleteRing(e.vertex.latlngs);
-        }
-    },
-
-    deleteRing: function (ring, latlngs) {
-        latlngs = latlngs || this.getLatLngs();
-        if (this.feature._flat(latlngs) || !latlngs.length) return;
-        for (var i = 0; i < latlngs.length; i++) {
-            if (latlngs[i] === ring) return latlngs.splice(latlngs.indexOf(ring), 1);
-            else this.deleteRing(ring, latlngs[i]);
-        }
     },
 
     getDefaultLatLngs: function () {

@@ -4,9 +4,6 @@ describe('L.PolygonEditor', function() {
     before(function () {
         this.map = map;
     });
-    after(function () {
-        this.map.removeLayer(polygon);
-    });
 
     describe('#startNewPolygon()', function() {
 
@@ -161,6 +158,122 @@ describe('L.PolygonEditor', function() {
             happen.at('mousemove', 250, 200);
             happen.at('click', 250, 200);
             assert.notOk(polygon._latlngs[1]);
+            polygon.remove();
+        });
+
+    });
+
+    describe('Multi', function () {
+        var p2ll;
+
+        before(function () {
+            this.map = map;
+            p2ll = function (x, y) {
+                return map.layerPointToLatLng([x, y]);
+            };
+        });
+
+        describe('#enableEdit', function () {
+
+            it('should create vertex and middle markers for each ring', function () {
+                var multi = L.polygon([
+                    [
+                        [
+                          [43.1239, 1.244],
+                          [43.123, 1.253],
+                          [43.1252, 1.255],
+                          [43.1250, 1.251],
+                          [43.1239, 1.244]
+                        ],
+                        [
+                          [43.124, 1.246],
+                          [43.1236, 1.248],
+                          [43.12475, 1.250]
+                        ]
+                    ],
+                    [
+                        [
+                          [43.1269, 1.246],
+                          [43.126, 1.252],
+                          [43.1282, 1.255],
+                          [43.1280, 1.245],
+                        ]
+                    ]
+                ]).addTo(this.map);
+                multi.enableEdit();
+                assert.ok(multi._latlngs[0][0][0].__vertex);
+                assert.ok(multi._latlngs[0][0][0].__vertex.middleMarker);
+                assert.ok(multi._latlngs[0][0][1].__vertex);
+                assert.ok(multi._latlngs[0][0][1].__vertex.middleMarker);
+                assert.ok(multi._latlngs[0][1][0].__vertex);
+                assert.ok(multi._latlngs[0][1][0].__vertex.middleMarker);
+                assert.ok(multi._latlngs[1][0][0].__vertex);
+                assert.ok(multi._latlngs[1][0][0].__vertex.middleMarker);
+                multi.remove();
+                this.map.editTools.editLayer.eachLayer(function (layer) {
+                    assert.fail(layer, null, "no layer expected but one found");
+                });
+            });
+
+        });
+
+        describe('#newShape', function () {
+
+            it('should add a new outline on empty polygon', function () {
+                var polygon = L.polygon([]).addTo(this.map);
+                polygon.enableEdit();
+                polygon.editor.newShape();
+                happen.at('mousemove', 100, 150);
+                happen.at('click', 100, 150);
+                assert.equal(polygon._latlngs[0].length, 1);
+                happen.at('mousemove', 200, 350);
+                happen.at('click', 200, 350);
+                assert.equal(polygon._latlngs[0].length, 2);
+                happen.at('mousemove', 300, 250);
+                happen.at('click', 300, 250);
+                assert.equal(polygon._latlngs[0].length, 3);
+                happen.at('click', 300, 250);
+                polygon.remove();
+            });
+
+            it('should add a new outline to existing simple polygon', function () {
+                var polygon = L.polygon([p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)]).addTo(this.map);
+                polygon.enableEdit();
+                polygon.editor.newShape();
+                assert(L.Util.isArray(polygon._latlngs[0]));
+                assert.ok(polygon._latlngs[0].length);
+                assert.ok(L.Util.isArray(polygon._latlngs[0][0]));
+                assert.ok(polygon._latlngs[0][0].length);
+                assert.ok(L.Util.isArray(polygon._latlngs[1]));
+                assert.ok(polygon._latlngs[1].length);
+                assert.ok(L.Util.isArray(polygon._latlngs[1][0]));
+                assert.notOk(polygon._latlngs[1][0].length);
+                happen.at('mousemove', 300, 300);
+                happen.at('click', 300, 300);
+                assert.equal(polygon._latlngs[1][0].length, 1);
+                happen.at('mousemove', 350, 350);
+                happen.at('click', 350, 350);
+                assert.equal(polygon._latlngs[1][0].length, 2);
+                happen.at('mousemove', 400, 250);
+                happen.at('click', 400, 250);
+                assert.equal(polygon._latlngs[1][0].length, 3);
+                happen.at('click', 400, 250);
+                polygon.remove();
+            });
+
+            it('should emit editable:shape:new on newShape call', function () {
+                var called = 0,
+                    call = function () {called++;};
+                this.map.on('editable:shape:new', call);
+                var polygon = L.polygon([p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)]).addTo(this.map);
+                assert.equal(called, 0);
+                polygon.enableEdit();
+                assert.equal(called, 0);
+                polygon.editor.newShape();
+                assert.equal(called, 1);
+                polygon.remove();
+            });
+
         });
 
     });

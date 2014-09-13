@@ -4,9 +4,6 @@ describe('L.PolylineEditor', function() {
     before(function () {
         this.map = map;
     });
-    after(function () {
-        this.map.removeLayer(polyline);
-    });
 
     describe('#startNewLine()', function() {
 
@@ -221,7 +218,101 @@ describe('L.PolylineEditor', function() {
             this.map.off('editable:drawing:click', setLast);
             this.map.off('editable:drawing:commit', setLast);
             this.map.off('editable:drawing:commit', setSecond);
-            this.map.removeLayer(other);
+            other.remove();
+            polyline.remove();
+        });
+
+    });
+
+    describe('Multi', function () {
+        var p2ll;
+
+        before(function () {
+            this.map = map;
+            p2ll = function (x, y) {
+                return map.layerPointToLatLng([x, y]);
+            };
+        });
+
+        describe('#enableEdit', function () {
+
+            it('should create vertex and middle markers for each line', function () {
+                var multi = L.polyline([
+                    [
+                      [43.1239, 1.244],
+                      [43.123, 1.253]
+                    ],
+                    [
+                      [43.1269, 1.246],
+                      [43.126, 1.252],
+                      [43.1282, 1.255]
+                    ]
+                ]).addTo(this.map);
+                multi.enableEdit();
+                assert.ok(multi._latlngs[0][0].__vertex);
+                assert.ok(multi._latlngs[0][1].__vertex);
+                assert.ok(multi._latlngs[0][1].__vertex.middleMarker);
+                assert.ok(multi._latlngs[1][0].__vertex);
+                assert.ok(multi._latlngs[1][1].__vertex);
+                assert.ok(multi._latlngs[1][1].__vertex.middleMarker);
+                multi.remove();
+                this.map.editTools.editLayer.eachLayer(function (layer) {
+                    assert.fail(layer, null, "no layer expected but one found");
+                });
+            });
+
+        });
+
+        describe('#newShape', function () {
+
+            it('should add a new shape on empty polyline', function () {
+                var multi = L.polyline([]).addTo(this.map);
+                multi.enableEdit();
+                multi.editor.newShape();
+                happen.at('mousemove', 100, 150);
+                happen.at('click', 100, 150);
+                assert.equal(multi._latlngs.length, 1);
+                happen.at('mousemove', 200, 350);
+                happen.at('click', 200, 350);
+                assert.equal(multi._latlngs.length, 2);
+                happen.at('mousemove', 300, 250);
+                happen.at('click', 300, 250);
+                assert.equal(multi._latlngs.length, 3);
+                happen.at('click', 300, 250);
+                multi.remove();
+            });
+
+            it('should add a new outline to existing simple polyline', function () {
+                var multi = L.polyline([p2ll(100, 150), p2ll(150, 200)]).addTo(this.map);
+                multi.enableEdit();
+                multi.editor.newShape();
+                assert(L.Util.isArray(multi._latlngs[0]));
+                assert.ok(multi._latlngs[0].length);
+                assert.ok(L.Util.isArray(multi._latlngs[1]));
+                assert.notOk(multi._latlngs[1].length);
+                happen.at('mousemove', 300, 300);
+                happen.at('click', 300, 300);
+                assert.equal(multi._latlngs[1].length, 1);
+                happen.at('mousemove', 350, 350);
+                happen.at('click', 350, 350);
+                assert.equal(multi._latlngs[1].length, 2);
+                happen.at('click', 350, 350);
+                multi.remove();
+            });
+
+            it('should emit editable:shape:new on newShape call', function () {
+                var called = 0,
+                    call = function () {called++;};
+                this.map.on('editable:shape:new', call);
+                var line = L.polyline([p2ll(100, 150), p2ll(150, 200)]).addTo(this.map);
+                assert.equal(called, 0);
+                line.enableEdit();
+                assert.equal(called, 0);
+                line.editor.newShape();
+                assert.equal(called, 1);
+                line.remove();
+            });
+
         });
 
     });

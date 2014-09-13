@@ -98,6 +98,7 @@ Leaflet.Editable add options and events to the `L.Map` object.
 | editable:vertex:drag | originalEvent, latlng, vertex, layer | Fired when a vertex is dragged by user |
 | editable:vertex:dragstart | originalEvent, latlng, vertex, layer | Fired before a vertex is dragged by user |
 | editable:vertex:dragend | originalEvent, latlng, vertex, layer | Fired after a vertex is dragged by user |
+| editable:shape:new | originalEvent, latlng, shape, layer | Fired when a new shape is created in a multi (polygon or polyline) |
 
 
 ### L.Editable
@@ -190,6 +191,7 @@ Interesting new method:
 |  method name   |  params | return |                      usage               |
 |----------------|---------|--------|---------------------------------|
 | reset  | —  | — | Rebuild edit elements (vertex, middlemarker, etc.) |
+| newShape  | —  | — | Add a new shape (polyline, polygon) in a multi, and setup up drawing tools to draw it |
 
 
 ### L.Editable.PolylineEditor
@@ -200,8 +202,8 @@ Useful specific methods:
 
 |  method name   |  params | return |              usage              |
 |----------------|---------|--------|---------------------------------|
-| continueForward  | —  | — | Set up drawing tools to continue the line forward |
-| continueBackward  | —  | — | Set up drawing tools to continue the line backward |
+| continueForward  | latlngs  | — | Set up drawing tools to continue the line forward |
+| continueBackward  | latlngs  | — | Set up drawing tools to continue the line backward |
 
 ### L.Editable.PolygonEditor
 
