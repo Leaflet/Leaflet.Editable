@@ -163,6 +163,188 @@ describe('L.PolygonEditor', function() {
 
     });
 
+    describe('Events', function () {
+
+        it('should fire editable:drawing:start on startPolygon call', function () {
+            var called = 0,
+                call = function () {called++;};
+            this.map.on('editable:drawing:start', call);
+            var layer = this.map.editTools.startPolygon();
+            assert.equal(called, 1);
+            this.map.off('editable:drawing:start', call);
+            layer.remove();
+            assert.notOk(this.map.editTools._drawingEditor);
+        });
+
+        it('should fire editable:drawing:end on last click', function () {
+            var called = 0,
+                call = function () {called++;};
+            this.map.on('editable:drawing:end', call);
+            var layer = this.map.editTools.startPolygon();
+            assert.equal(called, 0);
+            happen.at('mousemove', 100, 150);
+            happen.at('click', 100, 150);
+            assert.equal(layer._latlngs[0].length, 1);
+            assert.equal(called, 0);
+            happen.at('mousemove', 200, 350);
+            happen.at('click', 200, 350);
+            assert.equal(layer._latlngs[0].length, 2);
+            assert.equal(called, 0);
+            happen.at('mousemove', 300, 250);
+            happen.at('click', 300, 250);
+            assert.equal(layer._latlngs[0].length, 3);
+            assert.equal(called, 0);
+            happen.at('click', 300, 250);
+            assert.equal(called, 1);
+            this.map.off('editable:drawing:end', call);
+            layer.remove();
+            assert.equal(called, 1);
+        });
+
+        it('should fire editable:drawing:commit on last click', function () {
+            var called = 0,
+                call = function () {called++;};
+            this.map.on('editable:drawing:commit', call);
+            var layer = this.map.editTools.startPolygon();
+            assert.equal(called, 0);
+            happen.at('mousemove', 100, 150);
+            happen.at('click', 100, 150);
+            assert.equal(layer._latlngs[0].length, 1);
+            assert.equal(called, 0);
+            happen.at('mousemove', 200, 350);
+            happen.at('click', 200, 350);
+            assert.equal(layer._latlngs[0].length, 2);
+            assert.equal(called, 0);
+            happen.at('mousemove', 300, 250);
+            happen.at('click', 300, 250);
+            assert.equal(layer._latlngs[0].length, 3);
+            assert.equal(called, 0);
+            happen.at('click', 300, 250);
+            assert.equal(called, 1);
+            this.map.off('editable:drawing:commit', call);
+            layer.remove();
+            assert.equal(called, 1);
+        });
+
+        it('should fire editable:drawing:end on stopDrawing', function () {
+            var called = 0,
+                call = function () {called++;};
+            this.map.on('editable:drawing:end', call);
+            var layer = this.map.editTools.startPolygon();
+            this.map.editTools.stopDrawing();
+            assert.equal(called, 1);
+            this.map.off('editable:drawing:end', call);
+            layer.remove();
+            assert.equal(called, 1);
+        });
+
+        it('should not fire editable:drawing:commit on stopDrawing', function () {
+            var called = 0,
+                call = function () {called++;};
+            this.map.on('editable:drawing:commit', call);
+            var layer = this.map.editTools.startPolygon();
+            this.map.editTools.stopDrawing();
+            assert.equal(called, 0);
+            this.map.off('editable:drawing:commit', call);
+            layer.remove();
+            assert.equal(called, 0);
+        });
+
+        it('should fire editable:vertex:clicked before end/commit on last click', function () {
+            var first = null, second = 0, last,
+                setFirst = function (e) {if(first === null) first = e.type;},
+                setSecond = function () {second++;},
+                setLast = function (e) {last = e.type;};
+            this.map.on('editable:drawing:end', setFirst);
+            this.map.on('editable:drawing:commit', setFirst);
+            this.map.on('editable:drawing:end', setLast);
+            this.map.on('editable:drawing:commit', setLast);
+            this.map.on('editable:drawing:commit', setSecond);
+            var layer = this.map.editTools.startPolyline();
+            happen.at('mousemove', 450, 450);
+            happen.at('click', 450, 450);
+            happen.at('mousemove', 500, 500);
+            happen.at('click', 500, 500);
+            happen.at('mousemove', 400, 400);
+            happen.at('click', 400, 400);
+            assert.notOk(first);
+            assert.notOk(last);
+            this.map.on('editable:vertex:clicked', setFirst);
+            this.map.on('editable:vertex:clicked', setLast);
+            assert.notOk(first);
+            assert.notOk(last);
+            assert.notOk(second);
+            happen.at('click', 400, 400);
+            assert.equal(first, 'editable:vertex:clicked');
+            assert.equal(last, 'editable:drawing:end');
+            assert.equal(second, 1);  // commit has been called
+            this.map.off('editable:drawing:end', setFirst);
+            this.map.off('editable:drawing:commit', setFirst);
+            this.map.off('editable:drawing:end', setLast);
+            this.map.off('editable:drawing:commit', setLast);
+            this.map.off('editable:vertex:clicked', setFirst);
+            this.map.off('editable:vertex:clicked', setLast);
+            layer.remove();
+        });
+
+
+        it('should send editable:drawing:click before adding vertex', function () {
+            var called = 0,
+                calledWhenEmpty = 0,
+                call = function () {
+                    called++;
+                    if (!polygon._latlngs[0].length) calledWhenEmpty = 1;
+                };
+            this.map.on('editable:drawing:click', call);
+            var polygon = this.map.editTools.startPolygon();
+            assert.equal(called, 0);
+            happen.at('mousemove', 250, 200);
+            happen.at('click', 250, 200);
+            assert.equal(called, 1);
+            assert.ok(calledWhenEmpty);
+            assert.ok(polygon._latlngs[0].length);
+            this.map.off('editable:drawing:click', call);
+            polygon.remove();
+        });
+
+        it('should send editable:drawing:clicked after adding vertex', function () {
+            var called = 0,
+                calledAfterClick = 0,
+                call = function () {
+                    called++;
+                    if (polygon._latlngs[0].length) calledAfterClick = 1;
+                };
+            this.map.on('editable:drawing:clicked', call);
+            var polygon = this.map.editTools.startPolygon();
+            assert.equal(called, 0);
+            happen.at('mousemove', 250, 200);
+            happen.at('click', 250, 200);
+            assert.equal(called, 1);
+            assert.ok(calledAfterClick);
+            assert.ok(polygon._latlngs[0].length);
+            this.map.off('editable:drawing:clicked', call);
+            polygon.remove();
+        });
+
+        it('should be possible to cancel editable:drawing:click actions', function () {
+            var called = 0,
+                call = function (e) {
+                    e.cancel();
+                    called++;
+                };
+            this.map.on('editable:drawing:click', call);
+            var polygon = this.map.editTools.startPolygon();
+            assert.equal(called, 0);
+            happen.at('mousemove', 250, 200);
+            happen.at('click', 250, 200);
+            assert.equal(called, 1);
+            assert.notOk(polygon._latlngs[0].length);
+            this.map.off('editable:drawing:click', call);
+            polygon.remove();
+        });
+
+    });
+
     describe('Multi', function () {
         var p2ll;
 
@@ -272,6 +454,7 @@ describe('L.PolygonEditor', function() {
                 polygon.editor.newShape();
                 assert.equal(called, 1);
                 polygon.remove();
+                this.map.off('editable:shape:new', call);
             });
 
         });

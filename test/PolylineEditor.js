@@ -158,6 +158,16 @@ describe('L.PolylineEditor', function() {
     });
 
 
+    describe('#onRemove', function () {
+        it('should remove every edit related layer on remove', function () {
+            polyline.remove();
+            this.map.editTools.editLayer.eachLayer(function (layer) {
+                assert.fail(layer, null, "no layer expected but one found");
+            });
+        });
+
+    });
+
     describe('#events', function () {
 
         it('should fire editable:drawing:start on startPolyline call', function () {
@@ -175,7 +185,7 @@ describe('L.PolylineEditor', function() {
             var called = 0,
                 call = function () {called++;};
             this.map.on('editable:drawing:click', call);
-            var other = this.map.editTools.startPolyline();
+            var layer = this.map.editTools.startPolyline();
             assert.equal(called, 0);
             happen.at('mousemove', 450, 450);
             happen.at('click', 450, 450);
@@ -184,41 +194,97 @@ describe('L.PolylineEditor', function() {
             happen.at('click', 500, 500);
             assert.equal(called, 2);
             this.map.off('editable:drawing:click', call);
-            this.map.removeLayer(other);
+            layer.remove();
             assert.equal(called, 2);
         });
 
-        it('should fire editable:drawing:click/commit/end on last click', function () {
-            var second = 0, first = null, last,
+        it('should fire editable:vertex:clicked before end/commit on last click', function () {
+            var first = null, second = 0, last,
                 setFirst = function (e) {if(first === null) first = e.type;},
-                setLast = function (e) {last = e.type;},
-                setSecond = function () {second++;};
+                setSecond = function () {second++;},
+                setLast = function (e) {last = e.type;};
             this.map.on('editable:drawing:end', setFirst);
-            this.map.on('editable:drawing:click', setFirst);
             this.map.on('editable:drawing:commit', setFirst);
             this.map.on('editable:drawing:end', setLast);
-            this.map.on('editable:drawing:click', setLast);
             this.map.on('editable:drawing:commit', setLast);
             this.map.on('editable:drawing:commit', setSecond);
-            var other = this.map.editTools.startPolyline();
-            assert.equal(second, 0);
+            var layer = this.map.editTools.startPolyline();
             happen.at('mousemove', 450, 450);
             happen.at('click', 450, 450);
-            assert.equal(second, 0);
-            happen.at('mousemove', 500, 500);
-            happen.at('click', 500, 500);
-            happen.at('click', 500, 500);
-            assert.equal(second, 1);  // commit has been called
-            assert.equal(first, 'editable:drawing:click');
+            happen.at('mousemove', 400, 400);
+            happen.at('click', 400, 400);
+            assert.notOk(first);
+            assert.notOk(last);
+            this.map.on('editable:vertex:clicked', setFirst);
+            this.map.on('editable:vertex:clicked', setLast);
+            assert.notOk(first);
+            assert.notOk(last);
+            assert.notOk(second);
+            happen.at('click', 400, 400);
+            assert.equal(first, 'editable:vertex:clicked');
             assert.equal(last, 'editable:drawing:end');
+            assert.equal(second, 1);  // commit has been called
             this.map.off('editable:drawing:end', setFirst);
-            this.map.off('editable:drawing:click', setFirst);
             this.map.off('editable:drawing:commit', setFirst);
             this.map.off('editable:drawing:end', setLast);
-            this.map.off('editable:drawing:click', setLast);
             this.map.off('editable:drawing:commit', setLast);
-            this.map.off('editable:drawing:commit', setSecond);
-            other.remove();
+            this.map.off('editable:vertex:clicked', setFirst);
+            this.map.off('editable:vertex:clicked', setLast);
+            layer.remove();
+        });
+
+        it('should send editable:drawing:click before adding vertex', function () {
+            var called = 0,
+                calledWhenEmpty = 0,
+                call = function () {
+                    called++;
+                    if (!polyline._latlngs.length) calledWhenEmpty = 1;
+                };
+            this.map.on('editable:drawing:click', call);
+            var polyline = this.map.editTools.startPolyline();
+            assert.equal(called, 0);
+            happen.at('mousemove', 250, 200);
+            happen.at('click', 250, 200);
+            assert.equal(called, 1);
+            assert.ok(calledWhenEmpty);
+            assert.ok(polyline._latlngs.length);
+            this.map.off('editable:drawing:click', call);
+            polyline.remove();
+        });
+
+        it('should send editable:drawing:clicked after adding vertex', function () {
+            var called = 0,
+                calledAfterClick = 0,
+                call = function () {
+                    called++;
+                    if (polyline._latlngs.length) calledAfterClick = 1;
+                };
+            this.map.on('editable:drawing:clicked', call);
+            var polyline = this.map.editTools.startPolyline();
+            assert.equal(called, 0);
+            happen.at('mousemove', 250, 200);
+            happen.at('click', 250, 200);
+            assert.equal(called, 1);
+            assert.ok(calledAfterClick);
+            assert.ok(polyline._latlngs.length);
+            this.map.off('editable:drawing:clicked', call);
+            polyline.remove();
+        });
+
+        it('should be possible to cancel editable:drawing:click actions', function () {
+            var called = 0,
+                call = function (e) {
+                    e.cancel();
+                    called++;
+                };
+            this.map.on('editable:drawing:click', call);
+            var polyline = this.map.editTools.startPolyline();
+            assert.equal(called, 0);
+            happen.at('mousemove', 250, 200);
+            happen.at('click', 250, 200);
+            assert.equal(called, 1);
+            assert.notOk(polyline._latlngs.length);
+            this.map.off('editable:drawing:click', call);
             polyline.remove();
         });
 

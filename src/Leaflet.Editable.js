@@ -193,6 +193,16 @@ L.Editable = L.Evented.extend({
 
 });
 
+L.extend(L.Editable, {
+
+    makeCancellable: function (e) {
+        e.cancel = function () {
+            e._cancelled = true;
+        };
+    }
+
+});
+
 L.Map.addInitHook(function () {
 
     this.whenReady(function () {
@@ -434,7 +444,9 @@ L.Editable.MiddleMarker = L.Marker.extend({
     },
 
     onMouseDown: function (e) {
-        this.editor.onMiddleMarkerMouseDown(e, this);
+        L.Editable.makeCancellable(e);
+        this.editor.onMiddleMarkerMouseDown(e);
+        if (e._cancelled) return;
         this.latlngs.splice(this.index(), 0, e.latlng);
         this.editor.refresh();
         var marker = this.editor.addVertexMarker(e.latlng, this.latlngs);
@@ -561,11 +573,10 @@ L.Editable.BaseEditor = L.Class.extend({
     },
 
     onNewClickHandlerClicked: function (e) {
+        L.Editable.makeCancellable(e);
         this.fireAndForward('editable:drawing:click', e);
-    },
-
-    isNewClickValid: function (latlng) {
-        return true;
+        if (e._cancelled) return;
+        this.processClickHandlerClicked(e);
     }
 
 });
@@ -595,10 +606,8 @@ L.Editable.MarkerEditor = L.Editable.BaseEditor.extend({
         }
     },
 
-    onNewClickHandlerClicked: function (e) {
-        if (!this.isNewClickValid(e.latlng)) return;
-        // Send event before finishing drawing
-        L.Editable.BaseEditor.prototype.onNewClickHandlerClicked.call(this, e);
+    processClickHandlerClicked: function (e) {
+        this.fireAndForward('editable:drawing:clicked', e);
         this.commitDrawing();
     }
 
@@ -657,7 +666,10 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
     },
 
     onVertexMarkerClick: function (e) {
-        var index = e.vertex.getIndex();
+        L.Editable.makeCancellable(e);
+        this.fireAndForward('editable:vertex:click', e);
+        if (e._cancelled) return;
+        var index = e.vertex.getIndex(), commit;
         if (e.originalEvent.ctrlKey) {
             this.onVertexMarkerCtrlClick(e);
         } else if (e.originalEvent.altKey) {
@@ -665,14 +677,16 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
         } else if (e.originalEvent.shiftKey) {
             this.onVertexMarkerShiftClick(e);
         } else if (index >= 1 && index === e.vertex.getLastIndex() && this.drawing === L.Editable.FORWARD) {
-            this.commitDrawing();
+            commit = true;
         } else if (index === 0 && this.drawing === L.Editable.BACKWARD && this._drawnLatLngs.length >= this.MIN_VERTEX) {
-            this.commitDrawing();
+            commit = true;
         } else if (index === 0 && this.drawing === L.Editable.FORWARD && this._drawnLatLngs.length >= this.MIN_VERTEX && this.CLOSED) {
-            this.commitDrawing();  // Allow to close on first point also for polygons
+            commit = true;  // Allow to close on first point also for polygons
         } else {
             this.onVertexRawMarkerClick(e);
         }
+        this.fireAndForward('editable:vertex:clicked', e);
+        if (commit) this.commitDrawing();
     },
 
     onVertexRawMarkerClick: function (e) {
@@ -767,11 +781,10 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
         this.tools.anchorBackwardLineGuide(latlng);
     },
 
-    onNewClickHandlerClicked: function (e) {
-        if (!this.isNewClickValid(e.latlng)) return;
+    processClickHandlerClicked: function (e) {
         if (this.drawing === L.Editable.FORWARD) this.newPointForward(e.latlng);
         else this.newPointBackward(e.latlng);
-        L.Editable.BaseEditor.prototype.onNewClickHandlerClicked.call(this, e);
+        this.fireAndForward('editable:drawing:clicked', e);
     },
 
     onMouseMove: function (e) {
@@ -897,18 +910,9 @@ L.Editable.PolygonEditor = L.Editable.PathEditor.extend({
         }
     },
 
-    checkContains: function (latlng) {
-        return this.feature._containsPoint(this.map.latLngToLayerPoint(latlng));
-    },
-
     vertexCanBeDeleted: function (vertex) {
         if (vertex.latlngs === this.getLatLngs()) return L.Editable.PathEditor.prototype.vertexCanBeDeleted.call(this, vertex);
         else return true;  // Holes can be totally deleted without removing the layer itself
-    },
-
-    isNewClickValid: function (latlng) {
-        // if (this._drawnLatLngs !== this.getLatLngs()) return this.checkContains(latlng);
-        return true;
     },
 
     getDefaultLatLngs: function () {
