@@ -878,6 +878,7 @@ L.Editable.PolygonEditor = L.Editable.PathEditor.extend({
     },
 
     addNewEmptyHole: function (latlng) {
+        this.ensureNotFlat();
         var latlngs = this.feature.polygonFromLatLng(latlng);
         if (!latlngs) return;
         var holes = [];
@@ -894,19 +895,25 @@ L.Editable.PolygonEditor = L.Editable.PathEditor.extend({
     },
 
     addNewEmptyShape: function () {
-        var ring = [];
         if (this.feature._latlngs.length) {
+            var shape = [];
             this.ensureMulti();
-            this.feature._latlngs.push([ring]);
+            this.feature._latlngs.push([shape]);
+            return shape;
         } else {
-            this.feature._latlngs.push(ring);
+            return this.feature._latlngs;
         }
-        return ring;
     },
 
     ensureMulti: function () {
         if (this.feature._latlngs.length && this.feature._flat(this.feature._latlngs[0])) {
             this.feature._latlngs = [[this.feature._latlngs]];
+        }
+    },
+
+    ensureNotFlat: function () {
+        if (this.feature._latlngs.length && this.feature._flat(this.feature._latlngs)) {
+            this.feature._latlngs = [this.feature._latlngs];
         }
     },
 
@@ -991,9 +998,9 @@ L.Polygon.include({
     polygonFromLatLng: function (latlng, latlngs) {
         // So we can have those cases:
         // - latlngs are just a flat array of latlngs, use this
-        // - latlngs is an array of array of latlngs, this is a simple polygon (maybe with holes), use the first
-        // - latlngs is an array of array of array, this is a multi, loop over
-        var polygon = false;
+        // - latlngs is an array of arrays of latlngs, this is a simple polygon (maybe with holes), use the first
+        // - latlngs is an array of arrays of arrays, this is a multi, loop over
+        var polygon = null;
         latlngs = latlngs || this._latlngs;
         if (!latlngs.length) return polygon;
         else if (this._flat(latlngs) && L.Polygon.isInLatLngs(latlng, latlngs)) polygon = latlngs;
@@ -1015,7 +1022,7 @@ L.Marker.include({
 L.extend(L.Polygon, {
 
     isInLatLngs: function (l, latlngs) {
-        var inside = false, l1, l2, j, k, len, len2;
+        var inside = false, l1, l2, j, k, len2;
 
         for (j = 0, len2 = latlngs.length, k = len2 - 1; j < len2; k = j++) {
             l1 = latlngs[j];

@@ -11,43 +11,43 @@ describe('L.PolygonEditor', function() {
             polygon = this.map.editTools.startPolygon();
             assert.ok(polygon);
             assert.ok(polygon.editor);
-            assert.notOk(polygon._latlngs[0].length);
+            assert.notOk(polygon._latlngs.length);
         });
 
         it('should create latlng on click', function () {
             happen.at('mousemove', 100, 150);
             happen.at('click', 100, 150);
-            assert.equal(polygon._latlngs[0].length, 1);
+            assert.equal(polygon._latlngs.length, 1);
             happen.at('mousemove', 200, 350);
             happen.at('click', 200, 350);
-            assert.equal(polygon._latlngs[0].length, 2);
+            assert.equal(polygon._latlngs.length, 2);
             happen.at('mousemove', 300, 250);
             happen.at('click', 300, 250);
-            assert.equal(polygon._latlngs[0].length, 3);
+            assert.equal(polygon._latlngs.length, 3);
             happen.at('mousemove', 300, 150);
             happen.at('click', 300, 150);
-            assert.equal(polygon._latlngs[0].length, 4);
+            assert.equal(polygon._latlngs.length, 4);
         });
 
         it('should finish shape on last point click', function () {
             happen.at('click', 300, 150);
-            assert.equal(polygon._latlngs[0].length, 4);
+            assert.equal(polygon._latlngs.length, 4);
         });
 
         it('should finish drawing also on first point', function() {
             var other = this.map.editTools.startPolygon();
-            assert.notOk(other._latlngs[0].length);
+            assert.notOk(other._latlngs.length);
             happen.at('mousemove', 400, 450);
             happen.at('click', 400, 450);
-            assert.equal(other._latlngs[0].length, 1);
+            assert.equal(other._latlngs.length, 1);
             happen.at('mousemove', 450, 500);
             happen.at('click', 450, 500);
-            assert.equal(other._latlngs[0].length, 2);
+            assert.equal(other._latlngs.length, 2);
             happen.at('mousemove', 300, 450);
             happen.at('click', 300, 450);
-            assert.equal(other._latlngs[0].length, 3);
+            assert.equal(other._latlngs.length, 3);
             happen.at('click', 400, 450);
-            assert.equal(other._latlngs[0].length, 3);
+            assert.equal(other._latlngs.length, 3);
             this.map.removeLayer(other);
         });
 
@@ -74,10 +74,10 @@ describe('L.PolygonEditor', function() {
     describe('#dragVertex()', function () {
 
         it('should update latlng on vertex drag', function (done) {
-            var before = polygon._latlngs[0][2].lat,
+            var before = polygon._latlngs[2].lat,
                 self = this;
             happen.drag(300, 250, 310, 260, function () {
-                assert.notEqual(before, polygon._latlngs[0][2].lat);
+                assert.notEqual(before, polygon._latlngs[2].lat);
                 done();
             });
         });
@@ -88,7 +88,7 @@ describe('L.PolygonEditor', function() {
 
         it('should delete latlng on vertex click', function () {
             happen.at('click', 200, 350);
-            assert.equal(polygon._latlngs[0].length, 3);
+            assert.equal(polygon._latlngs.length, 3);
         });
 
     });
@@ -96,17 +96,17 @@ describe('L.PolygonEditor', function() {
     describe('#dragMiddleMarker()', function (done) {
 
         it('should insert new latlng on middle marker click', function (done) {
-            var first = polygon._latlngs[0][0],
-                second = polygon._latlngs[0][1],
+            var first = polygon._latlngs[0],
+                second = polygon._latlngs[1],
                 self = this,
                 fromX = (100 + 310) / 2,
                 fromY = (150 + 260) / 2;
             happen.drag(fromX, fromY, 150, 300, function () {
-                assert.equal(polygon._latlngs[0].length, 4);
+                assert.equal(polygon._latlngs.length, 4);
                 // New should have been inserted between first and second latlng,
                 // so second should equal third, and first should not have changed
-                assert.equal(first, polygon._latlngs[0][0]);
-                assert.equal(second, polygon._latlngs[0][2]);
+                assert.equal(first, polygon._latlngs[0]);
+                assert.equal(second, polygon._latlngs[2]);
                 done();
             });
         });
@@ -116,9 +116,11 @@ describe('L.PolygonEditor', function() {
     describe('#newHole', function () {
 
         it('should create new hole on click', function () {
-            assert.equal(polygon._latlngs.length, 1);
+            assert.equal(polygon._latlngs.length, 4);
+            L.marker(this.map.layerPointToLatLng([150, 170])).addTo(this.map);
             polygon.editor.newHole(this.map.layerPointToLatLng([150, 170]));
             assert.equal(polygon._latlngs.length, 2);
+            assert.equal(polygon._latlngs[0].length, 4);
             assert.equal(polygon._latlngs[1].length, 1);
             happen.at('mousemove', 200, 250);
             happen.at('click', 200, 250);
@@ -184,15 +186,15 @@ describe('L.PolygonEditor', function() {
             assert.equal(called, 0);
             happen.at('mousemove', 100, 150);
             happen.at('click', 100, 150);
-            assert.equal(layer._latlngs[0].length, 1);
+            assert.equal(layer._latlngs.length, 1);
             assert.equal(called, 0);
             happen.at('mousemove', 200, 350);
             happen.at('click', 200, 350);
-            assert.equal(layer._latlngs[0].length, 2);
+            assert.equal(layer._latlngs.length, 2);
             assert.equal(called, 0);
             happen.at('mousemove', 300, 250);
             happen.at('click', 300, 250);
-            assert.equal(layer._latlngs[0].length, 3);
+            assert.equal(layer._latlngs.length, 3);
             assert.equal(called, 0);
             happen.at('click', 300, 250);
             assert.equal(called, 1);
@@ -209,15 +211,15 @@ describe('L.PolygonEditor', function() {
             assert.equal(called, 0);
             happen.at('mousemove', 100, 150);
             happen.at('click', 100, 150);
-            assert.equal(layer._latlngs[0].length, 1);
+            assert.equal(layer._latlngs.length, 1);
             assert.equal(called, 0);
             happen.at('mousemove', 200, 350);
             happen.at('click', 200, 350);
-            assert.equal(layer._latlngs[0].length, 2);
+            assert.equal(layer._latlngs.length, 2);
             assert.equal(called, 0);
             happen.at('mousemove', 300, 250);
             happen.at('click', 300, 250);
-            assert.equal(layer._latlngs[0].length, 3);
+            assert.equal(layer._latlngs.length, 3);
             assert.equal(called, 0);
             happen.at('click', 300, 250);
             assert.equal(called, 1);
@@ -288,12 +290,12 @@ describe('L.PolygonEditor', function() {
         });
 
 
-        it('should send editable:drawing:click before adding vertex', function () {
+        it('should fire editable:drawing:click before adding vertex', function () {
             var called = 0,
                 calledWhenEmpty = 0,
                 call = function () {
                     called++;
-                    if (!polygon._latlngs[0].length) calledWhenEmpty = 1;
+                    if (!polygon._latlngs.length) calledWhenEmpty = 1;
                 };
             this.map.on('editable:drawing:click', call);
             var polygon = this.map.editTools.startPolygon();
@@ -302,17 +304,17 @@ describe('L.PolygonEditor', function() {
             happen.at('click', 250, 200);
             assert.equal(called, 1);
             assert.ok(calledWhenEmpty);
-            assert.ok(polygon._latlngs[0].length);
+            assert.ok(polygon._latlngs.length);
             this.map.off('editable:drawing:click', call);
             polygon.remove();
         });
 
-        it('should send editable:drawing:clicked after adding vertex', function () {
+        it('should fire editable:drawing:clicked after adding vertex', function () {
             var called = 0,
                 calledAfterClick = 0,
                 call = function () {
                     called++;
-                    if (polygon._latlngs[0].length) calledAfterClick = 1;
+                    if (polygon._latlngs.length) calledAfterClick = 1;
                 };
             this.map.on('editable:drawing:clicked', call);
             var polygon = this.map.editTools.startPolygon();
@@ -321,7 +323,7 @@ describe('L.PolygonEditor', function() {
             happen.at('click', 250, 200);
             assert.equal(called, 1);
             assert.ok(calledAfterClick);
-            assert.ok(polygon._latlngs[0].length);
+            assert.ok(polygon._latlngs.length);
             this.map.off('editable:drawing:clicked', call);
             polygon.remove();
         });
@@ -338,7 +340,7 @@ describe('L.PolygonEditor', function() {
             happen.at('mousemove', 250, 200);
             happen.at('click', 250, 200);
             assert.equal(called, 1);
-            assert.notOk(polygon._latlngs[0].length);
+            assert.notOk(polygon._latlngs.length);
             this.map.off('editable:drawing:click', call);
             polygon.remove();
         });
@@ -407,13 +409,13 @@ describe('L.PolygonEditor', function() {
                 polygon.editor.newShape();
                 happen.at('mousemove', 100, 150);
                 happen.at('click', 100, 150);
-                assert.equal(polygon._latlngs[0].length, 1);
+                assert.equal(polygon._latlngs.length, 1);
                 happen.at('mousemove', 200, 350);
                 happen.at('click', 200, 350);
-                assert.equal(polygon._latlngs[0].length, 2);
+                assert.equal(polygon._latlngs.length, 2);
                 happen.at('mousemove', 300, 250);
                 happen.at('click', 300, 250);
-                assert.equal(polygon._latlngs[0].length, 3);
+                assert.equal(polygon._latlngs.length, 3);
                 happen.at('click', 300, 250);
                 polygon.remove();
             });
