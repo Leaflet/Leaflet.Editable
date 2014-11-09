@@ -91,4 +91,21 @@ describe('L.MiddleMarker', function () {
 
     });
 
+    describe('#computeLatLng', function () {
+
+        it('compute middlemarker in the middle even in areas close to pole', function () {
+            this.map.setView([62.5, 22.7], 5);  // Move to Scandinavia
+            var line = this.map.editTools.startPolyline();
+            happen.at('mousemove', 100, 100);
+            happen.at('click', 100, 100);
+            happen.at('mousemove', 500, 500);
+            happen.at('click', 500, 500);
+            happen.at('click', 500, 500);
+            assert.equal(this.map.latLngToContainerPoint(line._latlngs[1].__vertex.middleMarker._latlng).x, 300);
+            assert.equal(this.map.latLngToContainerPoint(line._latlngs[1].__vertex.middleMarker._latlng).y, 300);
+            this.map.removeLayer(line);
+        });
+
+    });
+
 });
