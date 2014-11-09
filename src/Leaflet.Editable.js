@@ -418,9 +418,11 @@ L.Editable.MiddleMarker = L.Marker.extend({
     },
 
     computeLatLng: function () {
-        var lat = (this.left.latlng.lat + this.right.latlng.lat) / 2,
-            lng = (this.left.latlng.lng + this.right.latlng.lng) / 2;
-        return [lat, lng];
+        var leftPoint = this.editor.map.latLngToContainerPoint(this.left.latlng),
+            rightPoint = this.editor.map.latLngToContainerPoint(this.right.latlng),
+            y = (leftPoint.y + rightPoint.y) / 2,
+            x = (leftPoint.x + rightPoint.x) / 2;
+        return this.editor.map.containerPointToLatLng([x, y]);
     },
 
     onAdd: function (map) {

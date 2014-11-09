@@ -1,6 +1,6 @@
 {
   "name": "leaflet-editable",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Make geometries editable in Leaflet",
   "main": "src/Leaflet.Editable.js",
   "scripts": {
