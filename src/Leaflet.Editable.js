@@ -986,7 +986,7 @@ L.Marker.include(EditableMixin);
 L.Polyline.include({
 
     getEditorClass: function (map) {
-        return map.options.polylineEditorClass;
+        return map.options.polylineEditorClass || L.Editable.PolylineEditor;
     }
 
 });
@@ -994,7 +994,7 @@ L.Polyline.include({
 L.Polygon.include({
 
     getEditorClass: function (map) {
-        return map.options.polygonEditorClass;
+        return map.options.polygonEditorClass || L.Editable.PolygonEditor;
     },
 
     polygonFromLatLng: function (latlng, latlngs) {
@@ -1016,7 +1016,7 @@ L.Polygon.include({
 L.Marker.include({
 
     getEditorClass: function (map) {
-        return map.options.markerEditorClass;
+        return map.options.markerEditorClass || L.Editable.MarkerEditor;
     }
 
 });
