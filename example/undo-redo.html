@@ -69,7 +69,7 @@ var map = L.map('map', {editable: true}).setView(startPoint, 16),
         if (e.keyCode == Z) {
             if (!this.editTools._drawingEditor) return;
             if (e.shiftKey) {
-                if (redoBuffer.length) this.editTools._drawingEditor.newPointForward(redoBuffer.pop());
+                if (redoBuffer.length) this.editTools._drawingEditor.push(redoBuffer.pop());
             } else {
                 latlng = this.editTools._drawingEditor.pop();
                 if (latlng) redoBuffer.push(latlng);
