@@ -57,6 +57,7 @@ If you want to continue an existing line:
 - [Create hole in a polygon by ctrl-clicking on it](http://yohanboniface.github.io/Leaflet.Editable/example/create-hole-on-click.html)
 - [Change line colour on editing](http://yohanboniface.github.io/Leaflet.Editable/example/change-line-colour-on-editing.html)
 - [Display a tooltip near cursor while drawing](http://yohanboniface.github.io/Leaflet.Editable/example/tooltip-when-drawing.html)
+- [Basic demo of undo/redo](http://yohanboniface.github.io/Leaflet.Editable/example/undo-redo.html) (Use ctrl-Z to undo and ctrl-shift-Z to redo)
 - Example of [Leaflet.Snap](https://github.com/makinacorpus/Leaflet.Snap/) integration [to enable snapping](http://yohanboniface.github.io/Leaflet.Editable/example/snapping.html)
 
 
@@ -198,6 +199,8 @@ Interesting new method:
 |----------------|---------|--------|---------------------------------|
 | reset  | —  | — | Rebuild edit elements (vertex, middlemarker, etc.) |
 | newShape  | —  | — | Add a new shape (polyline, polygon) in a multi, and setup up drawing tools to draw it |
+| push  | latlng  | — | Programmatically add a point while drawing |
+| pop  | —  | latlng | Programatically remove last point (if any) while drawing |
 
 
 ### L.Editable.PolylineEditor

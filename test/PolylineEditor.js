@@ -1,8 +1,11 @@
 describe('L.PolylineEditor', function() {
-    var mouse, polyline;
+    var polyline, p2ll;
 
     before(function () {
         this.map = map;
+        p2ll = function (x, y) {
+            return map.layerPointToLatLng([x, y]);
+        };
     });
 
     describe('#startNewLine()', function() {
@@ -168,6 +171,77 @@ describe('L.PolylineEditor', function() {
 
     });
 
+    describe('#pop', function () {
+
+        it('should remove last latlng when drawing forward', function () {
+            var layer = this.map.editTools.startPolyline();
+            happen.at('mousemove', 450, 450);
+            happen.at('click', 450, 450);
+            happen.at('mousemove', 500, 500);
+            happen.at('click', 500, 500);
+            assert.equal(layer._latlngs.length, 2);
+            var last = layer._latlngs[1];
+            assert.include(layer._latlngs, last);
+            var latlng = layer.editor.pop();
+            assert.equal(latlng.lat, last.lat);
+            assert.ok(latlng);
+            assert.equal(layer._latlngs.length, 1);
+            assert.notInclude(layer._latlngs, last);
+            this.map.removeLayer(layer);
+        });
+
+        it('should remove first latlng when drawing backward', function () {
+            var layer = L.polyline([p2ll(100, 150), p2ll(150, 200)]).addTo(this.map);
+            layer.enableEdit();
+            layer.editor.continueBackward();
+            happen.at('mousemove', 450, 450);
+            happen.at('click', 450, 450);
+            assert.equal(layer._latlngs.length, 3);
+            var first = layer._latlngs[0];
+            assert.include(layer._latlngs, first);
+            var latlng = layer.editor.pop();
+            assert.equal(latlng.lat, first.lat);
+            assert.ok(latlng);
+            assert.equal(layer._latlngs.length, 2);
+            assert.notInclude(layer._latlngs, first);
+            this.map.removeLayer(layer);
+        });
+
+    });
+
+    describe('#push', function () {
+
+        it('should add a latlng at the end when drawing forward', function () {
+            var layer = this.map.editTools.startPolyline();
+            happen.at('mousemove', 450, 450);
+            happen.at('click', 450, 450);
+            happen.at('mousemove', 500, 500);
+            happen.at('click', 500, 500);
+            assert.equal(layer._latlngs.length, 2);
+            var latlng = p2ll(100, 150);
+            layer.editor.push(latlng);
+            assert.include(layer._latlngs, latlng);
+            var last = layer._latlngs[2];
+            assert.equal(latlng.lat, last.lat);
+            assert.equal(layer._latlngs.length, 3);
+            this.map.removeLayer(layer);
+        });
+
+        it('should add latlng on the beginning when drawing backward', function () {
+            var layer = L.polyline([p2ll(100, 150), p2ll(150, 200)]).addTo(this.map);
+            layer.enableEdit();
+            layer.editor.continueBackward();
+            var latlng = p2ll(150, 100);
+            layer.editor.push(latlng);
+            assert.equal(layer._latlngs.length, 3);
+            var first = layer._latlngs[0];
+            assert.include(layer._latlngs, latlng);
+            assert.equal(latlng.lat, first.lat);
+            this.map.removeLayer(layer);
+        });
+
+    });
+
     describe('#events', function () {
 
         it('should fire editable:drawing:start on startPolyline call', function () {
@@ -291,14 +365,6 @@ describe('L.PolylineEditor', function() {
     });
 
     describe('Multi', function () {
-        var p2ll;
-
-        before(function () {
-            this.map = map;
-            p2ll = function (x, y) {
-                return map.layerPointToLatLng([x, y]);
-            };
-        });
 
         describe('#enableEdit', function () {
 

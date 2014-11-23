@@ -1,11 +1,14 @@
 describe('L.PolygonEditor', function() {
-    var mouse, polygon;
+    var p2ll, polygon;
 
     before(function () {
         this.map = map;
+        p2ll = function (x, y) {
+            return map.layerPointToLatLng([x, y]);
+        };
     });
 
-    describe('#startNewPolygon()', function() {
+    describe('#startPolygon()', function() {
 
         it('should create feature and editor', function() {
             polygon = this.map.editTools.startPolygon();
@@ -161,6 +164,47 @@ describe('L.PolygonEditor', function() {
             happen.at('click', 250, 200);
             assert.notOk(polygon._latlngs[1]);
             polygon.remove();
+        });
+
+    });
+
+    describe('#pop', function () {
+
+        it('should remove last latlng when drawing', function () {
+            var layer = this.map.editTools.startPolygon();
+            happen.at('mousemove', 450, 450);
+            happen.at('click', 450, 450);
+            happen.at('mousemove', 500, 500);
+            happen.at('click', 500, 500);
+            assert.equal(layer._latlngs.length, 2);
+            var last = layer._latlngs[1];
+            assert.include(layer._latlngs, last);
+            var latlng = layer.editor.pop();
+            assert.equal(latlng.lat, last.lat);
+            assert.ok(latlng);
+            assert.equal(layer._latlngs.length, 1);
+            assert.notInclude(layer._latlngs, last);
+            this.map.removeLayer(layer);
+        });
+
+    });
+
+    describe('#push', function () {
+
+        it('should add a latlng at the end when drawing forward', function () {
+            var layer = this.map.editTools.startPolygon();
+            happen.at('mousemove', 450, 450);
+            happen.at('click', 450, 450);
+            happen.at('mousemove', 500, 500);
+            happen.at('click', 500, 500);
+            assert.equal(layer._latlngs.length, 2);
+            var latlng = p2ll(100, 150);
+            layer.editor.push(latlng);
+            assert.include(layer._latlngs, latlng);
+            var last = layer._latlngs[2];
+            assert.equal(latlng.lat, last.lat);
+            assert.equal(layer._latlngs.length, 3);
+            this.map.removeLayer(layer);
         });
 
     });
@@ -348,14 +392,6 @@ describe('L.PolygonEditor', function() {
     });
 
     describe('Multi', function () {
-        var p2ll;
-
-        before(function () {
-            this.map = map;
-            p2ll = function (x, y) {
-                return map.layerPointToLatLng([x, y]);
-            };
-        });
 
         describe('#enableEdit', function () {
 

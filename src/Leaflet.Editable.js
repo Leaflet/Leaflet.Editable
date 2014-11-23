@@ -783,6 +783,28 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
         this.tools.anchorBackwardLineGuide(latlng);
     },
 
+    push: function (latlng) {
+        if (!latlng) return console.error('L.Editable.PathEditor.push expect a vaild latlng as parameter');
+        if (this.drawing === L.Editable.FORWARD) this.newPointForward(latlng);
+        else this.newPointBackward(latlng);
+    },
+
+    removeLatLng: function (latlng) {
+        latlng.__vertex.delete();
+        this.refresh();
+    },
+
+    pop: function () {
+        if (this._drawnLatLngs.length <= 1) return;
+        var latlng;
+        if (this.drawing === L.Editable.FORWARD) latlng = this._drawnLatLngs[this._drawnLatLngs.length - 1];
+        else latlng = this._drawnLatLngs[0];
+        this.removeLatLng(latlng);
+        if (this.drawing === L.Editable.FORWARD) this.tools.anchorForwardLineGuide(this._drawnLatLngs[this._drawnLatLngs.length - 1]);
+        else this.tools.anchorForwardLineGuide(this._drawnLatLngs[0]);
+        return latlng;
+    },
+
     processClickHandlerClicked: function (e) {
         if (this.drawing === L.Editable.FORWARD) this.newPointForward(e.latlng);
         else this.newPointBackward(e.latlng);
