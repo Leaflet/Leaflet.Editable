@@ -953,17 +953,6 @@ L.Editable.PolygonEditor = L.Editable.PathEditor.extend({
 
 });
 
-L.Map.mergeOptions({
-    polylineEditorClass: L.Editable.PolylineEditor
-});
-
-L.Map.mergeOptions({
-    polygonEditorClass: L.Editable.PolygonEditor
-});
-
-L.Map.mergeOptions({
-    markerEditorClass: L.Editable.MarkerEditor
-});
 
 var EditableMixin = {
 
@@ -1008,7 +997,7 @@ L.Marker.include(EditableMixin);
 L.Polyline.include({
 
     getEditorClass: function (map) {
-        return map.options.polylineEditorClass || L.Editable.PolylineEditor;
+        return (map && map.options.polylineEditorClass) ? map.options.polylineEditorClass : L.Editable.PolylineEditor;
     }
 
 });
@@ -1016,7 +1005,7 @@ L.Polyline.include({
 L.Polygon.include({
 
     getEditorClass: function (map) {
-        return map.options.polygonEditorClass || L.Editable.PolygonEditor;
+        return (map && map.options.polygonEditorClass) ? map.options.polygonEditorClass : L.Editable.PolygonEditor;
     },
 
     polygonFromLatLng: function (latlng, latlngs) {
@@ -1038,7 +1027,7 @@ L.Polygon.include({
 L.Marker.include({
 
     getEditorClass: function (map) {
-        return map.options.markerEditorClass || L.Editable.MarkerEditor;
+        return (map && map.options.markerEditorClass) ? map.options.markerEditorClass : L.Editable.MarkerEditor;
     }
 
 });
