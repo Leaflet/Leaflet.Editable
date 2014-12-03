@@ -8,7 +8,7 @@ describe('L.MarkerEditor', function() {
         this.map.removeLayer(marker);
     });
 
-    describe('#startNewPolygon()', function() {
+    describe('#startNewMarker()', function() {
 
         it('should create feature and editor', function() {
             marker = this.map.editTools.startMarker();
@@ -116,28 +116,28 @@ describe('L.MarkerEditor', function() {
             assert.equal(called, 1);
         });
 
-        it('should fire editable:drawing:click before end/commit on click', function () {
+        it('should fire editable:drawing:clicked before end/commit on click', function () {
             var first = null, last,
                 setFirst = function (e) {if(first === null) first = e.type;},
                 setLast = function (e) {last = e.type;};
             this.map.on('editable:drawing:end', setFirst);
-            this.map.on('editable:drawing:click', setFirst);
+            this.map.on('editable:drawing:clicked', setFirst);
             this.map.on('editable:drawing:commit', setFirst);
             this.map.on('editable:drawing:end', setLast);
-            this.map.on('editable:drawing:click', setLast);
+            this.map.on('editable:drawing:clicked', setLast);
             this.map.on('editable:drawing:commit', setLast);
             var other = this.map.editTools.startMarker();
             happen.at('mousemove', 450, 450);
             happen.at('click', 450, 450);
-            assert.equal(first, 'editable:drawing:click');
+            assert.equal(first, 'editable:drawing:clicked');
             assert.equal(last, 'editable:drawing:end');
             this.map.off('editable:drawing:end', setFirst);
-            this.map.off('editable:drawing:click', setFirst);
+            this.map.off('editable:drawing:clicked', setFirst);
             this.map.off('editable:drawing:commit', setFirst);
             this.map.off('editable:drawing:end', setLast);
-            this.map.off('editable:drawing:click', setLast);
+            this.map.off('editable:drawing:clicked', setLast);
             this.map.off('editable:drawing:commit', setLast);
-            this.map.removeLayer(other);
+            other.remove();
         });
 
         it('should not fire editable:drawing:commit on stopDrawing', function () {

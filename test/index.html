@@ -10,11 +10,11 @@
         <script src="../node_modules/chai/chai.js"></script>
         <script src="../node_modules/effroi/dist/effroi.js"></script>
         <link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
-        <script>mocha.setup({ui: 'bdd', bail: true})</script>
         <script type="text/javascript">
-            expect = chai.expect;
+            chai.config.includeStack = true;
             assert = chai.assert;
         </script>
+        <script>mocha.setup({ui: 'bdd', bail: true})</script>
         <script src="./_pre.js"></script>
         <script src="./Editable.js"></script>
         <script src="./PolylineEditor.js"></script>

@@ -57,6 +57,7 @@ If you want to continue an existing line:
 - [Create hole in a polygon by ctrl-clicking on it](http://yohanboniface.github.io/Leaflet.Editable/example/create-hole-on-click.html)
 - [Change line colour on editing](http://yohanboniface.github.io/Leaflet.Editable/example/change-line-colour-on-editing.html)
 - [Display a tooltip near cursor while drawing](http://yohanboniface.github.io/Leaflet.Editable/example/tooltip-when-drawing.html)
+- [Basic demo of undo/redo](http://yohanboniface.github.io/Leaflet.Editable/example/undo-redo.html) (Use ctrl-Z to undo and ctrl-shift-Z to redo)
 - Example of [Leaflet.Snap](https://github.com/makinacorpus/Leaflet.Snap/) integration [to enable snapping](http://yohanboniface.github.io/Leaflet.Editable/example/snapping.html)
 
 
@@ -78,27 +79,34 @@ Leaflet.Editable add options and events to the `L.Map` object.
 
 
 #### Events
-|    event name      |  properties  |                      usage               |
-|---------------------|-----------|------------------------------------------|
-| editable:created    | layer     |  Fired when a new feature (Marker, Polyline…) has been created.  |
-| editable:enable     | layer     |  Fired when an existing feature is ready to be edited  |
-| editable:disable    | layer     |  Fired when an existing feature is not ready anymore to be edited  |
-| editable:editing    | layer     |  Fired as soon as any change is made to the feature geometry  |
-| editable:drawing:start | layer   |  Fired when a feature is to be drawn  |
-| editable:drawing:end | layer    |  Fired when a feature is not drawn anymore  |
-| editable:drawing:cancel | layer    |  Fired when user cancel drawing while a feature is being drawn  |
-| editable:drawing:commit | layer    |  Fired when user finish drawing a feature  |
-| editable:drawing:click | layer    |  Fired when user click while drawing  |
-| editable:vertex:ctrlclick | originalEvent, latlng, vertex, layer    |  Fired when a click having ctrlKey is issued on a vertex  |
-| editable:vertex:shiftclick | originalEvent, latlng, vertex, layer    |  Fired when a click having shiftKey is issued on a vertex  |
-| editable:vertex:altclick | originalEvent, latlng, vertex, layer    |  Fired when a click having altKey is issued on a vertex  |
-| editable:vertex:contextmenu | originalEvent, latlng, vertex, layer    |  Fired when a contextmenu is issued on a vertex  |
-| editable:vertex:deleted | originalEvent, latlng, vertex, layer    |  Fired after a vertex has been deleted by user |
-| editable:vertex:deleted | originalEvent, latlng, vertex, layer    |  Fired after a vertex has been deleted by user |
-| editable:vertex:drag | originalEvent, latlng, vertex, layer | Fired when a vertex is dragged by user |
-| editable:vertex:dragstart | originalEvent, latlng, vertex, layer | Fired before a vertex is dragged by user |
-| editable:vertex:dragend | originalEvent, latlng, vertex, layer | Fired after a vertex is dragged by user |
+| event name | properties | cancellable* | usage |
+|------------|------------|-------------|-------|
+| editable:created    | layer | false | Fired when a new feature (Marker, Polyline…) has been created. |
+| editable:enable     | layer | false | Fired when an existing feature is ready to be edited |
+| editable:disable    | layer | false | Fired when an existing feature is not ready anymore to be edited |
+| editable:editing    | layer | false | Fired as soon as any change is made to the feature geometry |
+| editable:drawing:start | layer | false | Fired when a feature is to be drawn |
+| editable:drawing:end | layer | false | Fired when a feature is not drawn anymore |
+| editable:drawing:cancel | layer | false | Fired when user cancel drawing while a feature is being drawn |
+| editable:drawing:commit | layer | false | Fired when user finish drawing a feature |
+| editable:drawing:click | layer | true | Fired when user click while drawing, before any internal action is being processed |
+| editable:drawing:clicked | layer | false | Fired when user click while drawing, after all internal actions |
+| editable:vertex:click | originalEvent, latlng, vertex, layer | true | Fired when a click is issued on a vertex, before any internal action is being processed |
+| editable:vertex:clicked | originalEvent, latlng, vertex, layer | false | Fired when a click is issued on a vertex, after all internal actions |
+| editable:vertex:ctrlclick | originalEvent, latlng, vertex, layer | false | Fired when a click having ctrlKey is issued on a vertex |
+| editable:vertex:shiftclick | originalEvent, latlng, vertex, layer | false | Fired when a click having shiftKey is issued on a vertex |
+| editable:vertex:altclick | originalEvent, latlng, vertex, layer | false | Fired when a click having altKey is issued on a vertex |
+| editable:vertex:contextmenu | originalEvent, latlng, vertex, layer | false | Fired when a contextmenu is issued on a vertex |
+| editable:vertex:deleted | originalEvent, latlng, vertex, layer | false | Fired after a vertex has been deleted by user |
+| editable:vertex:mousedown | originalEvent, latlng, vertex, layer | false | Fired when user mousedown a vertex |
+| editable:vertex:drag | originalEvent, latlng, vertex, layer | false | Fired when a vertex is dragged by user |
+| editable:vertex:dragstart | originalEvent, latlng, vertex, layer | false | Fired before a vertex is dragged by user |
+| editable:vertex:dragend | originalEvent, latlng, vertex, layer | false | Fired after a vertex is dragged by user |
+| editable:middlemarker:mousedown | originalEvent, latlng, vertex, layer | true | Fired when user mousedown a middle marker |
+| editable:shape:new | originalEvent, latlng, shape, layer | false | Fired when a new shape is created in a multi (polygon or polyline) |
 
+Note on *cancellable* events: those event have attached a `cancel` method,
+calling this method (eg. `e.cancel()`) will cancel any subsequent action.
 
 ### L.Editable
 
@@ -190,6 +198,9 @@ Interesting new method:
 |  method name   |  params | return |                      usage               |
 |----------------|---------|--------|---------------------------------|
 | reset  | —  | — | Rebuild edit elements (vertex, middlemarker, etc.) |
+| newShape  | —  | — | Add a new shape (polyline, polygon) in a multi, and setup up drawing tools to draw it |
+| push  | latlng  | — | Programmatically add a point while drawing |
+| pop  | —  | latlng | Programatically remove last point (if any) while drawing |
 
 
 ### L.Editable.PolylineEditor
@@ -200,8 +211,8 @@ Useful specific methods:
 
 |  method name   |  params | return |              usage              |
 |----------------|---------|--------|---------------------------------|
-| continueForward  | —  | — | Set up drawing tools to continue the line forward |
-| continueBackward  | —  | — | Set up drawing tools to continue the line backward |
+| continueForward  | latlngs  | — | Set up drawing tools to continue the line forward |
+| continueBackward  | latlngs  | — | Set up drawing tools to continue the line backward |
 
 ### L.Editable.PolygonEditor
 

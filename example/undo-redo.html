@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <title>Leaflet.Editable continue line demo</title>
+  <link rel="stylesheet" href="http://leaflet-cdn.s3.amazonaws.com/build/master/leaflet.css" />
+  <script src="../node_modules/leaflet/dist/leaflet-src.js"></script>
+  <script src="../src/Leaflet.Editable.js"></script>
+
+  <style type='text/css'>
+      body { margin:0; padding:0; }
+      #map { position:absolute; top:0; bottom:0; right: 0; left: 0; width:100%; }
+</style>
+</head>
+<body>
+  <div id='map'></div>
+
+<script type="text/javascript">
+var startPoint = [43.1249, 1.254];
+var map = L.map('map', {editable: true}).setView(startPoint, 16),
+    tilelayer = L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {maxZoom: 20, attribution: 'Data \u00a9 <a href="http://www.openstreetmap.org/copyright"> OpenStreetMap Contributors </a> | Use Ctrl-Z to undo / Ctrl-Shift-Z to redo'}).addTo(map);
+    L.NewLineControl = L.Control.extend({
+
+        options: {
+            position: 'topleft'
+        },
+
+        onAdd: function (map) {
+            var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar'),
+            link = L.DomUtil.create('a', '', container);
+
+            link.href = '#';
+            link.title = 'Create a new line';
+            link.innerHTML = '/\\/';
+            L.DomEvent.on(link, 'click', L.DomEvent.stop)
+            .on(link, 'click', function () {
+                map.editTools.startPolyline();
+            });
+
+            return container;
+        }
+    });
+
+    L.NewPolygonControl = L.Control.extend({
+
+        options: {
+            position: 'topleft'
+        },
+
+        onAdd: function (map) {
+            var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar'),
+            link = L.DomUtil.create('a', '', container);
+
+            link.href = '#';
+            link.title = 'Create a new polygon';
+            link.innerHTML = '▱';
+            L.DomEvent.on(link, 'click', L.DomEvent.stop)
+            .on(link, 'click', function () {
+                map.editTools.startPolygon();
+            });
+
+            return container;
+        }
+    });
+    map.addControl(new L.NewLineControl());
+    map.addControl(new L.NewPolygonControl());
+    var Z = 90, latlng, redoBuffer = [],
+        onKeyDown = function (e) {
+        if (e.keyCode == Z) {
+            if (!this.editTools._drawingEditor) return;
+            if (e.shiftKey) {
+                if (redoBuffer.length) this.editTools._drawingEditor.push(redoBuffer.pop());
+            } else {
+                latlng = this.editTools._drawingEditor.pop();
+                if (latlng) redoBuffer.push(latlng);
+            }
+        }
+    };
+    L.DomEvent.addListener(document, 'keydown', onKeyDown, map);
+    map.on('editable:drawing:end', function () {
+        redoBuffer = [];
+    });
+
+</script>
+</body>
+</html>
