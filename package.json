@@ -15,7 +15,8 @@
   "devDependencies": {
     "chai": "^1.9.1",
     "happen": "^0.1.3",
-    "mocha": "^1.21.3"
+    "mocha": "^1.21.3",
+    "mocha-phantomjs": "3.5.*"
   },
   "repository": {
     "type": "git",
