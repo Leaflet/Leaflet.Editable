@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/yohanboniface/Leaflet.Editable.svg)](https://travis-ci.org/yohanboniface/Leaflet.Editable)
 # Leaflet.Editable
 
 Make geometries editable in Leaflet.
