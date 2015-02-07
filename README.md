@@ -148,6 +148,7 @@ instance:
 | startPolygon  | latlng\*  | created L.Polygon instance | Start drawing a polygon. If latlng is given, a first point will be added. In any case, continuing on user click. |
 | startMarker  | latlng\*  | created L.Marker instance | Start adding a marker. If latlng is given, the marker will be shown first at this point. In any case, it will follow the user mouse, and will have a final latlng on next click (or touch). |
 | stopDrawing  | — | — | When you need to stop any ongoing drawing, without needing to know which editor is active. |
+| commitDrawing  | — | — | When you need to commit any ongoing drawing, without needing to know which editor is active. |
 
 #### Events
 
