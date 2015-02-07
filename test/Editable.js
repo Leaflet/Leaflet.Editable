@@ -56,5 +56,31 @@ describe('L.Editable', function () {
         });
 
     });
+    describe('#commitDrawing', function () {
+
+        it('should commit drawing if drawing is active', function () {
+            var layer = this.map.editTools.startPolyline();
+            happen.at('mousemove', 450, 450);
+            happen.at('click', 450, 450);
+            happen.at('mousemove', 500, 500);
+            happen.at('click', 500, 500);
+            assert.equal(layer._latlngs.length, 2);
+            this.map.editTools.commitDrawing();
+            assert.equal(layer._latlngs.length, 2);
+            happen.at('mousemove', 550, 550);
+            happen.at('click', 550, 550);
+            assert.equal(layer._latlngs.length, 2);
+            layer.remove();
+        });
+
+        it('should fail silently if no drawing is active', function () {
+            try {
+                this.map.editTools.commitDrawing();
+            } catch (e) {
+                fail('commitDrawing has raised');
+            }
+        });
+
+    });
 
 });

@@ -133,6 +133,11 @@ L.Editable = L.Evented.extend({
         this.unregisterForDrawing();
     },
 
+    commitDrawing: function () {
+        if (!this._drawingEditor) return;
+        this._drawingEditor.commitDrawing();
+    },
+
     connectCreatedToMap: function (layer) {
         return this.featuresLayer.addLayer(layer);
     },
