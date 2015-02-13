@@ -1,5 +1,8 @@
+"use strict";
+
+/*globals describe, before, after, it, assert, happen, map*/
 describe('L.MarkerEditor', function() {
-    var mouse, marker;
+    var marker;
 
     before(function () {
         this.map = map;
@@ -72,7 +75,7 @@ describe('L.MarkerEditor', function() {
             var other = this.map.editTools.startMarker();
             assert.equal(called, 1);
             this.map.off('editable:drawing:start', call);
-            this.map.removeLayer(other);
+            other.remove();
             assert.notOk(this.map.editTools._drawingEditor);
         });
 
