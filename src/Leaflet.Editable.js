@@ -13,7 +13,7 @@
 
     // attach your plugin to the global 'L' variable
     if(typeof window !== 'undefined' && window.L){
-      factory(window.L);
+        factory(window.L);
     }
 
 }(function (L) {
