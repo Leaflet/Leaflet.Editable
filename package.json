@@ -4,8 +4,7 @@
   "description": "Make geometries editable in Leaflet",
   "main": "src/Leaflet.Editable.js",
   "scripts": {
-    "test": "make test",
-    "install": "napa"
+    "test": "make test"
   },
   "keywords": [
     "leaflet",
@@ -16,8 +15,10 @@
   "devDependencies": {
     "chai": "^1.9.1",
     "happen": "^0.1.3",
+    "jake": "^8.0.10",
     "mocha": "^1.21.3",
-    "mocha-phantomjs": "3.5.*"
+    "mocha-phantomjs": "3.5.*",
+    "uglify-js": "^2.4.16"
   },
   "repository": {
     "type": "git",
@@ -28,9 +29,6 @@
   },
   "homepage": "https://github.com/yohanboniface/Leaflet.Editable/",
   "dependencies": {
-    "napa": "^0.4.1"
-  },
-  "napa": {
     "leaflet": "Leaflet/Leaflet"
   }
 }
