@@ -3,4 +3,4 @@ sudo: false
 node_js:
 - "0.10"
 before_script:
-- cd node_modules/leaflet/ && ../.bin/jake build
+- cd node_modules/leaflet/ && npm install && ./node_modules/.bin/jake build
