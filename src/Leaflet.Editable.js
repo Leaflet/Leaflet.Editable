@@ -470,6 +470,7 @@
         },
 
         onMouseDown: function (e) {
+            if (this.options.opacity === 0) return;
             L.Editable.makeCancellable(e);
             this.editor.onMiddleMarkerMouseDown(e);
             if (e._cancelled) return;
