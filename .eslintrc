@@ -8,8 +8,8 @@
         "curly": false,
         "consistent-return": false,
         "new-cap": false,
-        "strict": global,
-        "indent": 4
+        "strict": "global",
+        "global-strict": 0
     },
     "globals": {L: true}
 }
