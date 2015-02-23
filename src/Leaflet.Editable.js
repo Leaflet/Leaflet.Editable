@@ -188,15 +188,6 @@
             editor.newHole(latlng);
         },
 
-        extendMultiPolygon: function (multi) {
-            var polygon = this.createPolygon([]);
-            multi.addLayer(polygon);
-            polygon.multi = multi;
-            var editor = polygon.enableEdit();
-            editor.startDrawingForward();
-            return polygon;
-        },
-
         createPolyline: function (latlngs) {
             var line = new this.options.polylineClass(latlngs, {editOptions: {editTools: this}});
             this.fireAndForward('editable:created', {layer: line});
