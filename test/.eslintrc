@@ -1,0 +1,10 @@
+{
+    "globals": {
+        "describe": true,
+        "happen": true,
+        "assert": true,
+        "before": true,
+        "after": true,
+        "it"
+    }
+}
