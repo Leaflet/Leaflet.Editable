@@ -58,6 +58,7 @@ If you want to continue an existing line:
 - [Change line colour on editing](http://yohanboniface.github.io/Leaflet.Editable/example/change-line-colour-on-editing.html)
 - [Display a tooltip near cursor while drawing](http://yohanboniface.github.io/Leaflet.Editable/example/tooltip-when-drawing.html)
 - [Basic demo of undo/redo](http://yohanboniface.github.io/Leaflet.Editable/example/undo-redo.html) (Use ctrl-Z to undo and ctrl-shift-Z to redo)
+- [Multipolygon example](http://yohanboniface.github.io/Leaflet.Editable/example/multipolygon.html)
 - Example of [Leaflet.Snap](https://github.com/makinacorpus/Leaflet.Snap/) integration [to enable snapping](http://yohanboniface.github.io/Leaflet.Editable/example/snapping.html)
 
 

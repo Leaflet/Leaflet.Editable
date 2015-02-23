@@ -1010,11 +1010,11 @@
         },
 
         toggleEdit: function () {
-          if (this.editEnabled()) {
-            this.disableEdit();
-          } else {
-            this.enableEdit();
-          }
+            if (this.editEnabled()) {
+                this.disableEdit();
+            } else {
+                this.enableEdit();
+            }
         }
 
     };
