@@ -83,4 +83,25 @@ describe('L.Editable', function () {
 
     });
 
+    describe('#map options', function () {
+
+        it('should possible to override editTools class with editToolsClass', function () {
+
+            var CustomEditable = L.Editable.extend({
+                options: {
+                    checkme: true
+                }
+            });
+            var container = document.createElement('DIV');
+            document.body.appendChild(container);
+            var someMap = L.map(container, {editable: true, editToolsClass: CustomEditable});
+            someMap.setView([0, 0], 0);
+            assert.ok(someMap.editTools);
+            assert.ok(someMap.editTools.options.checkme);
+            assert.ok(someMap.editTools instanceof CustomEditable);
+
+        });
+
+    });
+
 });

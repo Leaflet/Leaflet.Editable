@@ -72,10 +72,11 @@ Leaflet.Editable add options and events to the `L.Map` object.
 
 #### Options
 
-|    option name      |  default  |                      usage               |
-|---------------------|-----------|------------------------------------------|
-| editable            | false     |  Whether to create a L.Editable instance at map init or not.  |
-| editOptions         | {}        |  Options to pass to L.Editable when instanciating.  |
+|    option name      |  default   |                      usage                                    |
+|---------------------|------------|---------------------------------------------------------------|
+| editable            | false      |  Whether to create a L.Editable instance at map init or not.  |
+| editOptions         | {}         |  Options to pass to L.Editable when instanciating.            |
+| editToolsClass      | L.Editable |  Editable class to instanciate.                               |
 
 
 #### Events
