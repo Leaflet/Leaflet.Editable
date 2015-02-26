@@ -1,11 +1,11 @@
 describe('L.PolylineEditor', function() {
-    var mouse, polyline;
+    var polyline, p2ll;
 
     before(function () {
         this.map = map;
-    });
-    after(function () {
-        this.map.removeLayer(polyline);
+        p2ll = function (x, y) {
+            return map.layerPointToLatLng([x, y]);
+        };
     });
 
     describe('#startNewLine()', function() {
@@ -161,6 +161,87 @@ describe('L.PolylineEditor', function() {
     });
 
 
+    describe('#onRemove', function () {
+        it('should remove every edit related layer on remove', function () {
+            polyline.remove();
+            this.map.editTools.editLayer.eachLayer(function (layer) {
+                assert.fail(layer, null, "no layer expected but one found");
+            });
+        });
+
+    });
+
+    describe('#pop', function () {
+
+        it('should remove last latlng when drawing forward', function () {
+            var layer = this.map.editTools.startPolyline();
+            happen.at('mousemove', 450, 450);
+            happen.at('click', 450, 450);
+            happen.at('mousemove', 500, 500);
+            happen.at('click', 500, 500);
+            assert.equal(layer._latlngs.length, 2);
+            var last = layer._latlngs[1];
+            assert.include(layer._latlngs, last);
+            var latlng = layer.editor.pop();
+            assert.equal(latlng.lat, last.lat);
+            assert.ok(latlng);
+            assert.equal(layer._latlngs.length, 1);
+            assert.notInclude(layer._latlngs, last);
+            this.map.removeLayer(layer);
+        });
+
+        it('should remove first latlng when drawing backward', function () {
+            var layer = L.polyline([p2ll(100, 150), p2ll(150, 200)]).addTo(this.map);
+            layer.enableEdit();
+            layer.editor.continueBackward();
+            happen.at('mousemove', 450, 450);
+            happen.at('click', 450, 450);
+            assert.equal(layer._latlngs.length, 3);
+            var first = layer._latlngs[0];
+            assert.include(layer._latlngs, first);
+            var latlng = layer.editor.pop();
+            assert.equal(latlng.lat, first.lat);
+            assert.ok(latlng);
+            assert.equal(layer._latlngs.length, 2);
+            assert.notInclude(layer._latlngs, first);
+            this.map.removeLayer(layer);
+        });
+
+    });
+
+    describe('#push', function () {
+
+        it('should add a latlng at the end when drawing forward', function () {
+            var layer = this.map.editTools.startPolyline();
+            happen.at('mousemove', 450, 450);
+            happen.at('click', 450, 450);
+            happen.at('mousemove', 500, 500);
+            happen.at('click', 500, 500);
+            assert.equal(layer._latlngs.length, 2);
+            var latlng = p2ll(100, 150);
+            layer.editor.push(latlng);
+            assert.include(layer._latlngs, latlng);
+            var last = layer._latlngs[2];
+            assert.equal(latlng.lat, last.lat);
+            assert.equal(layer._latlngs.length, 3);
+            this.map.removeLayer(layer);
+        });
+
+        it('should add latlng on the beginning when drawing backward', function () {
+            var layer = L.polyline([p2ll(100, 150), p2ll(150, 200)]).addTo(this.map);
+            layer.enableEdit();
+            layer.editor.continueBackward();
+            var latlng = p2ll(150, 100);
+            layer.editor.push(latlng);
+            assert.equal(layer._latlngs.length, 3);
+            var first = layer._latlngs[0];
+            assert.include(layer._latlngs, latlng);
+            assert.equal(latlng.lat, first.lat);
+            this.map.removeLayer(layer);
+        });
+
+    });
+
     describe('#events', function () {
 
         it('should fire editable:drawing:start on startPolyline call', function () {
@@ -178,7 +259,7 @@ describe('L.PolylineEditor', function() {
             var called = 0,
                 call = function () {called++;};
             this.map.on('editable:drawing:click', call);
-            var other = this.map.editTools.startPolyline();
+            var layer = this.map.editTools.startPolyline();
             assert.equal(called, 0);
             happen.at('mousemove', 450, 450);
             happen.at('click', 450, 450);
@@ -187,41 +268,358 @@ describe('L.PolylineEditor', function() {
             happen.at('click', 500, 500);
             assert.equal(called, 2);
             this.map.off('editable:drawing:click', call);
-            this.map.removeLayer(other);
+            layer.remove();
             assert.equal(called, 2);
         });
 
-        it('should fire editable:drawing:click/commit/end on last click', function () {
-            var second = 0, first = null, last,
+        it('should fire editable:vertex:clicked before end/commit on last click', function () {
+            var first = null, second = 0, last,
                 setFirst = function (e) {if(first === null) first = e.type;},
-                setLast = function (e) {last = e.type;},
-                setSecond = function () {second++;};
+                setSecond = function () {second++;},
+                setLast = function (e) {last = e.type;};
             this.map.on('editable:drawing:end', setFirst);
-            this.map.on('editable:drawing:click', setFirst);
             this.map.on('editable:drawing:commit', setFirst);
             this.map.on('editable:drawing:end', setLast);
-            this.map.on('editable:drawing:click', setLast);
             this.map.on('editable:drawing:commit', setLast);
             this.map.on('editable:drawing:commit', setSecond);
-            var other = this.map.editTools.startPolyline();
-            assert.equal(second, 0);
+            var layer = this.map.editTools.startPolyline();
             happen.at('mousemove', 450, 450);
             happen.at('click', 450, 450);
-            assert.equal(second, 0);
-            happen.at('mousemove', 500, 500);
-            happen.at('click', 500, 500);
-            happen.at('click', 500, 500);
-            assert.equal(second, 1);  // commit has been called
-            assert.equal(first, 'editable:drawing:click');
+            happen.at('mousemove', 400, 400);
+            happen.at('click', 400, 400);
+            assert.notOk(first);
+            assert.notOk(last);
+            this.map.on('editable:vertex:clicked', setFirst);
+            this.map.on('editable:vertex:clicked', setLast);
+            assert.notOk(first);
+            assert.notOk(last);
+            assert.notOk(second);
+            happen.at('click', 400, 400);
+            assert.equal(first, 'editable:vertex:clicked');
             assert.equal(last, 'editable:drawing:end');
+            assert.equal(second, 1);  // commit has been called
             this.map.off('editable:drawing:end', setFirst);
-            this.map.off('editable:drawing:click', setFirst);
             this.map.off('editable:drawing:commit', setFirst);
             this.map.off('editable:drawing:end', setLast);
-            this.map.off('editable:drawing:click', setLast);
             this.map.off('editable:drawing:commit', setLast);
-            this.map.off('editable:drawing:commit', setSecond);
-            this.map.removeLayer(other);
+            this.map.off('editable:vertex:clicked', setFirst);
+            this.map.off('editable:vertex:clicked', setLast);
+            layer.remove();
+        });
+
+        it('should send editable:drawing:click before adding vertex', function () {
+            var called = 0,
+                calledWhenEmpty = 0,
+                call = function () {
+                    called++;
+                    if (!polyline._latlngs.length) calledWhenEmpty = 1;
+                };
+            this.map.on('editable:drawing:click', call);
+            var polyline = this.map.editTools.startPolyline();
+            assert.equal(called, 0);
+            happen.at('mousemove', 250, 200);
+            happen.at('click', 250, 200);
+            assert.equal(called, 1);
+            assert.ok(calledWhenEmpty);
+            assert.ok(polyline._latlngs.length);
+            this.map.off('editable:drawing:click', call);
+            polyline.remove();
+        });
+
+        it('should send editable:drawing:clicked after adding vertex', function () {
+            var called = 0,
+                calledAfterClick = 0,
+                call = function () {
+                    called++;
+                    if (polyline._latlngs.length) calledAfterClick = 1;
+                };
+            this.map.on('editable:drawing:clicked', call);
+            var polyline = this.map.editTools.startPolyline();
+            assert.equal(called, 0);
+            happen.at('mousemove', 250, 200);
+            happen.at('click', 250, 200);
+            assert.equal(called, 1);
+            assert.ok(calledAfterClick);
+            assert.ok(polyline._latlngs.length);
+            this.map.off('editable:drawing:clicked', call);
+            polyline.remove();
+        });
+
+        it('should be possible to cancel editable:drawing:click actions', function () {
+            var called = 0,
+                call = function (e) {
+                    e.cancel();
+                    called++;
+                };
+            this.map.on('editable:drawing:click', call);
+            var polyline = this.map.editTools.startPolyline();
+            assert.equal(called, 0);
+            happen.at('mousemove', 250, 200);
+            happen.at('click', 250, 200);
+            assert.equal(called, 1);
+            assert.notOk(polyline._latlngs.length);
+            this.map.off('editable:drawing:click', call);
+            polyline.remove();
+        });
+
+    });
+
+    describe('Multi', function () {
+
+        describe('#enableEdit', function () {
+
+            it('should create vertex and middle markers for each line', function () {
+                var multi = L.polyline([
+                    [
+                      [43.1239, 1.244],
+                      [43.123, 1.253]
+                    ],
+                    [
+                      [43.1269, 1.246],
+                      [43.126, 1.252],
+                      [43.1282, 1.255]
+                    ]
+                ]).addTo(this.map);
+                multi.enableEdit();
+                assert.ok(multi._latlngs[0][0].__vertex);
+                assert.ok(multi._latlngs[0][1].__vertex);
+                assert.ok(multi._latlngs[0][1].__vertex.middleMarker);
+                assert.ok(multi._latlngs[1][0].__vertex);
+                assert.ok(multi._latlngs[1][1].__vertex);
+                assert.ok(multi._latlngs[1][1].__vertex.middleMarker);
+                multi.remove();
+                this.map.editTools.editLayer.eachLayer(function (layer) {
+                    assert.fail(layer, null, "no layer expected but one found");
+                });
+            });
+
+        });
+
+        describe('#newShape', function () {
+
+            it('should add a new shape on empty polyline', function () {
+                var multi = L.polyline([]).addTo(this.map);
+                multi.enableEdit();
+                multi.editor.newShape();
+                happen.at('mousemove', 100, 150);
+                happen.at('click', 100, 150);
+                assert.equal(multi._latlngs.length, 1);
+                happen.at('mousemove', 200, 350);
+                happen.at('click', 200, 350);
+                assert.equal(multi._latlngs.length, 2);
+                happen.at('mousemove', 300, 250);
+                happen.at('click', 300, 250);
+                assert.equal(multi._latlngs.length, 3);
+                happen.at('click', 300, 250);
+                multi.remove();
+            });
+
+            it('should add a new outline to existing simple polyline', function () {
+                var multi = L.polyline([p2ll(100, 150), p2ll(150, 200)]).addTo(this.map);
+                multi.enableEdit();
+                multi.editor.newShape();
+                assert(L.Util.isArray(multi._latlngs[0]));
+                assert.ok(multi._latlngs[0].length);
+                assert.ok(L.Util.isArray(multi._latlngs[1]));
+                assert.notOk(multi._latlngs[1].length);
+                happen.at('mousemove', 300, 300);
+                happen.at('click', 300, 300);
+                assert.equal(multi._latlngs[1].length, 1);
+                happen.at('mousemove', 350, 350);
+                happen.at('click', 350, 350);
+                assert.equal(multi._latlngs[1].length, 2);
+                happen.at('click', 350, 350);
+                multi.remove();
+            });
+
+            it('should emit editable:shape:new on newShape call', function () {
+                var called = 0,
+                    call = function () {called++;};
+                this.map.on('editable:shape:new', call);
+                var line = L.polyline([p2ll(100, 150), p2ll(150, 200)]).addTo(this.map);
+                assert.equal(called, 0);
+                line.enableEdit();
+                assert.equal(called, 0);
+                line.editor.newShape();
+                assert.equal(called, 1);
+                line.remove();
+            });
+
+        });
+
+        describe('#shapeFromLatLng', function () {
+
+            it('should return latlngs in case of a flat polyline', function () {
+                var latlngs = [p2ll(100, 100), p2ll(100, 200)],
+                    layer = L.polyline(latlngs).addTo(this.map),
+                    shape = layer.shapeFromLatLng(p2ll(100, 150));
+                assert.equal(shape.length, 2);
+                assert.equal(shape[0], latlngs[0]);
+                layer.remove();
+            });
+
+            it('should return whole shape in case of a multi polyline', function () {
+                var latlngs = [
+                        [p2ll(100, 100), p2ll(100, 200)],
+                        [p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]
+                    ],
+                    layer = L.polyline(latlngs).addTo(this.map),
+                    shape = layer.shapeFromLatLng(p2ll(100, 150));
+                assert.equal(shape.length, 2);
+                assert.equal(shape[0], latlngs[0][0]);
+                layer.remove();
+            });
+
+        });
+
+        describe('#deleteShape', function () {
+
+            it('should emit editable:shape:delete before deleting the shape on flat polyline', function () {
+                var layer = L.polyline([p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)]).addTo(this.map),
+                    called = 0,
+                    call = function (e) {
+                        called++;
+                        assert.equal(layer._latlngs.length, 3);  // Not yet deleted
+                        assert.equal(e.shape.length, 3);
+                    };
+                this.map.on('editable:shape:delete', call);
+                layer.enableEdit();
+                assert.equal(called, 0);
+                layer.editor.deleteShape(layer._latlngs);
+                assert.equal(layer._latlngs.length, 0);
+                assert.equal(called, 1);
+                this.map.off('editable:shape:delete', call);
+                layer.remove();
+            });
+
+            it('should emit editable:shape:delete before deleting the shape on multi', function () {
+                var latlngs = [
+                        [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                        [p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]
+                    ],
+                    layer = L.polyline(latlngs).addTo(this.map),
+                    called = 0,
+                    call = function (e) {
+                        called++;
+                        assert.equal(layer._latlngs.length, 2);  // Not yet deleted
+                        assert.equal(e.shape.length, 3);
+                    };
+                this.map.on('editable:shape:delete', call);
+                layer.enableEdit();
+                assert.equal(called, 0);
+                layer.editor.deleteShape(layer._latlngs[0]);
+                assert.equal(called, 1);
+                assert.equal(layer._latlngs.length, 1);
+                assert.equal(layer._latlngs[0][0], latlngs[1][0]);
+                this.map.off('editable:shape:delete', call);
+                layer.remove();
+            });
+
+            it('editable:shape:delete should be cancellable on flat polyline', function () {
+                var layer = L.polyline([p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)]).addTo(this.map),
+                    called = 0,
+                    call = function (e) {
+                        called++;
+                        e.cancel();
+                    };
+                this.map.on('editable:shape:delete', call);
+                layer.enableEdit();
+                assert.equal(called, 0);
+                layer.editor.deleteShape(layer._latlngs);
+                assert.equal(called, 1);
+                assert.equal(layer._latlngs.length, 3);
+                this.map.off('editable:shape:delete', call);
+                layer.remove();
+            });
+
+            it('editable:shape:delete should be cancellable on multi polyline', function () {
+                var latlngs = [
+                        [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                        [p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]
+                    ],
+                    layer = L.polyline(latlngs).addTo(this.map),
+                    called = 0,
+                    call = function (e) {
+                        called++;
+                        e.cancel();
+                    };
+                this.map.on('editable:shape:delete', call);
+                layer.enableEdit();
+                assert.equal(called, 0);
+                layer.editor.deleteShape(layer._latlngs[0]);
+                assert.equal(called, 1);
+                assert.equal(layer._latlngs.length, 2);
+                assert.equal(layer._latlngs[0][0], latlngs[0][0]);
+                this.map.off('editable:shape:delete', call);
+                layer.remove();
+            });
+
+            it('should emit editable:shape:deleted after deleting the shape on flat polyline', function () {
+                var layer = L.polyline([p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)]).addTo(this.map),
+                    called = 0,
+                    call = function (e) {
+                        called++;
+                        assert.equal(layer._latlngs.length, 0);  // Already deleted
+                        assert.equal(e.shape.length, 3);  // Deleted elements
+                    };
+                this.map.on('editable:shape:deleted', call);
+                layer.enableEdit();
+                assert.equal(called, 0);
+                layer.editor.deleteShape(layer._latlngs);
+                assert.equal(called, 1);
+                assert.equal(layer._latlngs.length, 0);
+                this.map.off('editable:shape:deleted', call);
+                layer.remove();
+            });
+
+            it('should emit editable:shape:deleted after deleting the shape on multi', function () {
+                var latlngs = [
+                        [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                        [p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]
+                    ],
+                    layer = L.polyline(latlngs).addTo(this.map),
+                    called = 0,
+                    call = function (e) {
+                        called++;
+                        assert.equal(layer._latlngs.length, 1);  // Already deleted
+                        assert.equal(e.shape.length, 3);  // Deleted shape
+                    };
+                this.map.on('editable:shape:deleted', call);
+                layer.enableEdit();
+                assert.equal(called, 0);
+                layer.editor.deleteShape(layer._latlngs[0]);
+                assert.equal(called, 1);
+                assert.equal(layer._latlngs.length, 1);
+                assert.equal(layer._latlngs[0][0], latlngs[1][0]);
+                this.map.off('editable:shape:deleted', call);
+                layer.remove();
+            });
+
+        });
+
+        describe('#deleteShapeAt', function () {
+
+            it('should delete the shape on flat polyline', function () {
+                var layer = L.polyline([p2ll(100, 100), p2ll(100, 200)]).addTo(this.map);
+                layer.enableEdit();
+                layer.editor.deleteShapeAt(p2ll(100, 150));
+                assert.equal(layer._latlngs.length, 0);
+                layer.remove();
+            });
+
+            it('should delete the shape on multi', function () {
+                var latlngs = [
+                        [p2ll(100, 100), p2ll(100, 200)],
+                        [p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]
+                    ],
+                    layer = L.polyline(latlngs).addTo(this.map);
+                layer.enableEdit();
+                layer.editor.deleteShapeAt(p2ll(100, 150));
+                assert.equal(layer._latlngs.length, 1);
+                assert.equal(layer._latlngs[0][0], latlngs[1][0]);
+                layer.remove();
+            });
+
         });
 
     });

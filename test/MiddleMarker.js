@@ -1,4 +1,4 @@
-describe('L.PolylineEditor', function () {
+describe('L.MiddleMarker', function () {
     var mouse, polyline;
 
     before(function () {

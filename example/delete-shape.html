@@ -64,31 +64,15 @@ var map = L.map('map', {editable: true}).setView(startPoint, 16),
         }
     });
 
-    L.NewMarkerControl = L.Control.extend({
-
-        options: {
-            position: 'topleft'
-        },
-
-        onAdd: function (map) {
-            var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar'),
-                link = L.DomUtil.create('a', '', container);
-
-            link.href = '#';
-            link.title = 'Add a new marker';
-            link.innerHTML = '⚫';
-            L.DomEvent.on(link, 'click', L.DomEvent.stop)
-                      .on(link, 'click', function () {
-                        map.editTools.startMarker();
-                      });
-
-            return container;
-        }
-    });
-
-    map.addControl(new L.NewMarkerControl());
     map.addControl(new L.NewLineControl());
     map.addControl(new L.NewPolygonControl());
+    var deleteShape = function (e) {
+      if ((e.originalEvent.ctrlKey || e.originalEvent.metaKey) && this.editEnabled()) this.editor.deleteShapeAt(e.latlng);
+    };
+    map.on('layeradd', function (e) {
+        if (e.layer instanceof L.Path) e.layer.on('click', L.DomEvent.stop).on('click', deleteShape, e.layer);
+        if (e.layer instanceof L.Path) e.layer.on('dblclick', L.DomEvent.stop).on('dblclick', e.layer.toggleEdit);
+    });
 
     var line = L.polyline([
         [43.1292, 1.256],
@@ -96,8 +80,6 @@ var map = L.map('map', {editable: true}).setView(startPoint, 16),
         [43.1291, 1.261],
     ]).addTo(map);
     line.enableEdit();
-    line.on('dblclick', L.DomEvent.stop).on('dblclick', line.toggleEdit);
-
 
     var multi = L.polygon([
       [
@@ -129,9 +111,8 @@ var map = L.map('map', {editable: true}).setView(startPoint, 16),
       ]
     ]).addTo(map);
     multi.enableEdit();
-    multi.on('dblclick', L.DomEvent.stop).on('dblclick', multi.toggleEdit);
 
-    var poly = L.polygon([
+    var poly = L.polygon([[
       [
         [43.1239, 1.259],
         [43.123, 1.263],
@@ -143,9 +124,8 @@ var map = L.map('map', {editable: true}).setView(startPoint, 16),
         [43.1236, 1.261],
         [43.12475, 1.262]
       ]
-    ]).addTo(map);
+    ]]).addTo(map);
     poly.enableEdit();
-    poly.on('dblclick', L.DomEvent.stop).on('dblclick', poly.toggleEdit);
 
 </script>
 </body>

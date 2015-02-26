@@ -20,28 +20,6 @@ var startPoint = [43.1249, 1.254];
 var map = L.map('map', {editable: true}).setView(startPoint, 16),
     tilelayer = L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {maxZoom: 20, attribution: 'Data \u00a9 <a href="http://www.openstreetmap.org/copyright"> OpenStreetMap Contributors </a> Tiles \u00a9 HOT'}).addTo(map);
 
-    L.NewLineControl = L.Control.extend({
-
-        options: {
-            position: 'topleft'
-        },
-
-        onAdd: function (map) {
-            var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar'),
-                link = L.DomUtil.create('a', '', container);
-
-            link.href = '#';
-            link.title = 'Create a new line';
-            link.innerHTML = '/\\/';
-            L.DomEvent.on(link, 'click', L.DomEvent.stop)
-                      .on(link, 'click', function () {
-                        map.editTools.startPolyline();
-                      });
-
-            return container;
-        }
-    });
-
     L.NewPolygonControl = L.Control.extend({
 
         options: {
@@ -59,12 +37,17 @@ var map = L.map('map', {editable: true}).setView(startPoint, 16),
                       .on(link, 'click', function () {
                         map.editTools.startPolygon();
                       });
-
+            container.style.display = 'block';
+            map.editTools.on('editable:enabled', function (e) {
+                container.style.display = 'none';
+            });
+            map.editTools.on('editable:disable', function (e) {
+                container.style.display = 'block';
+            });
             return container;
         }
     });
-
-    L.NewMarkerControl = L.Control.extend({
+    L.AddPolygonShapeControl = L.Control.extend({
 
         options: {
             position: 'topleft'
@@ -75,29 +58,42 @@ var map = L.map('map', {editable: true}).setView(startPoint, 16),
                 link = L.DomUtil.create('a', '', container);
 
             link.href = '#';
-            link.title = 'Add a new marker';
-            link.innerHTML = '⚫';
+            link.title = 'Create a new polygon';
+            link.innerHTML = '▱▱';
             L.DomEvent.on(link, 'click', L.DomEvent.stop)
                       .on(link, 'click', function () {
-                        map.editTools.startMarker();
+                          if (!map.editTools.currentPolygon) return;
+                          map.editTools.currentPolygon.editor.newShape();
                       });
+            container.style.display = 'none';
+            map.editTools.on('editable:enabled', function (e) {
+                container.style.display = 'block';
+            });
+            map.editTools.on('editable:disable', function (e) {
+                container.style.display = 'none';
+            });
 
             return container;
         }
     });
 
-    map.addControl(new L.NewMarkerControl());
-    map.addControl(new L.NewLineControl());
+
     map.addControl(new L.NewPolygonControl());
-
-    var line = L.polyline([
-        [43.1292, 1.256],
-        [43.1295, 1.259],
-        [43.1291, 1.261],
-    ]).addTo(map);
-    line.enableEdit();
-    line.on('dblclick', L.DomEvent.stop).on('dblclick', line.toggleEdit);
-
+    map.addControl(new L.AddPolygonShapeControl());
+    map.on('layeradd', function (e) {
+        if (e.layer instanceof L.Polygon) e.layer.on('dblclick', L.DomEvent.stop).on('dblclick', e.layer.toggleEdit);
+    });
+    map.on('layerremove', function (e) {
+        if (e.layer instanceof L.Polygon) e.layer.off('dblclick', L.DomEvent.stop).off('dblclick', e.layer.toggleEdit);
+    });
+    map.editTools.on('editable:enable', function (e) {
+        if (this.currentPolygon) this.currentPolygon.disableEdit();
+        this.currentPolygon = e.layer;
+        this.fire('editable:enabled');
+    });
+    map.editTools.on('editable:disable', function (e) {
+        delete this.currentPolygon;
+    })
 
     var multi = L.polygon([
       [
@@ -129,7 +125,6 @@ var map = L.map('map', {editable: true}).setView(startPoint, 16),
       ]
     ]).addTo(map);
     multi.enableEdit();
-    multi.on('dblclick', L.DomEvent.stop).on('dblclick', multi.toggleEdit);
 
     var poly = L.polygon([
       [
@@ -145,7 +140,6 @@ var map = L.map('map', {editable: true}).setView(startPoint, 16),
       ]
     ]).addTo(map);
     poly.enableEdit();
-    poly.on('dblclick', L.DomEvent.stop).on('dblclick', poly.toggleEdit);
 
 </script>
 </body>

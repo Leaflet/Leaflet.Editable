@@ -27,6 +27,6 @@
   },
   "homepage": "https://github.com/yohanboniface/Leaflet.Editable/",
   "dependencies": {
-    "leaflet": "^0.7.3"
+    "leaflet": "Leaflet/Leaflet"
   }
 }

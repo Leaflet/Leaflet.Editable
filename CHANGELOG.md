@@ -4,6 +4,9 @@
 - hide middle markers if there is not enough space
 - make possible to add new vertex on top of other
   paths vertex
+- leaflet 1.0 support
+- make editable:drawing:click and editable:vertex:click cancellable
+- add editable:drawing:clicked and editable:vertex:clicked events
 
 ## 0.5.0
 - added editable:vertex:drag event
