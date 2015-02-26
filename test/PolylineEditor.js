@@ -447,6 +447,181 @@ describe('L.PolylineEditor', function() {
 
         });
 
+        describe('#shapeFromLatLng', function () {
+
+            it('should return latlngs in case of a flat polyline', function () {
+                var latlngs = [p2ll(100, 100), p2ll(100, 200)],
+                    layer = L.polyline(latlngs).addTo(this.map),
+                    shape = layer.shapeFromLatLng(p2ll(100, 150));
+                assert.equal(shape.length, 2);
+                assert.equal(shape[0], latlngs[0]);
+                layer.remove();
+            });
+
+            it('should return whole shape in case of a multi polyline', function () {
+                var latlngs = [
+                        [p2ll(100, 100), p2ll(100, 200)],
+                        [p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]
+                    ],
+                    layer = L.polyline(latlngs).addTo(this.map),
+                    shape = layer.shapeFromLatLng(p2ll(100, 150));
+                assert.equal(shape.length, 2);
+                assert.equal(shape[0], latlngs[0][0]);
+                layer.remove();
+            });
+
+        });
+
+        describe('#deleteShape', function () {
+
+            it('should emit editable:shape:delete before deleting the shape on flat polyline', function () {
+                var layer = L.polyline([p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)]).addTo(this.map),
+                    called = 0,
+                    call = function (e) {
+                        called++;
+                        assert.equal(layer._latlngs.length, 3);  // Not yet deleted
+                        assert.equal(e.shape.length, 3);
+                    };
+                this.map.on('editable:shape:delete', call);
+                layer.enableEdit();
+                assert.equal(called, 0);
+                layer.editor.deleteShape(layer._latlngs);
+                assert.equal(layer._latlngs.length, 0);
+                assert.equal(called, 1);
+                this.map.off('editable:shape:delete', call);
+                layer.remove();
+            });
+
+            it('should emit editable:shape:delete before deleting the shape on multi', function () {
+                var latlngs = [
+                        [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                        [p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]
+                    ],
+                    layer = L.polyline(latlngs).addTo(this.map),
+                    called = 0,
+                    call = function (e) {
+                        called++;
+                        assert.equal(layer._latlngs.length, 2);  // Not yet deleted
+                        assert.equal(e.shape.length, 3);
+                    };
+                this.map.on('editable:shape:delete', call);
+                layer.enableEdit();
+                assert.equal(called, 0);
+                layer.editor.deleteShape(layer._latlngs[0]);
+                assert.equal(called, 1);
+                assert.equal(layer._latlngs.length, 1);
+                assert.equal(layer._latlngs[0][0], latlngs[1][0]);
+                this.map.off('editable:shape:delete', call);
+                layer.remove();
+            });
+
+            it('editable:shape:delete should be cancellable on flat polyline', function () {
+                var layer = L.polyline([p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)]).addTo(this.map),
+                    called = 0,
+                    call = function (e) {
+                        called++;
+                        e.cancel();
+                    };
+                this.map.on('editable:shape:delete', call);
+                layer.enableEdit();
+                assert.equal(called, 0);
+                layer.editor.deleteShape(layer._latlngs);
+                assert.equal(called, 1);
+                assert.equal(layer._latlngs.length, 3);
+                this.map.off('editable:shape:delete', call);
+                layer.remove();
+            });
+
+            it('editable:shape:delete should be cancellable on multi polyline', function () {
+                var latlngs = [
+                        [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                        [p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]
+                    ],
+                    layer = L.polyline(latlngs).addTo(this.map),
+                    called = 0,
+                    call = function (e) {
+                        called++;
+                        e.cancel();
+                    };
+                this.map.on('editable:shape:delete', call);
+                layer.enableEdit();
+                assert.equal(called, 0);
+                layer.editor.deleteShape(layer._latlngs[0]);
+                assert.equal(called, 1);
+                assert.equal(layer._latlngs.length, 2);
+                assert.equal(layer._latlngs[0][0], latlngs[0][0]);
+                this.map.off('editable:shape:delete', call);
+                layer.remove();
+            });
+
+            it('should emit editable:shape:deleted after deleting the shape on flat polyline', function () {
+                var layer = L.polyline([p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)]).addTo(this.map),
+                    called = 0,
+                    call = function (e) {
+                        called++;
+                        assert.equal(layer._latlngs.length, 0);  // Already deleted
+                        assert.equal(e.shape.length, 3);  // Deleted elements
+                    };
+                this.map.on('editable:shape:deleted', call);
+                layer.enableEdit();
+                assert.equal(called, 0);
+                layer.editor.deleteShape(layer._latlngs);
+                assert.equal(called, 1);
+                assert.equal(layer._latlngs.length, 0);
+                this.map.off('editable:shape:deleted', call);
+                layer.remove();
+            });
+
+            it('should emit editable:shape:deleted after deleting the shape on multi', function () {
+                var latlngs = [
+                        [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                        [p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]
+                    ],
+                    layer = L.polyline(latlngs).addTo(this.map),
+                    called = 0,
+                    call = function (e) {
+                        called++;
+                        assert.equal(layer._latlngs.length, 1);  // Already deleted
+                        assert.equal(e.shape.length, 3);  // Deleted shape
+                    };
+                this.map.on('editable:shape:deleted', call);
+                layer.enableEdit();
+                assert.equal(called, 0);
+                layer.editor.deleteShape(layer._latlngs[0]);
+                assert.equal(called, 1);
+                assert.equal(layer._latlngs.length, 1);
+                assert.equal(layer._latlngs[0][0], latlngs[1][0]);
+                this.map.off('editable:shape:deleted', call);
+                layer.remove();
+            });
+
+        });
+
+        describe('#deleteShapeAt', function () {
+
+            it('should delete the shape on flat polyline', function () {
+                var layer = L.polyline([p2ll(100, 100), p2ll(100, 200)]).addTo(this.map);
+                layer.enableEdit();
+                layer.editor.deleteShapeAt(p2ll(100, 150));
+                assert.equal(layer._latlngs.length, 0);
+                layer.remove();
+            });
+
+            it('should delete the shape on multi', function () {
+                var latlngs = [
+                        [p2ll(100, 100), p2ll(100, 200)],
+                        [p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]
+                    ],
+                    layer = L.polyline(latlngs).addTo(this.map);
+                layer.enableEdit();
+                layer.editor.deleteShapeAt(p2ll(100, 150));
+                assert.equal(layer._latlngs.length, 1);
+                assert.equal(layer._latlngs[0][0], latlngs[1][0]);
+                layer.remove();
+            });
+
+        });
+
     });
 
 });

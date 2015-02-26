@@ -106,6 +106,8 @@ Leaflet.Editable add options and events to the `L.Map` object.
 | editable:vertex:dragend | originalEvent, latlng, vertex, layer | false | Fired after a vertex is dragged by user |
 | editable:middlemarker:mousedown | originalEvent, latlng, vertex, layer | true | Fired when user mousedown a middle marker |
 | editable:shape:new | originalEvent, latlng, shape, layer | false | Fired when a new shape is created in a multi (polygon or polyline) |
+| editable:shape:delete | originalEvent, latlng, shape, layer | true | Fired before a new shape is deleted in a multi (polygon or polyline) |
+| editable:shape:deleted | originalEvent, latlng, shape, layer | false | Fired after a new shape is deleted in a multi (polygon or polyline) |
 
 Note on *cancellable* events: those event have attached a `cancel` method,
 calling this method (eg. `e.cancel()`) will cancel any subsequent action.
@@ -201,9 +203,10 @@ Interesting new method:
 |  method name   |  params | return |                      usage               |
 |----------------|---------|--------|---------------------------------|
 | reset  | —  | — | Rebuild edit elements (vertex, middlemarker, etc.) |
-| newShape  | —  | — | Add a new shape (polyline, polygon) in a multi, and setup up drawing tools to draw it |
+| newShape  | latlng | — | Add a new shape (polyline, polygon) in a multi, and setup up drawing tools to draw it; if optional `latlng` is given, start a path at this point |
 | push  | latlng  | — | Programmatically add a point while drawing |
 | pop  | —  | latlng | Programatically remove last point (if any) while drawing |
+| deleteShapeAt  | latlng  | — | Remove a path shape at the given latlng |
 
 
 ### L.Editable.PolylineEditor

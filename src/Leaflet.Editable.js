@@ -855,11 +855,39 @@
 
         deleteShape: function (shape, latlngs) {
             latlngs = latlngs || this.getLatLngs();
-            if (this.feature._flat(latlngs) || !latlngs.length) return;
+            if (!latlngs.length) return;
+            var e, self = this,
+                inplaceDelete = function () {
+                    // Called when deleting a flat latlngs
+                    shape = latlngs.splice(0, Number.MAX_VALUE);
+                    return shape;
+                },
+                spliceDelete = function () {
+                    // Called when removing a latlngs inside an array
+                    latlngs.splice(latlngs.indexOf(shape), 1);
+                    return shape;
+                },
+                doDelete = function (callback) {
+                    e = {shape: shape};
+                    L.Editable.makeCancellable(e);
+                    self.fireAndForward('editable:shape:delete', e);
+                    if (e._cancelled) return;
+                    shape = callback(latlngs, shape);
+                    self.refresh();
+                    self.reset();
+                    self.fireAndForward('editable:shape:deleted', {shape: shape});
+                    return;
+                };
+            if (this.feature._flat(latlngs) && latlngs === shape) return doDelete(inplaceDelete);
             for (var i = 0; i < latlngs.length; i++) {
-                if (latlngs[i] === shape) return latlngs.splice(latlngs.indexOf(shape), 1);
+                if (latlngs[i] === shape) return doDelete(spliceDelete);
                 else this.deleteShape(shape, latlngs[i]);
             }
+        },
+
+        deleteShapeAt: function (latlng) {
+            var shape = this.feature.shapeFromLatLng(latlng);
+            if (shape) this.deleteShape(shape);
         }
 
     });
@@ -923,7 +951,7 @@
 
         addNewEmptyHole: function (latlng) {
             this.ensureNotFlat();
-            var latlngs = this.feature.polygonFromLatLng(latlng);
+            var latlngs = this.feature.shapeFromLatLng(latlng);
             if (!latlngs) return;
             var holes = [];
             latlngs.push(holes);
@@ -1018,6 +1046,36 @@
 
         getEditorClass: function (map) {
             return (map && map.options.polylineEditorClass) ? map.options.polylineEditorClass : L.Editable.PolylineEditor;
+        },
+
+        shapeFromLatLng: function (latlng, latlngs) {
+            // We can have those cases:
+            // - latlngs are just a flat array of latlngs, use this
+            // - latlngs is an array of arrays of latlngs, loop over
+            var shape = null;
+            latlngs = latlngs || this._latlngs;
+            if (!latlngs.length) return shape;
+            else if (this._flat(latlngs) && this.isInLatLngs(latlng, latlngs)) shape = latlngs;
+            else for (var i = 0; i < latlngs.length; i++) if (this.isInLatLngs(latlng, latlngs[i])) return latlngs[i];
+            return shape;
+        },
+
+        isInLatLngs: function (l, latlngs) {
+            if (!latlngs) return false;
+            var i, k, len, part = [], p,
+                w = this._clickTolerance();
+            this._projectLatlngs(latlngs, part);
+            part = part[0];
+            p = this._map.latLngToLayerPoint(l);
+
+            if (!this._pxBounds.contains(p)) { return false; }
+            for (i = 1, len = part.length, k = 0; i < len; k = i++) {
+
+                if (L.LineUtil.pointToSegmentDistance(p, part[k], part[i]) <= w) {
+                    return true;
+                }
+            }
+            return false;
         }
 
     });
@@ -1028,31 +1086,19 @@
             return (map && map.options.polygonEditorClass) ? map.options.polygonEditorClass : L.Editable.PolygonEditor;
         },
 
-        polygonFromLatLng: function (latlng, latlngs) {
-            // So we can have those cases:
+        shapeFromLatLng: function (latlng, latlngs) {
+            // We can have those cases:
             // - latlngs are just a flat array of latlngs, use this
             // - latlngs is an array of arrays of latlngs, this is a simple polygon (maybe with holes), use the first
             // - latlngs is an array of arrays of arrays, this is a multi, loop over
-            var polygon = null;
+            var shape = null;
             latlngs = latlngs || this._latlngs;
-            if (!latlngs.length) return polygon;
-            else if (this._flat(latlngs) && L.Polygon.isInLatLngs(latlng, latlngs)) polygon = latlngs;
-            else if (this._flat(latlngs[0]) && L.Polygon.isInLatLngs(latlng, latlngs[0])) polygon = latlngs;
-            else for (var i = 0; i < latlngs.length; i++) if (L.Polygon.isInLatLngs(latlng, latlngs[i][0])) return latlngs[i];
-            return polygon;
-        }
-
-    });
-
-    L.Marker.include({
-
-        getEditorClass: function (map) {
-            return (map && map.options.markerEditorClass) ? map.options.markerEditorClass : L.Editable.MarkerEditor;
-        }
-
-    });
-
-    L.extend(L.Polygon, {
+            if (!latlngs.length) return shape;
+            else if (this._flat(latlngs) && this.isInLatLngs(latlng, latlngs)) shape = latlngs;
+            else if (this._flat(latlngs[0]) && this.isInLatLngs(latlng, latlngs[0])) shape = latlngs;
+            else for (var i = 0; i < latlngs.length; i++) if (this.isInLatLngs(latlng, latlngs[i][0])) return latlngs[i];
+            return shape;
+        },
 
         isInLatLngs: function (l, latlngs) {
             var inside = false, l1, l2, j, k, len2;
@@ -1071,4 +1117,13 @@
         }
 
     });
+
+    L.Marker.include({
+
+        getEditorClass: function (map) {
+            return (map && map.options.markerEditorClass) ? map.options.markerEditorClass : L.Editable.MarkerEditor;
+        }
+
+    });
+
 }, window));
