@@ -878,10 +878,10 @@
                     self.fireAndForward('editable:shape:deleted', {shape: shape});
                     return;
                 };
-            if (this.feature._flat(latlngs) && latlngs === shape) return doDelete(inplaceDelete);
+            if (latlngs === shape) return doDelete(inplaceDelete);
             for (var i = 0; i < latlngs.length; i++) {
                 if (latlngs[i] === shape) return doDelete(spliceDelete);
-                else this.deleteShape(shape, latlngs[i]);
+                else if (L.Util.isArray(latlngs[i])) this.deleteShape(shape, latlngs[i]);
             }
         },
 

@@ -690,6 +690,19 @@ describe('L.PolygonEditor', function() {
                 layer.remove();
             });
 
+            it('should delete the shape on multi with ambiguous polygon', function () {
+                // According to GeoJSON spec, this is not a valid polygon, but this is valid
+                // for Leaflet, we should then support it.
+                var latlngs = [
+                        [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                    ],
+                    layer = L.polygon(latlngs).addTo(this.map);
+                layer.enableEdit();
+                layer.editor.deleteShapeAt(p2ll(150, 150));
+                assert.equal(layer._latlngs.length, 0);
+                layer.remove();
+            });
+
         });
 
     });
