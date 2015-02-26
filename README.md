@@ -3,6 +3,10 @@
 
 Make geometries editable in Leaflet.
 
+**WARNING: the `gh-pages` branch needs latest Leaflet master (future 1.0). To use the stable
+Leaflet release, please use the `leaflet0.7` branch.**
+
+
 This is not a plug and play UI, and will not. This is a minimal, lightweight,
 and fully extendable API to control editing of geometries. So you can easily
 build your own UI with your own needs and choices.
