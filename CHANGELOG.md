@@ -7,6 +7,12 @@
 - leaflet 1.0 support
 - make editable:drawing:click and editable:vertex:click cancellable
 - add editable:drawing:clicked and editable:vertex:clicked events
+- add L.Editable.commitDrawing, to commit any ongoing drawing
+- AMD/UMD compliancy
+- fix middleMarker still trigering some events while not being visible
+- add map option editToolsClass, that allow to override L.Editable class to be used
+- added deleteShapeAt method
+- added events editable:shape:delete and editable:shape:deleted
 
 ## 0.5.0
 - added editable:vertex:drag event
