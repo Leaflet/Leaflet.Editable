@@ -13,7 +13,7 @@ happen.at = function (what, x, y, props) {
 };
 happen.drag = function (fromX, fromY, toX, toY, then) {
     happen.at('mousemove', fromX, fromY);
-    happen.at('mousedown', fromX, fromY);
+    happen.at('mousedown', fromX, fromY, {button: 0});
     var moveX = function () {
         if (fromX <= toX) {
             happen.at('mousemove', fromX++, fromY);
@@ -29,7 +29,7 @@ happen.drag = function (fromX, fromY, toX, toY, then) {
     };
     moveY();
     window.setTimeout(function () {
-        happen.at('mouseup', toX, toY);
+        happen.at('mouseup', toX, toY, {button: 0});
         if (then) then();
     }, 1000);
 };

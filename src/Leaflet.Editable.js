@@ -453,18 +453,24 @@
 
         onAdd: function (map) {
             L.Marker.prototype.onAdd.call(this, map);
-            this.on('mousedown touchstart', this.onMouseDown);
+            L.DomEvent.on(this._icon, 'mousedown touchstart', this.onMouseDown, this);
             map.on('zoomend', this.setVisibility, this);
         },
 
         onRemove: function (map) {
             delete this.right.middleMarker;
-            this.off('mousedown touchstart', this.onMouseDown);
+            L.DomEvent.off(this._icon, 'mousedown touchstart', this.onMouseDown, this);
             map.off('zoomend', this.setVisibility, this);
             L.Marker.prototype.onRemove.call(this, map);
         },
 
         onMouseDown: function (e) {
+            var iconPos = L.DomUtil.getPosition(this._icon),
+                latlng = this.editor.map.layerPointToLatLng(iconPos);
+            e = {
+                originalEvent: e,
+                latlng: latlng
+            };
             if (this.options.opacity === 0) return;
             L.Editable.makeCancellable(e);
             this.editor.onMiddleMarkerMouseDown(e);
