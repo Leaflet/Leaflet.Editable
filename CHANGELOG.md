@@ -13,6 +13,7 @@
 - add map option editToolsClass, that allow to override L.Editable class to be used
 - added deleteShapeAt method
 - added events editable:shape:delete and editable:shape:deleted
+- added event editable:vertex:rawclick
 
 ## 0.5.0
 - added editable:vertex:drag event

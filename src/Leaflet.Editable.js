@@ -339,6 +339,7 @@
             this.editor.onVertexDeleted({latlng: this.latlng, vertex: this});
             if (!this.latlngs.length) this.editor.deleteShape(this.latlngs);
             if (next) next.resetMiddleMarker();
+            this.editor.refresh();
         },
 
         getIndex: function () {
@@ -718,9 +719,10 @@
         },
 
         onVertexRawMarkerClick: function (e) {
+            this.fireAndForward('editable:vertex:rawclick', e);
+            if (e._cancelled) return;
             if (!this.vertexCanBeDeleted(e.vertex)) return;
             e.vertex.delete();
-            this.refresh();
         },
 
         vertexCanBeDeleted: function (vertex) {

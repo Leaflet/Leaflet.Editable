@@ -389,6 +389,25 @@ describe('L.PolygonEditor', function() {
             polygon.remove();
         });
 
+        it('should be possible to cancel editable:vertex:rawclick', function () {
+            var layer = L.polygon([p2ll(100, 150), p2ll(150, 200), p2ll(200, 100), p2ll(100, 100)]).addTo(this.map),
+                called = 0,
+                call = function (e) {
+                    e.cancel();
+                    called++;
+                };
+            assert.equal(layer._latlngs.length, 4);
+            this.map.on('editable:vertex:rawclick', call);
+            layer.enableEdit();
+            assert.equal(called, 0);
+            happen.at('mousemove', 100, 100);
+            happen.at('click', 100, 100);
+            assert.equal(called, 1);
+            assert.equal(layer._latlngs.length, 4);
+            this.map.off('editable:vertex:rawclick', call);
+            layer.remove();
+        });
+
     });
 
     describe('Multi', function () {
