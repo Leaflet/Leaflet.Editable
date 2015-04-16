@@ -671,7 +671,7 @@ L.Editable.PathEditor = L.Editable.BaseEditor.extend({
             this.onVertexMarkerAltClick(e);
         } else if (e.originalEvent.shiftKey) {
             this.onVertexMarkerShiftClick(e);
-        } else if (index >= 1 && index === e.vertex.getLastIndex() && this.drawing === L.Editable.FORWARD) {
+        } else if (index >= this.MIN_VERTEX - 1 && index === e.vertex.getLastIndex() && this.drawing === L.Editable.FORWARD) {
             this.commitDrawing();
         } else if (index === 0 && this.drawing === L.Editable.BACKWARD && this._drawnLatLngs.length >= this.MIN_VERTEX) {
             this.commitDrawing();
