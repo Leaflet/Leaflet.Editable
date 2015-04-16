@@ -24,15 +24,21 @@ describe('L.PolygonEditor', function() {
             happen.at('mousemove', 200, 350);
             happen.at('click', 200, 350);
             assert.equal(polygon._latlngs.length, 2);
+        });
+
+        it('should not finish shape if not enough vertices', function () {
+            happen.at('click', 200, 350);
+            assert.equal(polygon._latlngs.length, 2);
+            assert.ok(polygon.editor.drawing);
+        });
+
+        it('should finish shape on last point click', function () {
             happen.at('mousemove', 300, 250);
             happen.at('click', 300, 250);
             assert.equal(polygon._latlngs.length, 3);
             happen.at('mousemove', 300, 150);
             happen.at('click', 300, 150);
             assert.equal(polygon._latlngs.length, 4);
-        });
-
-        it('should finish shape on last point click', function () {
             happen.at('click', 300, 150);
             assert.equal(polygon._latlngs.length, 4);
         });
