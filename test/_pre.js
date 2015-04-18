@@ -29,7 +29,7 @@ happen.drag = function (fromX, fromY, toX, toY, then) {
     };
     moveY();
     window.setTimeout(function () {
-        happen.at('mouseup', toX, toY, {button: 0});
+        happen.at('mouseup', toX, toY);
         if (then) then();
     }, 1000);
 };
