@@ -522,12 +522,12 @@ describe('L.PolygonEditor', function() {
 
         });
 
-        describe('#shapeFromLatLng', function () {
+        describe('#shapeAt', function () {
 
             it('should return latlngs in case of a flat polygon', function () {
                 var latlngs = [[p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)]],
                     layer = L.polygon(latlngs).addTo(this.map),
-                    shape = layer.shapeFromLatLng(p2ll(150, 150));
+                    shape = layer.shapeAt(p2ll(150, 150));
                 assert.equal(shape.length, 1);
                 assert.equal(shape[0].length, 3);
                 assert.equal(shape[0][0], latlngs[0][0]);
@@ -540,7 +540,7 @@ describe('L.PolygonEditor', function() {
                         [[p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]]
                     ],
                     layer = L.polygon(latlngs).addTo(this.map),
-                    shape = layer.shapeFromLatLng(p2ll(150, 150));
+                    shape = layer.shapeAt(p2ll(150, 150));
                 assert.equal(shape.length, 1);
                 assert.equal(shape[0].length, 3);
                 assert.equal(shape[0][0], latlngs[0][0][0]);
@@ -556,7 +556,7 @@ describe('L.PolygonEditor', function() {
                         [[p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]]
                     ],
                     layer = L.polygon(latlngs).addTo(this.map),
-                    shape = layer.shapeFromLatLng(p2ll(140, 140));
+                    shape = layer.shapeAt(p2ll(140, 140));
                 assert.equal(shape.length, 2);
                 assert.equal(shape[0].length, 3);
                 assert.equal(shape[0][0], latlngs[0][0][0]);

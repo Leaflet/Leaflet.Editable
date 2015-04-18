@@ -212,6 +212,7 @@ Interesting new method:
 | newShape  | latlng | — | Add a new shape (polyline, polygon) in a multi, and setup up drawing tools to draw it; if optional `latlng` is given, start a path at this point |
 | push  | latlng  | — | Programmatically add a point while drawing |
 | pop  | —  | latlng | Programatically remove last point (if any) while drawing |
+| shapeAt  | latlng  | shape or undefined | Return the shape at the given latlng if any |
 | deleteShapeAt  | latlng  | shape | Remove a path shape at the given latlng |
 | appendShape  | shape  | — | Append a new shape to the polygon or polyline |
 

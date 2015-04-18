@@ -447,12 +447,12 @@ describe('L.PolylineEditor', function() {
 
         });
 
-        describe('#shapeFromLatLng', function () {
+        describe('#shapeAt', function () {
 
             it('should return latlngs in case of a flat polyline', function () {
                 var latlngs = [p2ll(100, 100), p2ll(100, 200)],
                     layer = L.polyline(latlngs).addTo(this.map),
-                    shape = layer.shapeFromLatLng(p2ll(100, 150));
+                    shape = layer.shapeAt(p2ll(100, 150));
                 assert.equal(shape.length, 2);
                 assert.equal(shape[0], latlngs[0]);
                 layer.remove();
@@ -464,7 +464,7 @@ describe('L.PolylineEditor', function() {
                         [p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]
                     ],
                     layer = L.polyline(latlngs).addTo(this.map),
-                    shape = layer.shapeFromLatLng(p2ll(100, 150));
+                    shape = layer.shapeAt(p2ll(100, 150));
                 assert.equal(shape.length, 2);
                 assert.equal(shape[0], latlngs[0][0]);
                 layer.remove();

@@ -894,7 +894,7 @@
         },
 
         deleteShapeAt: function (latlng) {
-            var shape = this.feature.shapeFromLatLng(latlng);
+            var shape = this.feature.shapeAt(latlng);
             if (shape) return this.deleteShape(shape);
         },
 
@@ -969,7 +969,7 @@
 
         addNewEmptyHole: function (latlng) {
             this.ensureNotFlat();
-            var latlngs = this.feature.shapeFromLatLng(latlng);
+            var latlngs = this.feature.shapeAt(latlng);
             if (!latlngs) return;
             var holes = [];
             latlngs.push(holes);
@@ -1071,7 +1071,7 @@
             return (map && map.options.polylineEditorClass) ? map.options.polylineEditorClass : L.Editable.PolylineEditor;
         },
 
-        shapeFromLatLng: function (latlng, latlngs) {
+        shapeAt: function (latlng, latlngs) {
             // We can have those cases:
             // - latlngs are just a flat array of latlngs, use this
             // - latlngs is an array of arrays of latlngs, loop over
@@ -1109,7 +1109,7 @@
             return (map && map.options.polygonEditorClass) ? map.options.polygonEditorClass : L.Editable.PolygonEditor;
         },
 
-        shapeFromLatLng: function (latlng, latlngs) {
+        shapeAt: function (latlng, latlngs) {
             // We can have those cases:
             // - latlngs are just a flat array of latlngs, use this
             // - latlngs is an array of arrays of latlngs, this is a simple polygon (maybe with holes), use the first
