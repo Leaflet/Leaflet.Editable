@@ -1019,7 +1019,6 @@
         },
 
         formatShape: function (shape) {
-            if (L.Util.isArray(shape) && L.Util.isArray(shape[0])) return shape;  // See Leaflet#3386
             if (this.feature._flat(shape)) return [shape];
             else return shape;
         }
@@ -1101,6 +1100,11 @@
                 }
             }
             return false;
+        },
+
+        _flat: function (latlngs) {
+            // Workaround Leaflet#3386
+           return !L.Util.isArray(latlngs[0]) || (typeof latlngs[0][0] !== 'object' && typeof latlngs[0][0] !== 'undefined');
         }
 
     });
