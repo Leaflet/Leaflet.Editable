@@ -8,12 +8,12 @@ happen.at = function (what, x, y, props) {
         screenX: x,
         screenY: y,
         which: 1,
-        button: 1
+        button: 0
     }, props || {}));
 };
 happen.drag = function (fromX, fromY, toX, toY, then) {
     happen.at('mousemove', fromX, fromY);
-    happen.at('mousedown', fromX, fromY, {button: 0});
+    happen.at('mousedown', fromX, fromY);
     var moveX = function () {
         if (fromX <= toX) {
             happen.at('mousemove', fromX++, fromY);
