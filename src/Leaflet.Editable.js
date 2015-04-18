@@ -855,7 +855,7 @@
         newShape: function (latlng) {
             var shape = this.addNewEmptyShape();
             if (!shape) return;
-            this.setDrawnLatLngs(shape);
+            this.setDrawnLatLngs(shape[0] || shape);  // Polygon or polyline
             this.startDrawingForward();
             this.fireAndForward('editable:shape:new', {shape: shape});
             if (latlng) this.newPointForward(latlng);
@@ -896,6 +896,12 @@
         deleteShapeAt: function (latlng) {
             var shape = this.feature.shapeFromLatLng(latlng);
             if (shape) return this.deleteShape(shape);
+        },
+
+        appendShape: function (shape) {
+            this.ensureMulti();
+            shape = this.formatShape(shape);
+            this.feature._latlngs.push(shape);
         }
 
     });
@@ -937,12 +943,16 @@
         addNewEmptyShape: function () {
             if (this.feature._latlngs.length) {
                 var shape = [];
-                this.ensureMulti();
-                this.feature._latlngs.push(shape);
+                this.appendShape(shape);
                 return shape;
             } else {
                 return this.feature._latlngs;
             }
+        },
+
+        formatShape: function (shape) {
+            if (this.feature._flat(shape)) return shape;
+            else if (shape[0]) return this.formatShape(shape[0]);
         }
 
     });
@@ -976,9 +986,8 @@
 
         addNewEmptyShape: function () {
             if (this.feature._latlngs.length) {
-                var shape = [];
-                this.ensureMulti();
-                this.feature._latlngs.push([shape]);
+                var shape = [[]];
+                this.appendShape(shape);
                 return shape;
             } else {
                 return this.feature._latlngs;
@@ -1005,6 +1014,12 @@
         getDefaultLatLngs: function () {
             if (!this.feature._latlngs.length) this.feature._latlngs.push([]);
             return this.feature._latlngs[0];
+        },
+
+        formatShape: function (shape) {
+            if (L.Util.isArray(shape) && L.Util.isArray(shape[0])) return shape;  // See Leaflet#3386
+            if (this.feature._flat(shape)) return [shape];
+            else return shape;
         }
 
     });

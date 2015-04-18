@@ -213,6 +213,7 @@ Interesting new method:
 | push  | latlng  | — | Programmatically add a point while drawing |
 | pop  | —  | latlng | Programatically remove last point (if any) while drawing |
 | deleteShapeAt  | latlng  | shape | Remove a path shape at the given latlng |
+| appendShape  | shape  | — | Append a new shape to the polygon or polyline |
 
 
 ### L.Editable.PolylineEditor

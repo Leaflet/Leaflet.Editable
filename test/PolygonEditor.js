@@ -804,6 +804,92 @@ describe('L.PolygonEditor', function() {
 
         });
 
+        describe('#formatShape', function () {
+            var layer;
+
+            before(function () {
+                layer = L.polygon([]).addTo(this.map);
+                layer.enableEdit();
+            });
+
+            after(function () {
+                layer.remove();
+            });
+
+            it('should nest flat shape', function () {
+                var latlngs = [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)];
+                assert.deepEqual(layer.editor.formatShape(latlngs), [latlngs]);
+            });
+
+            it('should nest empty shape', function () {
+                assert.deepEqual(layer.editor.formatShape([]), [[]]);
+            });
+
+            it('should not renest nested empty shape', function () {
+                assert.deepEqual(layer.editor.formatShape([[]]), [[]]);
+            });
+
+            it('should not renest nested shape', function () {
+                var latlngs = [[p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)]];
+                assert.deepEqual(layer.editor.formatShape(latlngs), latlngs);
+            });
+
+        });
+
+        describe('#appendShape', function () {
+
+            it('should add flat shape on flat polygon', function () {
+                var latlngs = [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                    shape = [p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)],
+                    layer = L.polygon(latlngs).addTo(this.map);
+                layer.enableEdit();
+                layer.editor.appendShape(shape);
+                assert.equal(layer._latlngs.length, 2);
+                assert.deepEqual(shape, layer._latlngs[1][0]);
+                layer.remove();
+            });
+
+            it('should add nested shape on flat polygon', function () {
+                var latlngs = [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                    shape = [[p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]],
+                    layer = L.polygon(latlngs).addTo(this.map);
+                layer.enableEdit();
+                layer.editor.appendShape(shape);
+                assert.equal(layer._latlngs.length, 2);
+                assert.deepEqual(shape, layer._latlngs[1]);
+                layer.remove();
+            });
+
+            it('should add flat shape on multi polygon', function () {
+                var latlngs = [
+                        [[p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)]],
+                        [[p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]]
+                    ],
+                    shape = [p2ll(400, 450), p2ll(450, 500), p2ll(500, 400)],
+                    layer = L.polygon(latlngs).addTo(this.map);
+                layer.enableEdit();
+                layer.editor.appendShape(shape);
+                assert.equal(layer._latlngs.length, 3);
+                assert.deepEqual(shape, layer._latlngs[2][0]);
+                layer.remove();
+            });
+
+            it('should add nested shape on multi polygon', function () {
+                var latlngs = [
+                        [[p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)]],
+                        [[p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]]
+                    ],
+                    shape = [[p2ll(400, 450), p2ll(450, 500), p2ll(500, 400)]],
+                    layer = L.polygon(latlngs).addTo(this.map);
+                layer.enableEdit();
+                layer.editor.appendShape(shape);
+                assert.equal(layer._latlngs.length, 3);
+                assert.deepEqual(shape, layer._latlngs[2]);
+                layer.remove();
+            });
+
+        });
+
     });
 
 });
