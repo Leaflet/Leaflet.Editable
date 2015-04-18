@@ -690,15 +690,73 @@ describe('L.PolygonEditor', function() {
                 layer.remove();
             });
 
+            it('should return the deleted shape on flat polygon', function () {
+                var latlngs = [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                    layer = L.polygon(latlngs).addTo(this.map);
+                layer.enableEdit();
+                var deleted = layer.editor.deleteShape(layer._latlngs);
+                assert.equal(layer._latlngs.length, 0);
+                assert.deepEqual(deleted, latlngs);
+                layer.remove();
+            });
+
+            it('should return the deleted shape on multi', function () {
+                var latlngs = [
+                        [[p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)]],
+                        [[p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]]
+                    ],
+                    layer = L.polygon(latlngs).addTo(this.map);
+                layer.enableEdit();
+                var deleted = layer.editor.deleteShape(layer._latlngs[0]);
+                assert.deepEqual(deleted, latlngs[0]);
+                layer.remove();
+            });
+
+            it('should return the deleted shape on multi with hole', function () {
+                var latlngs = [
+                        [
+                            [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                            [p2ll(120, 150), p2ll(150, 180), p2ll(180, 120)]
+                        ],
+                        [
+                            [p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]
+                        ]
+                    ],
+                    layer = L.polygon(latlngs).addTo(this.map);
+                layer.enableEdit();
+                var deleted = layer.editor.deleteShape(layer._latlngs[0]);
+                assert.deepEqual(deleted, latlngs[0]);
+                layer.remove();
+            });
+
+            it('should return the deleted shape on multi with hole 2', function () {
+                var latlngs = [
+                        [
+                            [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                            [p2ll(120, 150), p2ll(150, 180), p2ll(180, 120)]
+                        ],
+                        [
+                            [p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]
+                        ]
+                    ],
+                    layer = L.polygon(latlngs).addTo(this.map);
+                layer.enableEdit();
+                var deleted = layer.editor.deleteShape(layer._latlngs[1]);
+                assert.deepEqual(deleted, latlngs[1]);
+                layer.remove();
+            });
+
         });
 
         describe('#deleteShapeAt', function () {
 
             it('should delete the shape on flat polygon', function () {
-                var layer = L.polygon([p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)]).addTo(this.map);
+                var latlngs = [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                    layer = L.polygon(latlngs).addTo(this.map);
                 layer.enableEdit();
-                layer.editor.deleteShapeAt(p2ll(150, 150));
+                var deleted = layer.editor.deleteShapeAt(p2ll(150, 150));
                 assert.equal(layer._latlngs.length, 0);
+                assert.deepEqual(latlngs, deleted);
                 layer.remove();
             });
 
@@ -709,9 +767,24 @@ describe('L.PolygonEditor', function() {
                     ],
                     layer = L.polygon(latlngs).addTo(this.map);
                 layer.enableEdit();
-                layer.editor.deleteShapeAt(p2ll(150, 150));
+                var deleted = layer.editor.deleteShapeAt(p2ll(150, 150));
                 assert.equal(layer._latlngs.length, 1);
                 assert.equal(layer._latlngs[0][0][0], latlngs[1][0][0]);
+                assert.deepEqual(latlngs[0], deleted);
+                layer.remove();
+            });
+
+            it('should delete the shape two on multi', function () {
+                var latlngs = [
+                        [[p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)]],
+                        [[p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]]
+                    ],
+                    layer = L.polygon(latlngs).addTo(this.map);
+                layer.enableEdit();
+                var deleted = layer.editor.deleteShapeAt(p2ll(350, 350));
+                assert.equal(layer._latlngs.length, 1);
+                assert.equal(layer._latlngs[0][0][0], latlngs[0][0][0]);
+                assert.deepEqual(latlngs[1], deleted);
                 layer.remove();
             });
 
@@ -723,8 +796,9 @@ describe('L.PolygonEditor', function() {
                     ],
                     layer = L.polygon(latlngs).addTo(this.map);
                 layer.enableEdit();
-                layer.editor.deleteShapeAt(p2ll(150, 150));
+                var deleted = layer.editor.deleteShapeAt(p2ll(150, 150));
                 assert.equal(layer._latlngs.length, 0);
+                assert.deepEqual(latlngs, deleted);
                 layer.remove();
             });
 
