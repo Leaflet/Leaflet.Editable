@@ -902,6 +902,8 @@
             this.ensureMulti();
             shape = this.formatShape(shape);
             this.feature._latlngs.push(shape);
+            this.feature.redraw();
+            if (this._enabled) this.reset();
         }
 
     });
