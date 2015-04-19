@@ -216,6 +216,8 @@ Interesting new method:
 | shapeAt  | latlng  | shape or undefined | Return the shape at the given latlng if any |
 | deleteShapeAt  | latlng  | shape | Remove a path shape at the given latlng |
 | appendShape  | shape  | — | Append a new shape to the polygon or polyline |
+| prependShape  | shape  | — | Prepend a new shape to the polygon or polyline |
+| insertShape  | shape, index  | — | Insert a new shape to the polygon or polyline at given index (default is to append) |
 
 
 ### L.Editable.PolylineEditor

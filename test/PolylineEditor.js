@@ -395,6 +395,175 @@ describe('L.PolylineEditor', function() {
 
         });
 
+        describe('#formatShape', function () {
+            var layer;
+
+            before(function () {
+                layer = L.polyline([]).addTo(this.map);
+                layer.enableEdit();
+            });
+
+            after(function () {
+                layer.remove();
+            });
+
+            it('should not nest flat shape', function () {
+                var latlngs = [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)];
+                assert.deepEqual(layer.editor.formatShape(latlngs), latlngs);
+            });
+
+            it('should not nest empty shape', function () {
+                assert.deepEqual(layer.editor.formatShape([]), []);
+            });
+
+            it('should unnest nested shape', function () {
+                var latlngs = [[p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)]];
+                assert.deepEqual(layer.editor.formatShape(latlngs), latlngs[0]);
+            });
+
+        });
+
+        describe('#insertShape', function () {
+
+            it('should insert flat shape on multi polyline', function () {
+                var latlngs = [
+                        [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                        [p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]
+                    ],
+                    shape = [p2ll(400, 450), p2ll(450, 500), p2ll(500, 400)],
+                    layer = L.polyline(latlngs).addTo(this.map);
+                layer.enableEdit();
+                layer.editor.insertShape(shape, 1);
+                assert.equal(layer._latlngs.length, 3);
+                assert.deepEqual(shape, layer._latlngs[1]);
+                layer.remove();
+            });
+
+            it('should add nested shape on multi polyline', function () {
+                var latlngs = [
+                        [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                        [p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]
+                    ],
+                    shape = [[p2ll(400, 450), p2ll(450, 500), p2ll(500, 400)]],
+                    layer = L.polyline(latlngs).addTo(this.map);
+                layer.enableEdit();
+                layer.editor.insertShape(shape, 1);
+                assert.equal(layer._latlngs.length, 3);
+                assert.deepEqual(shape[0], layer._latlngs[1]);
+                layer.remove();
+            });
+
+        });
+
+        describe('#appendShape', function () {
+
+            it('should add flat shape on flat line', function () {
+                var latlngs = [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                    shape = [p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)],
+                    layer = L.polyline(latlngs).addTo(this.map);
+                layer.enableEdit();
+                layer.editor.appendShape(shape);
+                layer.disableEdit();
+                assert.equal(layer._latlngs.length, 2);
+                assert.deepEqual(shape, layer._latlngs[1]);
+                layer.remove();
+            });
+
+            it('should add nested shape on flat line', function () {
+                var latlngs = [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                    shape = [[p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]],
+                    layer = L.polyline(latlngs).addTo(this.map);
+                layer.enableEdit();
+                layer.editor.appendShape(shape);
+                assert.equal(layer._latlngs.length, 2);
+                assert.deepEqual(shape[0], layer._latlngs[1]);
+                layer.remove();
+            });
+
+            it('should add flat shape on multi polyline', function () {
+                var latlngs = [
+                        [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                        [p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]
+                    ],
+                    shape = [p2ll(400, 450), p2ll(450, 500), p2ll(500, 400)],
+                    layer = L.polyline(latlngs).addTo(this.map);
+                layer.enableEdit();
+                layer.editor.appendShape(shape);
+                assert.equal(layer._latlngs.length, 3);
+                assert.deepEqual(shape, layer._latlngs[2]);
+                layer.remove();
+            });
+
+            it('should add nested shape on multi polyline', function () {
+                var latlngs = [
+                        [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                        [p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]
+                    ],
+                    shape = [[p2ll(400, 450), p2ll(450, 500), p2ll(500, 400)]],
+                    layer = L.polyline(latlngs).addTo(this.map);
+                layer.enableEdit();
+                layer.editor.appendShape(shape);
+                assert.equal(layer._latlngs.length, 3);
+                assert.deepEqual(shape[0], layer._latlngs[2]);
+                layer.remove();
+            });
+
+        });
+
+        describe('#prependShape', function () {
+
+            it('should add flat shape on flat line', function () {
+                var latlngs = [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                    shape = [p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)],
+                    layer = L.polyline(latlngs).addTo(this.map);
+                layer.enableEdit();
+                layer.editor.prependShape(shape);
+                assert.equal(layer._latlngs.length, 2);
+                assert.deepEqual(shape, layer._latlngs[0]);
+                layer.remove();
+            });
+
+            it('should add nested shape on flat line', function () {
+                var latlngs = [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                    shape = [[p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]],
+                    layer = L.polyline(latlngs).addTo(this.map);
+                layer.enableEdit();
+                layer.editor.prependShape(shape);
+                assert.equal(layer._latlngs.length, 2);
+                assert.deepEqual(shape[0], layer._latlngs[0]);
+                layer.remove();
+            });
+
+            it('should add flat shape on multi polyline', function () {
+                var latlngs = [
+                        [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                        [p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]
+                    ],
+                    shape = [p2ll(400, 450), p2ll(450, 500), p2ll(500, 400)],
+                    layer = L.polyline(latlngs).addTo(this.map);
+                layer.enableEdit();
+                layer.editor.prependShape(shape);
+                assert.equal(layer._latlngs.length, 3);
+                assert.deepEqual(shape, layer._latlngs[0]);
+                layer.remove();
+            });
+
+            it('should add nested shape on multi polyline', function () {
+                var latlngs = [
+                        [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                        [p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]
+                    ],
+                    shape = [[p2ll(400, 450), p2ll(450, 500), p2ll(500, 400)]],
+                    layer = L.polyline(latlngs).addTo(this.map);
+                layer.enableEdit();
+                layer.editor.prependShape(shape);
+                assert.equal(layer._latlngs.length, 3);
+                assert.deepEqual(shape[0], layer._latlngs[0]);
+                layer.remove();
+            });
+
+        });
+
         describe('#newShape', function () {
 
             it('should add a new shape on empty polyline', function () {
@@ -617,88 +786,6 @@ describe('L.PolylineEditor', function() {
                 layer.editor.deleteShapeAt(p2ll(100, 150));
                 assert.equal(layer._latlngs.length, 1);
                 assert.equal(layer._latlngs[0][0], latlngs[1][0]);
-                layer.remove();
-            });
-
-        });
-
-        describe('#formatShape', function () {
-            var layer;
-
-            before(function () {
-                layer = L.polyline([]).addTo(this.map);
-                layer.enableEdit();
-            });
-
-            after(function () {
-                layer.remove();
-            });
-
-            it('should not nest flat shape', function () {
-                var latlngs = [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)];
-                assert.deepEqual(layer.editor.formatShape(latlngs), latlngs);
-            });
-
-            it('should not nest empty shape', function () {
-                assert.deepEqual(layer.editor.formatShape([]), []);
-            });
-
-            it('should unnest nested shape', function () {
-                var latlngs = [[p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)]];
-                assert.deepEqual(layer.editor.formatShape(latlngs), latlngs[0]);
-            });
-
-        });
-
-        describe('#appendShape', function () {
-
-            it('should add flat shape on flat line', function () {
-                var latlngs = [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
-                    shape = [p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)],
-                    layer = L.polyline(latlngs).addTo(this.map);
-                layer.enableEdit();
-                layer.editor.appendShape(shape);
-                assert.equal(layer._latlngs.length, 2);
-                assert.deepEqual(shape, layer._latlngs[1]);
-                layer.remove();
-            });
-
-            it('should add nested shape on flat line', function () {
-                var latlngs = [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
-                    shape = [[p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]],
-                    layer = L.polyline(latlngs).addTo(this.map);
-                layer.enableEdit();
-                layer.editor.appendShape(shape);
-                assert.equal(layer._latlngs.length, 2);
-                assert.deepEqual(shape[0], layer._latlngs[1]);
-                layer.remove();
-            });
-
-            it('should add flat shape on multi polyline', function () {
-                var latlngs = [
-                        [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
-                        [p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]
-                    ],
-                    shape = [p2ll(400, 450), p2ll(450, 500), p2ll(500, 400)],
-                    layer = L.polyline(latlngs).addTo(this.map);
-                layer.enableEdit();
-                layer.editor.appendShape(shape);
-                assert.equal(layer._latlngs.length, 3);
-                assert.deepEqual(shape, layer._latlngs[2]);
-                layer.remove();
-            });
-
-            it('should add nested shape on multi polyline', function () {
-                var latlngs = [
-                        [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
-                        [p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]
-                    ],
-                    shape = [[p2ll(400, 450), p2ll(450, 500), p2ll(500, 400)]],
-                    layer = L.polyline(latlngs).addTo(this.map);
-                layer.enableEdit();
-                layer.editor.appendShape(shape);
-                assert.equal(layer._latlngs.length, 3);
-                assert.deepEqual(shape[0], layer._latlngs[2]);
                 layer.remove();
             });
 

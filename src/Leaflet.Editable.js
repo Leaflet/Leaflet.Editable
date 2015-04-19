@@ -905,9 +905,18 @@
         },
 
         appendShape: function (shape) {
+            this.insertShape(shape);
+        },
+
+        prependShape: function (shape) {
+            this.insertShape(shape, 0);
+        },
+
+        insertShape: function (shape, index) {
             this.ensureMulti();
             shape = this.formatShape(shape);
-            this.feature._latlngs.push(shape);
+            if (typeof index === 'undefined') index = this.feature._latlngs.length;
+            this.feature._latlngs.splice(index, 0, shape);
             this.feature.redraw();
             if (this._enabled) this.reset();
         }
