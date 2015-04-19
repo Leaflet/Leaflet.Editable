@@ -970,6 +970,8 @@
             if (shapeIndex === -1) return;
             var first = shape.slice(0, index + 1),
                 second = shape.slice(index);
+            // We deal with reference, we don't want twice the same latlng around.
+            second[0] = L.latLng(second[0].lat, second[0].lng, second[0].alt);
             this.feature._latlngs.splice(shapeIndex, 1, first, second);
             this.refresh();
             this.reset();

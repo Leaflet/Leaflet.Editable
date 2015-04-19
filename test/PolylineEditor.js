@@ -712,6 +712,7 @@ describe('L.PolylineEditor', function() {
                 layer.enableEdit().splitShape(layer._latlngs, 1);
                 layer.disableEdit();
                 assert.deepEqual(layer._latlngs, [[p2ll(100, 150), p2ll(150, 200)], [p2ll(150, 200), p2ll(200, 100)]]);
+                assert.notStrictEqual(layer._latlngs[0][1], layer._latlngs[1][0]);  // LatLng has been cloned.
                 layer.remove();
             });
 
