@@ -179,6 +179,7 @@ Those are its public methods.
 | getLastIndex  | —  | int | Get last vertex index of the LatLngs group of the current vertex. |
 | getPrevious  | —  | VertexMarker instance | Get the previous VertexMarker in the same LatLngs group. |
 | getNext  | —  | VertexMarker instance | Get the next VertexMarker in the same LatLngs group. |
+| split  | —  | — | Split the vertex LatLngs group at its index, if possible. |
 
 
 ### L.Editable.BaseEditor

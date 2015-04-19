@@ -396,10 +396,8 @@
         },
 
         split: function () {
-            if (this.editor.splitShape) return;  // Only for PolylineEditor
-            var index = this.getIndex();
-            if (index === 0 || index === this.getLastIndex()) return;
-            this.editor.splitShape(this.latlngs, index);
+            if (!this.editor.splitShape) return;  // Only for PolylineEditor
+            this.editor.splitShape(this.latlngs, this.getIndex());
         }
 
     });
