@@ -227,6 +227,7 @@ Useful specific methods:
 |----------------|---------|--------|---------------------------------|
 | continueForward  | latlngs  | — | Set up drawing tools to continue the line forward |
 | continueBackward  | latlngs  | — | Set up drawing tools to continue the line backward |
+| splitShape  | latlngs, index  | — | Split the given latlngs shape at index `index` and integrate new shape in instance latlngs |
 
 ### L.Editable.PolygonEditor
 

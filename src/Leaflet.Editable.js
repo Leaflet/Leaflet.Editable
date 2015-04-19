@@ -393,6 +393,13 @@
         _initInteraction: function () {
             L.Marker.prototype._initInteraction.call(this);
             L.DomEvent.on(this._icon, 'touchstart', function (e) {this._fireMouseEvent(e);}, this);
+        },
+
+        split: function () {
+            if (this.editor.splitShape) return;  // Only for PolylineEditor
+            var index = this.getIndex();
+            if (index === 0 || index === this.getLastIndex()) return;
+            this.editor.splitShape(this.latlngs, index);
         }
 
     });
@@ -955,6 +962,18 @@
         formatShape: function (shape) {
             if (this.feature._flat(shape)) return shape;
             else if (shape[0]) return this.formatShape(shape[0]);
+        },
+
+        splitShape: function (shape, index) {
+            if (!index || index >= shape.length - 1) return;
+            this.ensureMulti();
+            var shapeIndex = this.feature._latlngs.indexOf(shape);
+            if (shapeIndex === -1) return;
+            var first = shape.slice(0, index + 1),
+                second = shape.slice(index);
+            this.feature._latlngs.splice(shapeIndex, 1, first, second);
+            this.refresh();
+            this.reset();
         }
 
     });

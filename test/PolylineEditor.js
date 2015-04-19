@@ -704,6 +704,72 @@ describe('L.PolylineEditor', function() {
 
         });
 
+        describe('#splitShape', function () {
+
+            it('should split flat line at given index', function () {
+                var latlngs = [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                    layer = L.polyline(latlngs).addTo(this.map);
+                layer.enableEdit().splitShape(layer._latlngs, 1);
+                layer.disableEdit();
+                assert.deepEqual(layer._latlngs, [[p2ll(100, 150), p2ll(150, 200)], [p2ll(150, 200), p2ll(200, 100)]]);
+                layer.remove();
+            });
+
+            it('should split multi line shape at given index', function () {
+                var latlngs = [
+                        [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                        [p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]
+                    ],
+                    layer = L.polyline(latlngs).addTo(this.map);
+                layer.enableEdit().splitShape(layer._latlngs[0], 1);
+                layer.disableEdit();
+                assert.deepEqual(layer._latlngs, [[p2ll(100, 150), p2ll(150, 200)], [p2ll(150, 200), p2ll(200, 100)], [p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]]);
+                layer.remove();
+            });
+
+            it('should not split if index is first', function () {
+                var latlngs = [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                    layer = L.polyline(latlngs).addTo(this.map);
+                layer.enableEdit().splitShape(layer._latlngs, 0);
+                layer.disableEdit();
+                assert.deepEqual(layer._latlngs, latlngs);
+                layer.remove();
+            });
+
+            it('should not split if index is last', function () {
+                var latlngs = [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                    layer = L.polyline(latlngs).addTo(this.map);
+                layer.enableEdit().splitShape(layer._latlngs, 2);
+                layer.disableEdit();
+                assert.deepEqual(layer._latlngs, latlngs);
+                layer.remove();
+            });
+
+            it('should not split if index gt than last', function () {
+                var latlngs = [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                    layer = L.polyline(latlngs).addTo(this.map);
+                layer.enableEdit().splitShape(layer._latlngs, 3);
+                layer.disableEdit();
+                assert.deepEqual(layer._latlngs, latlngs);
+                layer.remove();
+            });
+
+            it('should fire editable:editing', function () {
+                var latlngs = [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                    layer = L.polyline(latlngs).addTo(this.map),
+                    called = 0,
+                    call = function (e) {called++;};
+                this.map.on('editable:editing', call);
+                layer.enableEdit().splitShape(layer._latlngs, 1);
+                assert.equal(called, 1);
+                layer.disableEdit();
+                assert.deepEqual(layer._latlngs, [[p2ll(100, 150), p2ll(150, 200)], [p2ll(150, 200), p2ll(200, 100)]]);
+                this.map.off('editable:editing', call);
+                layer.remove();
+            });
+
+        });
+
     });
 
 });
