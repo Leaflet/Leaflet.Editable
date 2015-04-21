@@ -159,6 +159,7 @@ instance:
 | startMarker  | latlng\*  | created L.Marker instance | Start adding a marker. If latlng is given, the marker will be shown first at this point. In any case, it will follow the user mouse, and will have a final latlng on next click (or touch). |
 | stopDrawing  | — | — | When you need to stop any ongoing drawing, without needing to know which editor is active. |
 | commitDrawing  | — | — | When you need to commit any ongoing drawing, without needing to know which editor is active. |
+| drawing | — | boolean | Return true if an editor is active and in drawing mode. |
 
 #### Events
 
@@ -218,6 +219,7 @@ Interesting new method:
 | appendShape  | shape  | — | Append a new shape to the polygon or polyline |
 | prependShape  | shape  | — | Prepend a new shape to the polygon or polyline |
 | insertShape  | shape, index  | — | Insert a new shape to the polygon or polyline at given index (default is to append) |
+| drawing  | — | bookean | Return true if editor is drawing |
 
 
 ### L.Editable.PolylineEditor

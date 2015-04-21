@@ -29,7 +29,7 @@ describe('L.PolygonEditor', function() {
         it('should not finish shape if not enough vertices', function () {
             happen.at('click', 200, 350);
             assert.equal(polygon._latlngs.length, 2);
-            assert.ok(polygon.editor.drawing);
+            assert.ok(polygon.editor.drawing());
         });
 
         it('should finish shape on last point click', function () {
@@ -170,6 +170,24 @@ describe('L.PolygonEditor', function() {
             happen.at('click', 250, 200);
             assert.notOk(polygon._latlngs[1]);
             polygon.remove();
+        });
+
+    });
+
+
+    describe('#drawing', function () {
+
+        it('should return false if no drawing happen', function () {
+            var layer = L.polyline([p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)]).addTo(this.map);
+            layer.enableEdit();
+            assert.notOk(layer.editor.drawing());
+            layer.remove();
+        });
+
+        it('should return true if an editor is active and drawing forward', function () {
+            var layer = this.map.editTools.startPolygon();
+            assert.ok(layer.editor.drawing());
+            layer.remove();
         });
 
     });

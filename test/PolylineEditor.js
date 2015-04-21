@@ -171,6 +171,34 @@ describe('L.PolylineEditor', function() {
 
     });
 
+
+    describe('#drawing', function () {
+
+        it('should return false if no drawing happen', function () {
+            var layer = L.polyline([p2ll(100, 150), p2ll(150, 200)]).addTo(this.map);
+            layer.enableEdit();
+            assert.notOk(layer.editor.drawing());
+            layer.remove();
+        });
+
+        it('should return true if an editor is active and drawing forward', function () {
+            var layer = L.polyline([p2ll(100, 150), p2ll(150, 200)]).addTo(this.map);
+            layer.enableEdit();
+            layer.editor.continueBackward();
+            assert.ok(layer.editor.drawing());
+            layer.remove();
+        });
+
+        it('should return true if an editor is active and drawing backward', function () {
+            var layer = L.polyline([p2ll(100, 150), p2ll(150, 200)]).addTo(this.map);
+            layer.enableEdit();
+            layer.editor.continueBackward();
+            assert.ok(layer.editor.drawing());
+            layer.remove();
+        });
+
+    });
+
     describe('#pop', function () {
 
         it('should remove last latlng when drawing forward', function () {

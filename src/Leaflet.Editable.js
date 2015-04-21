@@ -144,8 +144,12 @@
             if (L.Browser.touch) this.map.off('click', editor.onTouch, editor);
             if (editor !== this._drawingEditor) return;
             delete this._drawingEditor;
-            if (editor.drawing) editor.cancelDrawing();
+            if (editor._drawing) editor.cancelDrawing();
             L.DomUtil.removeClass(this.map._container, this.options.drawingCSSClass);
+        },
+
+        drawing: function () {
+            return this._drawingEditor && this._drawingEditor.drawing();
         },
 
         stopDrawing: function () {
@@ -534,8 +538,12 @@
             this.tools.editLayer.removeLayer(this.editLayer);
             this.onDisable();
             delete this._enabled;
-            if (this.drawing) this.cancelDrawing();
+            if (this._drawing) this.cancelDrawing();
             return this;
+        },
+
+        drawing: function () {
+            return !!this._drawing;
         },
 
         fireAndForward: function (type, e) {
@@ -575,7 +583,7 @@
         },
 
         startDrawing: function () {
-            if (!this.drawing) this.drawing = L.Editable.FORWARD;
+            if (!this._drawing) this._drawing = L.Editable.FORWARD;
             this.tools.registerForDrawing(this);
             this.onStartDrawing();
         },
@@ -591,20 +599,20 @@
         },
 
         endDrawing: function () {
-            this.drawing = false;
+            this._drawing = false;
             this.tools.unregisterForDrawing(this);
             this.onEndDrawing();
         },
 
         onMouseMove: function (e) {
-            if (this.drawing) {
+            if (this._drawing) {
                 this.tools.newClickHandler.setLatLng(e.latlng);
             }
         },
 
         onTouch: function (e) {
             this.onMouseMove(e);
-            if (this.drawing) this.tools.newClickHandler._fireMouseEvent(e);
+            if (this._drawing) this.tools.newClickHandler._fireMouseEvent(e);
         },
 
         onNewClickHandlerClicked: function (e) {
@@ -634,7 +642,7 @@
         },
 
         onMouseMove: function (e) {
-            if (this.drawing) {
+            if (this._drawing) {
                 L.Editable.BaseEditor.prototype.onMouseMove.call(this, e);
                 this.feature.setLatLng(e.latlng);
                 this.tools.newClickHandler._bringToFront();
@@ -711,11 +719,11 @@
                 this.onVertexMarkerAltClick(e);
             } else if (e.originalEvent.shiftKey) {
                 this.onVertexMarkerShiftClick(e);
-            } else if (index >= this.MIN_VERTEX - 1 && index === e.vertex.getLastIndex() && this.drawing === L.Editable.FORWARD) {
+            } else if (index >= this.MIN_VERTEX - 1 && index === e.vertex.getLastIndex() && this._drawing === L.Editable.FORWARD) {
                 commit = true;
-            } else if (index === 0 && this.drawing === L.Editable.BACKWARD && this._drawnLatLngs.length >= this.MIN_VERTEX) {
+            } else if (index === 0 && this._drawing === L.Editable.BACKWARD && this._drawnLatLngs.length >= this.MIN_VERTEX) {
                 commit = true;
-            } else if (index === 0 && this.drawing === L.Editable.FORWARD && this._drawnLatLngs.length >= this.MIN_VERTEX && this.CLOSED) {
+            } else if (index === 0 && this._drawing === L.Editable.FORWARD && this._drawnLatLngs.length >= this.MIN_VERTEX && this.CLOSED) {
                 commit = true;  // Allow to close on first point also for polygons
             } else {
                 this.onVertexRawMarkerClick(e);
@@ -797,7 +805,7 @@
         },
 
         addLatLng: function (latlng) {
-            if (this.drawing === L.Editable.FORWARD) this._drawnLatLngs.push(latlng);
+            if (this._drawing === L.Editable.FORWARD) this._drawnLatLngs.push(latlng);
             else this._drawnLatLngs.unshift(latlng);
             this.feature._bounds.extend(latlng);
             this.refresh();
@@ -819,7 +827,7 @@
 
         push: function (latlng) {
             if (!latlng) return console.error('L.Editable.PathEditor.push expect a vaild latlng as parameter');
-            if (this.drawing === L.Editable.FORWARD) this.newPointForward(latlng);
+            if (this._drawing === L.Editable.FORWARD) this.newPointForward(latlng);
             else this.newPointBackward(latlng);
         },
 
@@ -831,22 +839,22 @@
         pop: function () {
             if (this._drawnLatLngs.length <= 1) return;
             var latlng;
-            if (this.drawing === L.Editable.FORWARD) latlng = this._drawnLatLngs[this._drawnLatLngs.length - 1];
+            if (this._drawing === L.Editable.FORWARD) latlng = this._drawnLatLngs[this._drawnLatLngs.length - 1];
             else latlng = this._drawnLatLngs[0];
             this.removeLatLng(latlng);
-            if (this.drawing === L.Editable.FORWARD) this.tools.anchorForwardLineGuide(this._drawnLatLngs[this._drawnLatLngs.length - 1]);
+            if (this._drawing === L.Editable.FORWARD) this.tools.anchorForwardLineGuide(this._drawnLatLngs[this._drawnLatLngs.length - 1]);
             else this.tools.anchorForwardLineGuide(this._drawnLatLngs[0]);
             return latlng;
         },
 
         processClickHandlerClicked: function (e) {
-            if (this.drawing === L.Editable.FORWARD) this.newPointForward(e.latlng);
+            if (this._drawing === L.Editable.FORWARD) this.newPointForward(e.latlng);
             else this.newPointBackward(e.latlng);
             this.fireAndForward('editable:drawing:clicked', e);
         },
 
         onMouseMove: function (e) {
-            if (this.drawing) {
+            if (this._drawing) {
                 L.Editable.BaseEditor.prototype.onMouseMove.call(this, e);
                 this.tools.moveForwardLineGuide(e.latlng);
                 this.tools.moveBackwardLineGuide(e.latlng);
@@ -926,7 +934,7 @@
     L.Editable.PolylineEditor = L.Editable.PathEditor.extend({
 
         startDrawingBackward: function (latlngs) {
-            this.drawing = L.Editable.BACKWARD;
+            this._drawing = L.Editable.BACKWARD;
             this.startDrawing(latlngs);
             this.tools.attachBackwardLineGuide();
         },

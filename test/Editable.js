@@ -104,4 +104,34 @@ describe('L.Editable', function () {
 
     });
 
+
+    describe('#drawing', function () {
+
+        it('should return false if nothing happen', function () {
+            assert.notOk(this.map.editTools.drawing());
+        });
+
+        it('should return false if an editor is active but not drawing', function () {
+            var layer = L.polyline([]).addTo(this.map);
+            layer.enableEdit();
+            assert.notOk(this.map.editTools.drawing());
+            layer.remove()
+        });
+
+        it('should return true if an editor is active and drawing forward', function () {
+            var layer = this.map.editTools.startPolyline();
+            assert.ok(this.map.editTools.drawing());
+            layer.remove();
+        });
+
+        it('should return true if an editor is active and drawing backward', function () {
+            var layer = L.polyline([[1, 2], [3, 4]]).addTo(this.map);
+            layer.enableEdit();
+            layer.editor.continueBackward();
+            assert.ok(this.map.editTools.drawing());
+            layer.remove()
+        });
+
+    });
+
 });
