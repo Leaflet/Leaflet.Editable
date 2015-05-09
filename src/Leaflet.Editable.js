@@ -322,6 +322,7 @@
         },
 
         onClick: function (e) {
+            L.DomEvent.stop(e);
             e.vertex = this;
             this.editor.onVertexMarkerClick(e);
         },
