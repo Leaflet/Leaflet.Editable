@@ -181,6 +181,7 @@ Those are its public methods.
 | getPrevious  | —  | VertexMarker instance | Get the previous VertexMarker in the same LatLngs group. |
 | getNext  | —  | VertexMarker instance | Get the next VertexMarker in the same LatLngs group. |
 | split  | —  | — | Split the vertex LatLngs group at its index, if possible. |
+| continue  | —  | — | Continue the vertex LatLngs from this vertex. Only active for first and last vertices of a Polyline. |
 
 
 ### L.Editable.BaseEditor
