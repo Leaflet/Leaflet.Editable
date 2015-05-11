@@ -684,7 +684,7 @@
 
         initVertexMarkers: function (latlngs) {
             latlngs = latlngs || this.getLatLngs();
-            if (this.feature._flat(latlngs)) {
+            if (L.Polyline._flat(latlngs)) {
                 this.addVertexMarkers(latlngs);
             } else {
                 for (var i = 0; i < latlngs.length; i++) {
@@ -727,8 +727,8 @@
                 this.onVertexMarkerAltClick(e);
             } else if (e.originalEvent.shiftKey) {
                 this.onVertexMarkerShiftClick(e);
-            } else if (index >= this.MIN_VERTEX - 1 && index === e.vertex.getLastIndex() && this._drawing === L.Editable.FORWARD) {
-                commit = true;
+            } else if (index === e.vertex.getLastIndex() && this._drawing === L.Editable.FORWARD) {
+                if (index >= this.MIN_VERTEX - 1) commit = true;
             } else if (index === 0 && this._drawing === L.Editable.BACKWARD && this._drawnLatLngs.length >= this.MIN_VERTEX) {
                 commit = true;
             } else if (index === 0 && this._drawing === L.Editable.FORWARD && this._drawnLatLngs.length >= this.MIN_VERTEX && this.CLOSED) {
@@ -903,6 +903,7 @@
                     self.fireAndForward('editable:shape:delete', e);
                     if (e._cancelled) return;
                     shape = callback(latlngs, shape);
+                    if (self.ensureNotFlat) self.ensureNotFlat();  // Polygon
                     self.refresh();
                     self.reset();
                     self.fireAndForward('editable:shape:deleted', {shape: shape});
@@ -968,7 +969,7 @@
         },
 
         ensureMulti: function () {
-            if (this.feature._latlngs.length && this.feature._flat(this.feature._latlngs)) {
+            if (this.feature._latlngs.length && L.Polyline._flat(this.feature._latlngs)) {
                 this.feature._latlngs = [this.feature._latlngs];
             }
         },
@@ -984,7 +985,7 @@
         },
 
         formatShape: function (shape) {
-            if (this.feature._flat(shape)) return shape;
+            if (L.Polyline._flat(shape)) return shape;
             else if (shape[0]) return this.formatShape(shape[0]);
         },
 
@@ -1032,8 +1033,8 @@
         },
 
         addNewEmptyShape: function () {
-            if (this.feature._latlngs.length) {
-                var shape = [[]];
+            if (this.feature._latlngs.length && this.feature._latlngs[0].length) {
+                var shape = [];
                 this.appendShape(shape);
                 return shape;
             } else {
@@ -1042,15 +1043,13 @@
         },
 
         ensureMulti: function () {
-            if (this.feature._latlngs.length && this.feature._flat(this.feature._latlngs[0])) {
-                this.feature._latlngs = [[this.feature._latlngs]];
+            if (this.feature._latlngs.length && L.Polyline._flat(this.feature._latlngs[0])) {
+                this.feature._latlngs = [this.feature._latlngs];
             }
         },
 
         ensureNotFlat: function () {
-            if (this.feature._latlngs.length && this.feature._flat(this.feature._latlngs)) {
-                this.feature._latlngs = [this.feature._latlngs];
-            }
+            if (!this.feature._latlngs.length || L.Polyline._flat(this.feature._latlngs)) this.feature._latlngs = [this.feature._latlngs];
         },
 
         vertexCanBeDeleted: function (vertex) {
@@ -1064,7 +1063,10 @@
         },
 
         formatShape: function (shape) {
-            if (this.feature._flat(shape)) return [shape];
+            // [[1, 2], [3, 4]] => must be nested
+            // [] => must be nested
+            // [[]] => is already nested
+            if (L.Polyline._flat(shape) && (!shape[0] || shape[0].length !== 0)) return [shape];
             else return shape;
         }
 
@@ -1124,7 +1126,7 @@
             var shape = null;
             latlngs = latlngs || this._latlngs;
             if (!latlngs.length) return shape;
-            else if (this._flat(latlngs) && this.isInLatLngs(latlng, latlngs)) shape = latlngs;
+            else if (L.Polyline._flat(latlngs) && this.isInLatLngs(latlng, latlngs)) shape = latlngs;
             else for (var i = 0; i < latlngs.length; i++) if (this.isInLatLngs(latlng, latlngs[i])) return latlngs[i];
             return shape;
         },
@@ -1145,11 +1147,6 @@
                 }
             }
             return false;
-        },
-
-        _flat: function (latlngs) {
-            // Workaround Leaflet#3386
-           return !L.Util.isArray(latlngs[0]) || (typeof latlngs[0][0] !== 'object' && typeof latlngs[0][0] !== 'undefined');
         }
 
     });
@@ -1168,8 +1165,8 @@
             var shape = null;
             latlngs = latlngs || this._latlngs;
             if (!latlngs.length) return shape;
-            else if (this._flat(latlngs) && this.isInLatLngs(latlng, latlngs)) shape = latlngs;
-            else if (this._flat(latlngs[0]) && this.isInLatLngs(latlng, latlngs[0])) shape = latlngs;
+            else if (L.Polyline._flat(latlngs) && this.isInLatLngs(latlng, latlngs)) shape = latlngs;
+            else if (L.Polyline._flat(latlngs[0]) && this.isInLatLngs(latlng, latlngs[0])) shape = latlngs;
             else for (var i = 0; i < latlngs.length; i++) if (this.isInLatLngs(latlng, latlngs[i][0])) return latlngs[i];
             return shape;
         },
