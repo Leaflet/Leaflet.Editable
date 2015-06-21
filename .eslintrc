@@ -3,13 +3,12 @@
         "browser": true
     },
     "rules": {
-        "quotes": "single",
-        "no-underscore-dangle": false,
-        "curly": false,
-        "consistent-return": false,
-        "new-cap": false,
-        "strict": "global",
-        "global-strict": 0
+        "quotes": [2, "single"],
+        "no-underscore-dangle": 0,
+        "curly": 0,
+        "consistent-return": 0,
+        "new-cap": 0,
+        "strict": [2, "global"]
     },
     "globals": {L: true}
 }
