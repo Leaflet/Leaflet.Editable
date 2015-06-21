@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 (function (factory, window) {
     /*globals define, module, require*/
 
@@ -398,7 +398,7 @@
 
         _initInteraction: function () {
             L.Marker.prototype._initInteraction.call(this);
-            L.DomEvent.on(this._icon, 'touchstart', function (e) {this._fireMouseEvent(e);}, this);
+            L.DomEvent.on(this._icon, 'touchstart', function (e) { this._handleDOMEvent(e); }, this);
         },
 
         split: function () {
@@ -511,7 +511,7 @@
 
         _initInteraction: function () {
             L.Marker.prototype._initInteraction.call(this);
-            L.DomEvent.on(this._icon, 'touchstart', function (e) {this._fireMouseEvent(e);}, this);
+            L.DomEvent.on(this._icon, 'touchstart', function (e) { this._handleDOMEvent(e); }, this);
         }
 
     });
@@ -620,7 +620,7 @@
 
         onTouch: function (e) {
             this.onMouseMove(e);
-            if (this._drawing) this.tools.newClickHandler._fireMouseEvent(e);
+            if (this._drawing) this.tools.newClickHandler._handleDOMEvent(e);
         },
 
         onNewClickHandlerClicked: function (e) {
@@ -1066,7 +1066,7 @@
             // [[1, 2], [3, 4]] => must be nested
             // [] => must be nested
             // [[]] => is already nested
-            if (L.Polyline._flat(shape) && (!shape[0] || shape[0].length !== 0)) return [shape];
+            if (L.Polyline._flat(shape) && (!shape[0] || shape[0].length !== 0)) return [shape];
             else return shape;
         }
 
