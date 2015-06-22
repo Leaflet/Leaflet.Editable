@@ -398,7 +398,7 @@
 
         _initInteraction: function () {
             L.Marker.prototype._initInteraction.call(this);
-            L.DomEvent.on(this._icon, 'touchstart', function (e) { this._handleDOMEvent(e); }, this);
+            L.DomEvent.on(this._icon, 'touchstart', function (e) { this._map._handleDOMEvent(e); }, this);
         },
 
         split: function () {
@@ -511,7 +511,7 @@
 
         _initInteraction: function () {
             L.Marker.prototype._initInteraction.call(this);
-            L.DomEvent.on(this._icon, 'touchstart', function (e) { this._handleDOMEvent(e); }, this);
+            L.DomEvent.on(this._icon, 'touchstart', function (e) { this._map._handleDOMEvent(e); }, this);
         }
 
     });
@@ -620,7 +620,7 @@
 
         onTouch: function (e) {
             this.onMouseMove(e);
-            if (this._drawing) this.tools.newClickHandler._handleDOMEvent(e);
+            if (this._drawing) this.tools.newClickHandler._map._handleDOMEvent(e);
         },
 
         onNewClickHandlerClicked: function (e) {
