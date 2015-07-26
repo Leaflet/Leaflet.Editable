@@ -27,7 +27,7 @@ describe('L.MarkerEditor', function() {
         });
 
         it('should set latlng on first click', function () {
-            happen.at('click', 300, 300);
+            happen.drawingClick(300, 300);
             var before = marker._latlng;
             happen.at('mousemove', 400, 400);
             assert.equal(before, marker._latlng);
@@ -85,8 +85,7 @@ describe('L.MarkerEditor', function() {
             this.map.on('editable:drawing:end', call);
             var other = this.map.editTools.startMarker();
             assert.equal(called, 0);
-            happen.at('mousemove', 450, 450);
-            happen.at('click', 450, 450);
+            happen.drawingClick(450, 450);
             assert.equal(called, 1);
             this.map.off('editable:drawing:end', call);
             this.map.removeLayer(other);
@@ -99,8 +98,7 @@ describe('L.MarkerEditor', function() {
             this.map.on('editable:drawing:commit', call);
             var other = this.map.editTools.startMarker();
             assert.equal(called, 0);
-            happen.at('mousemove', 450, 450);
-            happen.at('click', 450, 450);
+            happen.drawingClick(450, 450);
             assert.equal(called, 1);
             this.map.off('editable:drawing:commit', call);
             this.map.removeLayer(other);
@@ -130,8 +128,7 @@ describe('L.MarkerEditor', function() {
             this.map.on('editable:drawing:clicked', setLast);
             this.map.on('editable:drawing:commit', setLast);
             var other = this.map.editTools.startMarker();
-            happen.at('mousemove', 450, 450);
-            happen.at('click', 450, 450);
+            happen.drawingClick(450, 450);
             assert.equal(first, 'editable:drawing:clicked');
             assert.equal(last, 'editable:drawing:end');
             this.map.off('editable:drawing:end', setFirst);

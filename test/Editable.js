@@ -13,9 +13,9 @@ describe('L.Editable', function () {
         });
 
     });
-    describe('#updateNewClickHandlerZIndex', function () {
+    describe('#drawing on top of other elements', function () {
 
-        it('should be possible to create latlng on top of previously created vertex', function () {
+        xit('should be possible to create latlng on top of previously created vertex', function () {
             var line1 = this.map.editTools.startPolyline();
             happen.at('mousemove', 450, 450);
             happen.at('click', 450, 450);
@@ -39,18 +39,13 @@ describe('L.Editable', function () {
 
         it('should be possible to delete other vertex of currently drawn path', function () {
             var line = this.map.editTools.startPolyline();
-            happen.at('mousemove', 450, 450);
-            happen.at('click', 450, 450);
-            happen.at('mousemove', 500, 500);
-            happen.at('click', 500, 500);
-            happen.at('mousemove', 500, 550);
-            happen.at('click', 500, 550);
+            happen.drawingClick(450, 450);
+            happen.drawingClick(500, 500);
+            happen.drawingClick(500, 550);
             assert.equal(line._latlngs.length, 3);
-            happen.at('mousemove', 500, 500);
             happen.at('click', 500, 500);
             assert.equal(line._latlngs.length, 2);
-            happen.at('mousemove', 500, 550);
-            happen.at('click', 500, 550);
+            happen.drawingClick(500, 550);
             assert.equal(line._latlngs.length, 2);
             this.map.removeLayer(line);
         });
@@ -60,15 +55,12 @@ describe('L.Editable', function () {
 
         it('should commit drawing if drawing is active', function () {
             var layer = this.map.editTools.startPolyline();
-            happen.at('mousemove', 450, 450);
-            happen.at('click', 450, 450);
-            happen.at('mousemove', 500, 500);
-            happen.at('click', 500, 500);
+            happen.drawingClick(450, 450);
+            happen.drawingClick(500, 500);
             assert.equal(layer._latlngs.length, 2);
             this.map.editTools.commitDrawing();
             assert.equal(layer._latlngs.length, 2);
-            happen.at('mousemove', 550, 550);
-            happen.at('click', 550, 550);
+            happen.drawingClick(550, 550);
             assert.equal(layer._latlngs.length, 2);
             layer.remove();
         });
