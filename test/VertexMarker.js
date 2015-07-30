@@ -49,13 +49,13 @@ describe('L.Editable.VertexMarker', function() {
             happen.drawingClick(200, 200);
             assert.equal(layer._latlngs[0].length, 4);
             happen.at('click', 200, 200);  // Finish shape
-            happen.drawingClick('click', 250, 250);  // Drawing click elsewhere on the map
+            happen.drawingClick(250, 250);  // Drawing click elsewhere on the map
             assert.equal(layer._latlngs[0].length, 4);
             layer._latlngs[1][0].__vertex.continue();
             happen.drawingClick(400, 400);
             assert.equal(layer._latlngs[1].length, 4);
             happen.at('click', 400, 400);  // Finish shape
-            happen.drawingClick('click', 450, 450);  // Drawing click elsewhere on the map
+            happen.drawingClick(450, 450);  // Drawing click elsewhere on the map
             assert.equal(layer._latlngs[1].length, 4);
             layer.remove();
         });
@@ -85,13 +85,13 @@ describe('L.Editable.VertexMarker', function() {
             happen.drawingClick(200, 200);
             assert.equal(layer._latlngs[0].length, 4);
             happen.at('click', 200, 200);  // Finish shape
-            happen.drawingClick('click', 250, 250);  // Drawing click elsewhere on the map
+            happen.drawingClick(250, 250);  // Drawing click elsewhere on the map
             assert.equal(layer._latlngs[0].length, 4);
             layer._latlngs[1][2].__vertex.continue();
             happen.drawingClick(400, 400);
             assert.equal(layer._latlngs[1].length, 4);
             happen.at('click', 400, 400);  // Finish shape
-            happen.drawingClick('click', 450, 450);  // Drawing click elsewhere on the map
+            happen.drawingClick(450, 450);  // Drawing click elsewhere on the map
             assert.equal(layer._latlngs[1].length, 4);
             layer.remove();
         });
