@@ -341,7 +341,6 @@ describe('L.PolygonEditor', function() {
             layer = this.map.editTools.startPolygon();
             assert.equal(called, 0);
             happen.drawingClick(250, 200);
-            happen.drawingClick(250, 200);
             assert.equal(called, 1);
             assert.ok(calledWhenEmpty);
             assert.ok(layer._latlngs[0].length);
