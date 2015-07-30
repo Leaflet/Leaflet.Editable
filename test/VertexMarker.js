@@ -29,8 +29,7 @@ describe('L.Editable.VertexMarker', function() {
                 layer = L.polyline(latlngs).addTo(this.map);
             layer.enableEdit();
             layer._latlngs[0].__vertex.continue();
-            happen.at('mousemove', 200, 200);
-            happen.at('click', 200, 200);
+            happen.drawingClick(200, 200);
             assert.equal(layer._latlngs.length, 4);
             happen.at('click', 200, 200);  // Finish shape
             happen.at('click', 250, 250);  // Click elsewhere on the map
@@ -44,8 +43,7 @@ describe('L.Editable.VertexMarker', function() {
                 layer = L.polyline(latlngs).addTo(this.map);
             layer.enableEdit();
             layer._latlngs[2].__vertex.continue();
-            happen.at('mousemove', 200, 200);
-            happen.at('click', 200, 200);
+            happen.drawingClick(200, 200);
             assert.equal(layer._latlngs.length, 4);
             happen.at('click', 200, 200);  // Finish shape
             happen.at('click', 250, 250);  // Click elsewhere on the map

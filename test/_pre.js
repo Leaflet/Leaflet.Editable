@@ -33,3 +33,7 @@ happen.drag = function (fromX, fromY, toX, toY, then) {
         if (then) then();
     }, 1000);
 };
+happen.drawingClick = function (x, y) {
+    this.at('mousedown', x, y);
+    this.at('mouseup', x, y);
+};

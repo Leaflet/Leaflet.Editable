@@ -1,14 +1,16 @@
-"use strict";
+'use strict';
 
-/*globals describe, before, after, it, assert, happen, map*/
 describe('L.MarkerEditor', function() {
-    var marker;
+    var marker, p2ll;
 
     before(function () {
         this.map = map;
+        p2ll = function (x, y) {
+            return map.layerPointToLatLng([x, y]);
+        };
     });
     after(function () {
-        this.map.removeLayer(marker);
+        if (marker) marker.remove();
     });
 
     describe('#startNewMarker()', function() {
@@ -27,7 +29,7 @@ describe('L.MarkerEditor', function() {
         });
 
         it('should set latlng on first click', function () {
-            happen.at('click', 300, 300);
+            happen.drawingClick(300, 300);
             var before = marker._latlng;
             happen.at('mousemove', 400, 400);
             assert.equal(before, marker._latlng);
@@ -85,11 +87,10 @@ describe('L.MarkerEditor', function() {
             this.map.on('editable:drawing:end', call);
             var other = this.map.editTools.startMarker();
             assert.equal(called, 0);
-            happen.at('mousemove', 450, 450);
-            happen.at('click', 450, 450);
+            happen.drawingClick(450, 450);
             assert.equal(called, 1);
             this.map.off('editable:drawing:end', call);
-            this.map.removeLayer(other);
+            other.remove();
             assert.equal(called, 1);
         });
 
@@ -99,11 +100,10 @@ describe('L.MarkerEditor', function() {
             this.map.on('editable:drawing:commit', call);
             var other = this.map.editTools.startMarker();
             assert.equal(called, 0);
-            happen.at('mousemove', 450, 450);
-            happen.at('click', 450, 450);
+            happen.drawingClick(450, 450);
             assert.equal(called, 1);
             this.map.off('editable:drawing:commit', call);
-            this.map.removeLayer(other);
+            other.remove();
             assert.equal(called, 1);
         });
 
@@ -115,7 +115,7 @@ describe('L.MarkerEditor', function() {
             this.map.editTools.stopDrawing();
             assert.equal(called, 1);
             this.map.off('editable:drawing:end', call);
-            this.map.removeLayer(other);
+            other.remove();
             assert.equal(called, 1);
         });
 
@@ -130,8 +130,7 @@ describe('L.MarkerEditor', function() {
             this.map.on('editable:drawing:clicked', setLast);
             this.map.on('editable:drawing:commit', setLast);
             var other = this.map.editTools.startMarker();
-            happen.at('mousemove', 450, 450);
-            happen.at('click', 450, 450);
+            happen.drawingClick(450, 450);
             assert.equal(first, 'editable:drawing:clicked');
             assert.equal(last, 'editable:drawing:end');
             this.map.off('editable:drawing:end', setFirst);
@@ -151,8 +150,37 @@ describe('L.MarkerEditor', function() {
             this.map.editTools.stopDrawing();
             assert.equal(called, 0);
             this.map.off('editable:drawing:commit', call);
-            this.map.removeLayer(other);
+            other.remove();
             assert.equal(called, 0);
+        });
+
+        it('should fire editable:drawing:move on mousemove while drawing', function () {
+            var called = 0,
+                call = function () {called++;};
+            this.map.on('editable:drawing:move', call);
+            var other = this.map.editTools.startMarker();
+            assert.equal(called, 0);
+            happen.at('mousemove', 450, 450);
+            assert.equal(called, 1);
+            happen.drawingClick(450, 450);
+            this.map.off('editable:drawing:move', call);
+            other.remove();
+            assert.equal(called, 1);
+        });
+
+        it('should fire editable:drawing:move on mousemove while moving marker', function (done) {
+            var called = 0,
+                call = function () {called++;};
+            var layer = L.marker(p2ll(200, 200)).addTo(this.map);
+            layer.enableEdit();
+            assert.equal(called, 0);
+            this.map.on('editable:drawing:move', call);
+            happen.drag(200, 190, 210, 210, function () {
+                assert.ok(called > 0);
+                map.off('editable:drawing:move', call);
+                layer.remove();
+                done();
+            });
         });
 
     });

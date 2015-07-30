@@ -76,7 +76,13 @@ var map = L.map('map', {editable: true}).setView(startPoint, 16),
 
   var snap = new L.Handler.MarkerSnap(map);
   snap.addGuideLayer(road);
-  snap.watchMarker(map.editTools.newClickHandler);
+  var snapMarker = L.marker(map.getCenter(), {
+    icon: map.editTools.createVertexIcon({className: 'leaflet-div-icon leaflet-drawing-icon'}),
+    opacity: 1,
+    zIndexOffset: 1000
+  });
+
+  snap.watchMarker(snapMarker);
 
   map.on('editable:vertex:dragstart', function (e) {
     snap.watchMarker(e.vertex);
@@ -84,6 +90,32 @@ var map = L.map('map', {editable: true}).setView(startPoint, 16),
   map.on('editable:vertex:dragend', function (e) {
     snap.unwatchMarker(e.vertex);
   });
+  map.on('editable:drawing:start', function () {
+    this.on('mousemove', followMouse);
+  });
+  map.on('editable:drawing:end', function () {
+    this.off('mousemove', followMouse);
+    snapMarker.remove();
+  });
+  map.on('editable:drawing:click editable:drawing:move', function (e) {
+    // Leaflet copy event data to another object when firing,
+    // so the event object we have here is not the one fired by
+    // Leaflet.Editable; it's not a deep copy though, so we can change
+    // the other objects that have a reference here.
+    var latlng = snapMarker.getLatLng();
+    e.latlng.lat = latlng.lat;
+    e.latlng.lng = latlng.lng;
+  });
+  snapMarker.on('snap', function (e) {
+    snapMarker.addTo(map);
+  });
+  snapMarker.on('unsnap', function (e) {
+    snapMarker.remove();
+  });
+  var followMouse = function (e) {
+    snapMarker.setLatLng(e.latlng);
+  }
+
 
 </script>
 </body>

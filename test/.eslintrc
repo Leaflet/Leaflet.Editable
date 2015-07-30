@@ -5,6 +5,7 @@
         "assert": true,
         "before": true,
         "after": true,
-        "it"
+        "it": true,
+        "map": true
     }
 }
