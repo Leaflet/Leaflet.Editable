@@ -1,3 +1,4 @@
+'use strict';
 describe('L.PolylineEditor', function() {
     var polyline, p2ll;
 
@@ -120,7 +121,6 @@ describe('L.PolylineEditor', function() {
         it('should insert new latlng on middle marker click', function (done) {
             var last = polyline._latlngs[3],
                 third = polyline._latlngs[2],
-                self = this,
                 fromX = (400 + 220) / 2,
                 fromY = (400 + 360) / 2;
             happen.drag(fromX, fromY, 300, 440, function () {
@@ -161,7 +161,7 @@ describe('L.PolylineEditor', function() {
         it('should remove every edit related layer on remove', function () {
             polyline.remove();
             this.map.editTools.editLayer.eachLayer(function (layer) {
-                assert.fail(layer, null, "no layer expected but one found");
+                assert.fail(layer, null, 'no layer expected but one found');
             });
         });
 
@@ -366,13 +366,40 @@ describe('L.PolylineEditor', function() {
                     called++;
                 };
             this.map.on('editable:drawing:click', call);
-            var polyline = this.map.editTools.startPolyline();
+            var layer = this.map.editTools.startPolyline();
             assert.equal(called, 0);
             happen.drawingClick(250, 250);
             assert.equal(called, 1);
-            assert.notOk(polyline._latlngs.length);
+            assert.notOk(layer._latlngs.length);
             this.map.off('editable:drawing:click', call);
-            polyline.remove();
+            layer.remove();
+        });
+
+        it('should send editable:drawing:move while drawing', function () {
+            var called = 0,
+                call = function () {called++;};
+            this.map.on('editable:drawing:move', call);
+            var layer = this.map.editTools.startPolyline();
+            assert.equal(called, 0);
+            happen.at('mousemove', 250, 250);
+            assert.equal(called, 1);
+            this.map.off('editable:drawing:move', call);
+            layer.remove();
+        });
+
+        it('should send editable:drawing:move when dragging vertex', function (done) {
+            var called = 0,
+                call = function () {called++;};
+            this.map.on('editable:drawing:move', call);
+            var layer = L.polyline([p2ll(100, 100), p2ll(150, 150)]).addTo(this.map);
+            layer.enableEdit();
+            assert.equal(called, 0);
+            happen.drag(100, 100, 110, 110, function () {
+                assert.ok(called > 0);
+                map.off('editable:drawing:move', call);
+                layer.remove();
+                done();
+            });
         });
 
     });
@@ -402,7 +429,7 @@ describe('L.PolylineEditor', function() {
                 assert.ok(multi._latlngs[1][1].__vertex.middleMarker);
                 multi.remove();
                 this.map.editTools.editLayer.eachLayer(function (layer) {
-                    assert.fail(layer, null, "no layer expected but one found");
+                    assert.fail(layer, null, 'no layer expected but one found');
                 });
             });
 
@@ -854,7 +881,7 @@ describe('L.PolylineEditor', function() {
                 var latlngs = [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
                     layer = L.polyline(latlngs).addTo(this.map),
                     called = 0,
-                    call = function (e) {called++;};
+                    call = function () {called++;};
                 this.map.on('editable:editing', call);
                 layer.enableEdit().splitShape(layer._latlngs, 1);
                 assert.equal(called, 1);

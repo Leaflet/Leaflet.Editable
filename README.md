@@ -98,6 +98,7 @@ Leaflet.Editable add options and events to the `L.Map` object.
 | editable:drawing:commit | layer | false | Fired when user finish drawing a feature |
 | editable:drawing:click | layer | true | Fired when user click while drawing, before any internal action is being processed |
 | editable:drawing:clicked | layer | false | Fired when user click while drawing, after all internal actions |
+| editable:drawing:move | layer | false | Fired when move mouse while drawing, while dragging a marker, and while dragging a vertex |
 | editable:vertex:click | originalEvent, latlng, vertex, layer | true | Fired when a click is issued on a vertex, before any internal action is being processed |
 | editable:vertex:clicked | originalEvent, latlng, vertex, layer | false | Fired when a click is issued on a vertex, after all internal actions |
 | editable:vertex:ctrlclick | originalEvent, latlng, vertex, layer | false | Fired when a click having ctrlKey is issued on a vertex |

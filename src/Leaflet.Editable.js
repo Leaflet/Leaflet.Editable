@@ -620,6 +620,14 @@
             this.fireAndForward('editable:drawing:click', e);
             if (e._cancelled) return;
             this.processClickHandlerClicked(e);
+        },
+
+        onMove: function (e) {
+            this.fireAndForward('editable:drawing:move', e);
+        },
+
+        onMouseMove: function (e) {
+            this.onMove(e);
         }
 
     });
@@ -631,6 +639,7 @@
             L.Editable.BaseEditor.prototype.enable.call(this);
             this.feature.dragging.enable();
             this.feature.on('dragstart', this.onEditing, this);
+            this.feature.on('drag', this.onMove, this);
             return this;
         },
 
@@ -638,10 +647,12 @@
             L.Editable.BaseEditor.prototype.disable.call(this);
             this.feature.dragging.disable();
             this.feature.off('dragstart', this.onEditing, this);
+            this.feature.off('drag', this.onMove, this);
             return this;
         },
 
         onMouseMove: function (e) {
+            L.Editable.BaseEditor.prototype.onMouseMove.call(this, e);
             if (this._drawing) {
                 this.feature.setLatLng(e.latlng);
             }
@@ -771,6 +782,7 @@
         },
 
         onVertexMarkerDrag: function (e) {
+            this.onMove(e);
             this.fireAndForward('editable:vertex:drag', e);
         },
 
@@ -853,6 +865,7 @@
         },
 
         onMouseMove: function (e) {
+            L.Editable.BaseEditor.prototype.onMouseMove.call(this, e);
             if (this._drawing) {
                 this.tools.moveForwardLineGuide(e.latlng);
                 this.tools.moveBackwardLineGuide(e.latlng);

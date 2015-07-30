@@ -97,7 +97,7 @@ var map = L.map('map', {editable: true}).setView(startPoint, 16),
     this.off('mousemove', followMouse);
     snapMarker.remove();
   });
-  map.on('editable:drawing:click', function (e) {
+  map.on('editable:drawing:click editable:drawing:move', function (e) {
     // Leaflet copy event data to another object when firing,
     // so the event object we have here is not the one fired by
     // Leaflet.Editable; it's not a deep copy though, so we can change

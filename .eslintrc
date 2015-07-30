@@ -8,7 +8,8 @@
         "curly": 0,
         "consistent-return": 0,
         "new-cap": 0,
-        "strict": [2, "global"]
+        "strict": [2, "global"],
+        "semi-spacing": 0
     },
     "globals": {L: true}
 }
