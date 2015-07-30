@@ -414,8 +414,8 @@
         continue: function () {
             if (!this.editor.continueBackward) return;  // Only for PolylineEditor
             var index = this.getIndex();
-            if (index === 0) this.editor.continueBackward();
-            else if (index === this.getLastIndex()) this.editor.continueForward();
+            if (index === 0) this.editor.continueBackward(this.latlngs);
+            else if (index === this.getLastIndex()) this.editor.continueForward(this.latlngs);
         }
 
     });
