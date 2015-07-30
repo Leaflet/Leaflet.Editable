@@ -504,7 +504,9 @@
             marker._initIcon();
             marker.setOpacity(1);
             /* End hack */
-            marker.dragging._draggable._onDown(e.originalEvent);  // Transfer ongoing dragging to real marker
+            // Transfer ongoing dragging to real marker
+            L.Draggable._dragging = false;
+            marker.dragging._draggable._onDown(e.originalEvent);
             this.delete();
         },
 
