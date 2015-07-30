@@ -14,6 +14,11 @@
 - added deleteShapeAt method
 - added events editable:shape:delete and editable:shape:deleted
 - added event editable:vertex:rawclick
+- added splitShape method
+- added appendShape method
+- added Vertex.continue, as a shortcut to continueBackward / continueForward
+- removed newClickHandler, now relying only on mousedown/mouseup event (simpler touch support)
+- added editable:drawing:move
 
 ## 0.5.0
 - added editable:vertex:drag event
