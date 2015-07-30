@@ -76,8 +76,7 @@ describe('L.PolygonEditor', function() {
     describe('#dragVertex()', function () {
 
         it('should update latlng on vertex drag', function (done) {
-            var before = polygon._latlngs[0][2].lat,
-                self = this;
+            var before = polygon._latlngs[0][2].lat;
             happen.drag(300, 250, 310, 260, function () {
                 assert.notEqual(before, polygon._latlngs[0][2].lat);
                 done();
