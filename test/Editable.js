@@ -17,20 +17,16 @@ describe('L.Editable', function () {
 
         xit('should be possible to create latlng on top of previously created vertex', function () {
             var line1 = this.map.editTools.startPolyline();
-            happen.at('mousemove', 450, 450);
-            happen.at('click', 450, 450);
-            happen.at('mousemove', 500, 500);
-            happen.at('click', 500, 500);
-            happen.at('click', 500, 500);
+            happen.drawingClick(450, 450);
+            happen.drawingClick(500, 500);
+            happen.drawingClick(500, 500);
             assert.equal(line1._latlngs.length, 2);
             var line2 = this.map.editTools.startPolyline();
-            happen.at('mousemove', 450, 450);
-            happen.at('click', 450, 450);
+            happen.drawingClick(450, 450);
             assert.equal(line2._latlngs.length, 1);
             assert.equal(line1._latlngs.length, 2);
-            happen.at('mousemove', 500, 500);
-            happen.at('click', 500, 500);
-            happen.at('click', 500, 500);
+            happen.drawingClick(500, 500);
+            happen.drawingClick(500, 500);
             assert.equal(line2._latlngs.length, 2);
             assert.equal(line1._latlngs.length, 2);
             this.map.removeLayer(line1);
