@@ -562,7 +562,6 @@
             e = e || {};
             e.layer = this.feature;
             this.feature.fire(type, e);
-            if (this.feature.multi) this.feature.multi.fire(type, e);
             this.tools.fireAndForward(type, e);
         },
 
@@ -1088,7 +1087,6 @@
 
         enableEdit: function () {
             if (!this.editor) this.createEditor();
-            if (this.multi) this.multi.onEditEnabled();
             return this.editor.enable();
         },
 
@@ -1098,7 +1096,6 @@
 
         disableEdit: function () {
             if (this.editor) {
-                if (this.multi) this.multi.onEditDisabled();
                 this.editor.disable();
                 delete this.editor;
             }
