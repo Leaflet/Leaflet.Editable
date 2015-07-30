@@ -9,9 +9,9 @@ happen.at = function (what, x, y, props) {
         screenY: y,
         which: 1,
         button: 0
-    }, props || {}));
+    }, props || {}));
 };
-happen.drag = function (fromX, fromY, toX, toY, then) {
+happen.drag = function (fromX, fromY, toX, toY, then, delay) {
     happen.at('mousemove', fromX, fromY);
     happen.at('mousedown', fromX, fromY);
     var moveX = function () {
@@ -30,8 +30,9 @@ happen.drag = function (fromX, fromY, toX, toY, then) {
     moveY();
     window.setTimeout(function () {
         happen.at('mouseup', toX, toY);
-        if (then) then();
-    }, 1000);
+        happen.at('click', toX, toY);
+        if (then) { then(); }
+    }, delay || 600);
 };
 happen.drawingClick = function (x, y) {
     this.at('mousedown', x, y);
