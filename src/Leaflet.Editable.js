@@ -280,6 +280,7 @@
             this.on('drag', this.onDrag);
             this.on('dragstart', this.onDragStart);
             this.on('dragend', this.onDragEnd);
+            this.on('mouseup', this.onMouseup);
             this.on('click', this.onClick);
             this.on('contextmenu', this.onContextMenu);
             this.on('mousedown touchstart', this.onMouseDown);
@@ -292,6 +293,7 @@
             this.off('drag', this.onDrag);
             this.off('dragstart', this.onDragStart);
             this.off('dragend', this.onDragEnd);
+            this.off('mouseup', this.onMouseup);
             this.off('click', this.onClick);
             this.off('contextmenu', this.onContextMenu);
             this.off('mousedown touchstart', this.onMouseDown);
@@ -328,6 +330,12 @@
         onClick: function (e) {
             e.vertex = this;
             this.editor.onVertexMarkerClick(e);
+        },
+
+        onMouseup: function (e) {
+            L.DomEvent.stop(e);
+            e.vertex = this;
+            this.editor.map.fire('mouseup', e);
         },
 
         onContextMenu: function (e) {
@@ -620,7 +628,7 @@
             L.Editable.makeCancellable(e);
             this.fireAndForward('editable:drawing:click', e);
             if (e._cancelled) return;
-            this.processClickHandlerClicked(e);
+            this.processDrawingClick(e);
         },
 
         onMove: function (e) {
@@ -659,7 +667,7 @@
             }
         },
 
-        processClickHandlerClicked: function (e) {
+        processDrawingClick: function (e) {
             this.fireAndForward('editable:drawing:clicked', e);
             this.commitDrawing();
         }
@@ -859,7 +867,8 @@
             return latlng;
         },
 
-        processClickHandlerClicked: function (e) {
+        processDrawingClick: function (e) {
+            if (e.vertex && e.vertex.editor === this) return;
             if (this._drawing === L.Editable.FORWARD) this.newPointForward(e.latlng);
             else this.newPointBackward(e.latlng);
             this.fireAndForward('editable:drawing:clicked', e);
