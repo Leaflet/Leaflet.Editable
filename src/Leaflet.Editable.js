@@ -817,9 +817,9 @@
         },
 
         endDrawing: function () {
-            L.Editable.BaseEditor.prototype.endDrawing.call(this);
             this.tools.detachForwardLineGuide();
             this.tools.detachBackwardLineGuide();
+            L.Editable.BaseEditor.prototype.endDrawing.call(this);
             delete this._drawnLatLngs;
         },
 
