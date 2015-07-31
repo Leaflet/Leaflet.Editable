@@ -385,6 +385,7 @@
         },
 
         addMiddleMarker: function (previous) {
+            if (this.editor.tools.options.skipMiddleMarkers) return;
             previous = previous || this.getPrevious();
             if (previous && !this.middleMarker) this.middleMarker = this.editor.addMiddleMarker(previous, this, this.latlngs, this.editor);
         },
