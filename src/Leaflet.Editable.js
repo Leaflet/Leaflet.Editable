@@ -122,6 +122,8 @@
         },
 
         unregisterForDrawing: function (editor) {
+            L.DomUtil.removeClass(this.map._container, this.options.drawingCSSClass);
+            this.map._container.style.cursor = this.defaultMapCursor;
             editor = editor || this._drawingEditor;
             if (!editor) return;
             this.map.off('mousemove touchmove', editor.onMouseMove, editor);
@@ -130,8 +132,6 @@
             if (editor !== this._drawingEditor) return;
             delete this._drawingEditor;
             if (editor._drawing) editor.cancelDrawing();
-            L.DomUtil.removeClass(this.map._container, this.options.drawingCSSClass);
-            this.map._container.style.cursor = this.defaultMapCursor;
         },
 
         onMousedown: function (e) {
