@@ -261,6 +261,49 @@ describe('L.PolylineEditor', function() {
 
     });
 
+    describe('#endDrawing', function () {
+
+        it('should remove shape if not enough latlngs', function () {
+            var layer = this.map.editTools.startPolyline();
+            happen.drawingClick(450, 450);
+            assert.equal(layer._latlngs.length, 1);
+            layer.editor.cancelDrawing();
+            assert.equal(layer._latlngs.length, 0);
+            layer.remove();
+        });
+
+        it('should remove shape if not enough latlngs (multi)', function () {
+            var latlngs = [
+                    [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                    [p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]
+                ],
+                layer = L.polyline(latlngs).addTo(this.map);
+            layer.enableEdit();
+            assert.equal(layer._latlngs.length, 2);
+            layer.editor.newShape();
+            happen.drawingClick(400, 400);
+            assert.equal(layer._latlngs.length, 3);
+            layer.editor.cancelDrawing();
+            assert.equal(layer._latlngs.length, 2);
+            layer.remove();
+        });
+
+        it('should not remove shape if enough latlngs (multi)', function () {
+            var latlngs = [
+                    [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                    [p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]
+                ],
+                layer = L.polyline(latlngs).addTo(this.map);
+            layer.enableEdit();
+            layer._latlngs[1][2].__vertex.continue();
+            happen.drawingClick(400, 400);
+            layer.editor.cancelDrawing();
+            assert.equal(layer._latlngs[1].length, 4);
+            layer.remove();
+        });
+
+    });
+
     describe('#events', function () {
 
         it('should fire editable:drawing:start on startPolyline call', function () {

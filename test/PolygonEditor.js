@@ -162,7 +162,7 @@ describe('L.PolygonEditor', function() {
     describe('#drawing', function () {
 
         it('should return false if no drawing happen', function () {
-            var layer = L.polyline([p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)]).addTo(this.map);
+            var layer = L.polygon([p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)]).addTo(this.map);
             layer.enableEdit();
             assert.notOk(layer.editor.drawing());
             layer.remove();
@@ -209,6 +209,49 @@ describe('L.PolygonEditor', function() {
             assert.equal(latlng.lat, last.lat);
             assert.equal(layer._latlngs[0].length, 3);
             this.map.removeLayer(layer);
+        });
+
+    });
+
+    describe('#endDrawing', function () {
+
+        it('should remove shape if not enough latlngs', function () {
+            var layer = this.map.editTools.startPolygon();
+            happen.drawingClick(450, 450);
+            happen.drawingClick(500, 500);
+            assert.equal(layer._latlngs[0].length, 2);
+            layer.editor.cancelDrawing();
+            assert.equal(layer._latlngs[0].length, 0);
+            layer.remove();
+        });
+
+        it('should remove shape if not enough latlngs (multi)', function () {
+            var latlngs = [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                layer = L.polygon(latlngs).addTo(this.map);
+            layer.enableEdit();
+            assert.equal(layer._latlngs.length, 1);
+            layer.editor.newShape();
+            happen.drawingClick(400, 400);
+            happen.drawingClick(500, 500);
+            assert.equal(layer._latlngs.length, 2);
+            layer.editor.cancelDrawing();
+            assert.equal(layer._latlngs.length, 1);
+            layer.remove();
+        });
+
+        it('should not remove shape if enough latlngs (multi)', function () {
+            var latlngs = [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                layer = L.polygon(latlngs).addTo(this.map);
+            layer.enableEdit();
+            assert.equal(layer._latlngs.length, 1);
+            layer.editor.newShape();
+            happen.drawingClick(400, 400);
+            happen.drawingClick(500, 400);
+            happen.drawingClick(400, 500);
+            assert.equal(layer._latlngs.length, 2);
+            layer.editor.cancelDrawing();
+            assert.equal(layer._latlngs.length, 2);
+            layer.remove();
         });
 
     });
@@ -304,7 +347,7 @@ describe('L.PolygonEditor', function() {
             this.map.on('editable:drawing:end', setLast);
             this.map.on('editable:drawing:commit', setLast);
             this.map.on('editable:drawing:commit', setSecond);
-            var layer = this.map.editTools.startPolyline();
+            var layer = this.map.editTools.startPolygon();
             happen.drawingClick(450, 450);
             happen.drawingClick(500, 500);
             happen.drawingClick(400, 400);
@@ -859,6 +902,8 @@ describe('L.PolygonEditor', function() {
                     layer = L.polygon(latlngs).addTo(this.map);
                 layer.enableEdit();
                 var deleted = layer.editor.deleteShape(layer._latlngs[0]);
+                assert.equal(layer._latlngs.length, 1);
+                assert.equal(layer._latlngs[0].length, 1);
                 assert.deepEqual(deleted, latlngs[0]);
                 layer.remove();
             });

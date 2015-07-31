@@ -820,6 +820,7 @@
         endDrawing: function () {
             this.tools.detachForwardLineGuide();
             this.tools.detachBackwardLineGuide();
+            if (this._drawnLatLngs.length < this.MIN_VERTEX) this.deleteShape(this._drawnLatLngs);
             L.Editable.BaseEditor.prototype.endDrawing.call(this);
             delete this._drawnLatLngs;
         },
@@ -900,17 +901,17 @@
             latlngs = latlngs || this.getLatLngs();
             if (!latlngs.length) return;
             var e, self = this,
-                inplaceDelete = function () {
+                inplaceDelete = function (latlngs, shape) {
                     // Called when deleting a flat latlngs
                     shape = latlngs.splice(0, Number.MAX_VALUE);
                     return shape;
                 },
-                spliceDelete = function () {
+                spliceDelete = function (latlngs, shape) {
                     // Called when removing a latlngs inside an array
                     latlngs.splice(latlngs.indexOf(shape), 1);
                     return shape;
                 },
-                doDelete = function (callback) {
+                doDelete = function (callback, shape) {
                     e = {shape: shape};
                     L.Editable.makeCancellable(e);
                     self.fireAndForward('editable:shape:delete', e);
@@ -922,10 +923,10 @@
                     self.fireAndForward('editable:shape:deleted', {shape: shape});
                     return shape;
                 };
-            if (latlngs === shape) return doDelete(inplaceDelete);
+            if (latlngs === shape) return doDelete(inplaceDelete, shape);
             for (var i = 0; i < latlngs.length; i++) {
-                if (latlngs[i] === shape) return doDelete(spliceDelete);
-                else if (L.Util.isArray(latlngs[i])) this.deleteShape(shape, latlngs[i]);
+                if (latlngs[i] === shape) return doDelete(spliceDelete, shape);
+                else if (L.Util.indexOf(latlngs[i], shape) !== -1) return doDelete(spliceDelete, latlngs[i]);
             }
         },
 
