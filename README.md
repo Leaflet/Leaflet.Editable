@@ -136,6 +136,7 @@ Let's see them.
 | polygonClass        | L.Polygon |  Class to be used when creating a new Polygon  |
 | markerClass         | L.Marker |  Class to be used when creating a new Marker  |
 | drawingCSSClass     | leaflet-editable-drawing |  CSS class to be added to the map container while drawing  |
+| drawingCursor       | crosshair |  cursor mode set to the map while drawing  |
 | editLayer     | new L.LayerGroup() |  Layer used to store edit tools (vertex, line guide…)  |
 | featuresLayer     | new L.LayerGroup() | Default layer used to store drawn features (marker, polyline…)  |
 | vertexMarkerClass | L.Editable.VertexMarker | Class to be used as vertex, for path editing  |

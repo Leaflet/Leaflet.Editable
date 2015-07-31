@@ -19,6 +19,7 @@
 - added Vertex.continue, as a shortcut to continueBackward / continueForward
 - removed newClickHandler, now relying only on mousedown/mouseup event (simpler touch support)
 - added editable:drawing:move
+- added drawingCursor option to L.Editable
 
 ## 0.5.0
 - added editable:vertex:drag event

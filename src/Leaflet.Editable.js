@@ -29,7 +29,8 @@
             polygonClass: L.Polygon,
             polylineClass: L.Polyline,
             markerClass: L.Marker,
-            drawingCSSClass: 'leaflet-editable-drawing'
+            drawingCSSClass: 'leaflet-editable-drawing',
+            drawingCursor: 'crosshair'
         },
 
         initialize: function (map, options) {
@@ -118,7 +119,7 @@
             this.map.on('mouseup', this.onMouseup, this);
             L.DomUtil.addClass(this.map._container, this.options.drawingCSSClass);
             this.defaultMapCursor = this.map._container.style.cursor;
-            this.map._container.style.cursor = 'pointer';
+            this.map._container.style.cursor = this.options.drawingCursor;
         },
 
         unregisterForDrawing: function (editor) {
