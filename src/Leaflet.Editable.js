@@ -116,7 +116,6 @@
             this._drawingEditor = editor;
             this.map.on('mousedown', this.onMousedown, this);
             this.map.on('mouseup', this.onMouseup, this);
-            if (L.Browser.touch) this.map.on('click', editor.onTouch, editor);
             L.DomUtil.addClass(this.map._container, this.options.drawingCSSClass);
             this.defaultMapCursor = this.map._container.style.cursor;
             this.map._container.style.cursor = 'pointer';
@@ -128,7 +127,6 @@
             this.map.off('mousemove touchmove', editor.onMouseMove, editor);
             this.map.off('mousedown', this.onMousedown, this);
             this.map.off('mouseup', this.onMouseup, this);
-            if (L.Browser.touch) this.map.off('click', editor.onTouch, editor);
             if (editor !== this._drawingEditor) return;
             delete this._drawingEditor;
             if (editor._drawing) editor.cancelDrawing();
