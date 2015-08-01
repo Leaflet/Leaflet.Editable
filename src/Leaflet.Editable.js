@@ -829,8 +829,8 @@
             if (this._drawing === L.Editable.FORWARD) this._drawnLatLngs.push(latlng);
             else this._drawnLatLngs.unshift(latlng);
             this.feature._bounds.extend(latlng);
-            this.refresh();
             this.addVertexMarker(latlng, this._drawnLatLngs);
+            this.refresh();
         },
 
         newPointForward: function (latlng) {

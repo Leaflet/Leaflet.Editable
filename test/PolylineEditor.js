@@ -445,6 +445,24 @@ describe('L.PolylineEditor', function() {
             });
         });
 
+        it('should send editable:editing after adding vertex', function () {
+            var called = 0, line,
+                calledAfterClick = 0,
+                call = function () {
+                    called++;
+                    if (line._latlngs[0].__vertex) calledAfterClick = 1;
+                };
+            this.map.on('editable:editing', call);
+            line = this.map.editTools.startPolyline();
+            assert.equal(called, 0);
+            happen.drawingClick(250, 250);
+            assert.equal(called, 1);
+            assert.ok(calledAfterClick);
+            assert.ok(line._latlngs.length);
+            this.map.off('editable:editing', call);
+            line.remove();
+        });
+
     });
 
     describe('Multi', function () {
