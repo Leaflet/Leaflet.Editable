@@ -820,7 +820,7 @@
         endDrawing: function () {
             this.tools.detachForwardLineGuide();
             this.tools.detachBackwardLineGuide();
-            if (this._drawnLatLngs.length < this.MIN_VERTEX) this.deleteShape(this._drawnLatLngs);
+            if (this._drawnLatLngs && this._drawnLatLngs.length < this.MIN_VERTEX) this.deleteShape(this._drawnLatLngs);
             L.Editable.BaseEditor.prototype.endDrawing.call(this);
             delete this._drawnLatLngs;
         },
