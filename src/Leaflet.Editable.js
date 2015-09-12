@@ -792,6 +792,7 @@
 
         onVertexMarkerDrag: function (e) {
             this.onMove(e);
+            this.feature._bounds.extend(e.vertex._latlng);
             this.fireAndForward('editable:vertex:drag', e);
         },
 
