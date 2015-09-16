@@ -35,7 +35,7 @@ var map = L.map('map', {editable: true}).setView(startPoint, 16),
     ]).addTo(map);
     poly.enableEdit();
     poly.on('click', function (e) {
-        if (e.originalEvent.ctrlKey && this.editEnabled()) {
+        if ((e.originalEvent.ctrlKey || e.originalEvent.metaKey) && this.editEnabled()) {
           this.editor.newHole(e.latlng);
         }
     });

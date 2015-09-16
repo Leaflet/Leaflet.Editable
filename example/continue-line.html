@@ -39,7 +39,7 @@ var map = L.map('map', {editable: true}).setView(startPoint, 16),
       ]
     ]).addTo(map);
     line2.enableEdit();
-    map.on('editable:vertex:ctrlclick', function (e) {
+    map.on('editable:vertex:ctrlclick editable:vertex:metakeyclick', function (e) {
         var index = e.vertex.getIndex();
         if (index === 0) e.layer.editor.continueBackward(e.vertex.latlngs);
         else if (index === e.vertex.getLastIndex()) e.layer.editor.continueForward(e.vertex.latlngs);

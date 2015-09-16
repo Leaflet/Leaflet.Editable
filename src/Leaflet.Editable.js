@@ -738,6 +738,8 @@
                 this.onVertexMarkerAltClick(e);
             } else if (e.originalEvent.shiftKey) {
                 this.onVertexMarkerShiftClick(e);
+            } else if (e.originalEvent.metaKey) {
+                this.onVertexMarkerMetaKeyClick(e);
             } else if (index === e.vertex.getLastIndex() && this._drawing === L.Editable.FORWARD) {
                 if (index >= this.MIN_VERTEX - 1) commit = true;
             } else if (index === 0 && this._drawing === L.Editable.BACKWARD && this._drawnLatLngs.length >= this.MIN_VERTEX) {
@@ -772,6 +774,10 @@
 
         onVertexMarkerShiftClick: function (e) {
             this.fireAndForward('editable:vertex:shiftclick', e);
+        },
+
+        onVertexMarkerMetaKeyClick: function (e) {
+            this.fireAndForward('editable:vertex:metakeyclick', e);
         },
 
         onVertexMarkerAltClick: function (e) {

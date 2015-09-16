@@ -104,6 +104,7 @@ Leaflet.Editable add options and events to the `L.Map` object.
 | editable:vertex:ctrlclick | originalEvent, latlng, vertex, layer | false | Fired when a click having ctrlKey is issued on a vertex |
 | editable:vertex:shiftclick | originalEvent, latlng, vertex, layer | false | Fired when a click having shiftKey is issued on a vertex |
 | editable:vertex:altclick | originalEvent, latlng, vertex, layer | false | Fired when a click having altKey is issued on a vertex |
+| editable:vertex:metakeyclick | originalEvent, latlng, vertex, layer | false | Fired when a click with metaKey pressed is issued on a vertex |
 | editable:vertex:rawclick | originalEvent, latlng, vertex, layer | true | Fired when a click is issued on a vertex without any special key and without being in drawing mode |
 | editable:vertex:contextmenu | originalEvent, latlng, vertex, layer | false | Fired when a contextmenu is issued on a vertex |
 | editable:vertex:deleted | originalEvent, latlng, vertex, layer | false | Fired after a vertex has been deleted by user |
