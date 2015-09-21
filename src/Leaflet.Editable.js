@@ -510,6 +510,7 @@
             marker._icon = icon;
             parent.appendChild(marker._icon);
             marker._initIcon();
+            marker._initInteraction();
             marker.setOpacity(1);
             /* End hack */
             // Transfer ongoing dragging to real marker
