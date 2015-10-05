@@ -42,7 +42,12 @@ describe('L.PolylineEditor', function() {
             happen.at('click', 300, 250);
             assert.equal(polyline._latlngs.length, 3);
         });
-
+		
+        it('should apply passed options to the polyline', function(){
+            var className = 'my-class';
+            var other = this.map.editTools.startPolyline(null, {className:className});
+            assert.equal(other.options.className, className);
+        });
     });
 
     describe('#disable()', function () {

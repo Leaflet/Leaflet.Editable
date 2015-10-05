@@ -137,8 +137,8 @@ L.Editable = L.Class.extend({
         return this.featuresLayer.addLayer(layer);
     },
 
-    startPolyline: function (latlng) {
-        var line = this.createPolyline([]);
+    startPolyline: function (latlng, options) {
+        var line = this.createPolyline([], options);
         this.connectCreatedToMap(line);
         var editor = line.enableEdit();
         editor.startDrawingForward();
@@ -146,8 +146,8 @@ L.Editable = L.Class.extend({
         return line;
     },
 
-    startPolygon: function (latlng) {
-        var polygon = this.createPolygon([]);
+    startPolygon: function (latlng, options) {
+        var polygon = this.createPolygon([], options);
         this.connectCreatedToMap(polygon);
         var editor = polygon.enableEdit();
         editor.startDrawingForward();
@@ -155,9 +155,9 @@ L.Editable = L.Class.extend({
         return polygon;
     },
 
-    startMarker: function (latlng, markerOptions) {
+    startMarker: function (latlng, options) {
         latlng = latlng || this.map.getCenter();
-        var marker = this.createMarker(latlng, markerOptions);
+        var marker = this.createMarker(latlng, options);
         this.connectCreatedToMap(marker);
         var editor = marker.enableEdit();
         editor.startDrawing();
@@ -177,20 +177,22 @@ L.Editable = L.Class.extend({
         return polygon;
     },
 
-    createPolyline: function (latlngs) {
-        var line = new this.options.polylineClass(latlngs, {editOptions: {editTools: this}});
+    createPolyline: function (latlngs, options) {
+        options = L.Util.extend({editOptions: {editTools: this}}, options);
+        var line = new this.options.polylineClass(latlngs, options);
         this.fireAndForward('editable:created', {layer: line});
         return line;
     },
 
-    createPolygon: function (latlngs) {
-        var polygon = new this.options.polygonClass(latlngs, {editOptions: {editTools: this}});
+    createPolygon: function (latlngs, options) {
+        options = L.Util.extend({editOptions: {editTools: this}}, options);
+        var polygon = new this.options.polygonClass(latlngs, options);
         this.fireAndForward('editable:created', {layer: polygon});
         return polygon;
     },
 
-    createMarker: function (latlng, markerOptions) {
-        var options = L.Util.extend({editOptions: {editTools: this}}, markerOptions);
+    createMarker: function (latlng, options) {
+        options = L.Util.extend({editOptions: {editTools: this}}, options);
         var marker = new this.options.markerClass(latlng, options);
         this.fireAndForward('editable:created', {layer: marker});
         return marker;

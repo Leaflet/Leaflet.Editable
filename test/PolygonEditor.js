@@ -63,6 +63,11 @@ describe('L.PolygonEditor', function() {
             this.map.removeLayer(other);
         });
 
+        it('should apply passed options to the polygon', function(){
+            var className = 'my-class';
+            var other = this.map.editTools.startPolygon(null, {className:className});
+            assert.equal(other.options.className, className);
+        });
     });
 
     describe('#disable()', function () {
