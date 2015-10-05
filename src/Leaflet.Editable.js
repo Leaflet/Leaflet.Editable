@@ -159,9 +159,9 @@
             this.unregisterForDrawing();
         },
 
-        commitDrawing: function () {
+        commitDrawing: function (e) {
             if (!this._drawingEditor) return;
-            this._drawingEditor.commitDrawing();
+            this._drawingEditor.commitDrawing(e);
         },
 
         connectCreatedToMap: function (layer) {
@@ -598,8 +598,8 @@
             this.fireAndForward('editable:drawing:cancel');
         },
 
-        onCommitDrawing: function () {
-            this.fireAndForward('editable:drawing:commit');
+        onCommitDrawing: function (e) {
+            this.fireAndForward('editable:drawing:commit', e);
         },
 
         startDrawing: function () {
@@ -608,8 +608,8 @@
             this.onStartDrawing();
         },
 
-        commitDrawing: function () {
-            this.onCommitDrawing();
+        commitDrawing: function (e) {
+            this.onCommitDrawing(e);
             this.endDrawing();
         },
 
@@ -670,7 +670,7 @@
 
         processDrawingClick: function (e) {
             this.fireAndForward('editable:drawing:clicked', e);
-            this.commitDrawing();
+            this.commitDrawing(e);
         }
 
     });
@@ -751,7 +751,7 @@
                 this.onVertexRawMarkerClick(e);
             }
             this.fireAndForward('editable:vertex:clicked', e);
-            if (commit) this.commitDrawing();
+            if (commit) this.commitDrawing(e);
         },
 
         onVertexRawMarkerClick: function (e) {
