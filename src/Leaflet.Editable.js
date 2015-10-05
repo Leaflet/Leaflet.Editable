@@ -155,9 +155,9 @@ L.Editable = L.Class.extend({
         return polygon;
     },
 
-    startMarker: function (latlng) {
+    startMarker: function (latlng, markerOptions) {
         latlng = latlng || this.map.getCenter();
-        var marker = this.createMarker(latlng);
+        var marker = this.createMarker(latlng, markerOptions);
         this.connectCreatedToMap(marker);
         var editor = marker.enableEdit();
         editor.startDrawing();
@@ -189,8 +189,9 @@ L.Editable = L.Class.extend({
         return polygon;
     },
 
-    createMarker: function (latlng) {
-        var marker = new this.options.markerClass(latlng, {editOptions: {editTools: this}});
+    createMarker: function (latlng, markerOptions) {
+        var options = L.Util.extend({editOptions: {editTools: this}}, markerOptions);
+        var marker = new this.options.markerClass(latlng, options);
         this.fireAndForward('editable:created', {layer: marker});
         return marker;
     }
