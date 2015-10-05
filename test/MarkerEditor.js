@@ -35,6 +35,12 @@ describe('L.MarkerEditor', function() {
             assert.equal(before, marker._latlng);
         });
 
+        it('should apply passed options to the marker', function(){
+            var title = 'My title';
+            var other = this.map.editTools.startPolygon(null, {title:title});
+            assert.equal(other.options.title, title);
+            this.map.removeLayer(other);
+        });
     });
 
     describe('#disable()', function () {
