@@ -70,6 +70,7 @@
         moveForwardLineGuide: function (latlng) {
             if (this.forwardLineGuide._latlngs.length) {
                 this.forwardLineGuide._latlngs[1] = latlng;
+                this.forwardLineGuide._bounds.extend(latlng);
                 this.forwardLineGuide.redraw();
             }
         },
@@ -77,6 +78,7 @@
         moveBackwardLineGuide: function (latlng) {
             if (this.backwardLineGuide._latlngs.length) {
                 this.backwardLineGuide._latlngs[1] = latlng;
+                this.backwardLineGuide._bounds.extend(latlng);
                 this.backwardLineGuide.redraw();
             }
         },
