@@ -34,6 +34,7 @@ describe('L.MarkerEditor', function() {
             var title = 'My title';
             var other = this.map.editTools.startPolygon(null, {title:title});
             assert.equal(other.options.title, title);
+            this.map.removeLayer(other);
         });
     });
 

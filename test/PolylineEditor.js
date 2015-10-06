@@ -47,6 +47,7 @@ describe('L.PolylineEditor', function() {
             var className = 'my-class';
             var other = this.map.editTools.startPolyline(null, {className:className});
             assert.equal(other.options.className, className);
+            this.map.removeLayer(other);
         });
     });
 
