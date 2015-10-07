@@ -137,9 +137,9 @@ instance:
 
 |  method name   |  params | return |                      usage               |
 |----------------|---------|--------|---------------------------------|
-| startPolyline  | latlng\*  | created L.Polyline instance | Start drawing a polyline. If latlng is given, a first point will be added. In any case, continuing on user click. |
-| startPolygon  | latlng\*  | created L.Polygon instance | Start drawing a polygon. If latlng is given, a first point will be added. In any case, continuing on user click. |
-| startMarker  | latlng\*  | created L.Marker instance | Start adding a marker. If latlng is given, the marker will be shown first at this point. In any case, it will follow the user mouse, and will have a final latlng on next click (or touch). |
+| startPolyline  | latlng\*, options  | created L.Polyline instance | Start drawing a polyline. If latlng is given, a first point will be added. In any case, continuing on user click. If options is given, it will be passed to the polyline class constructor. |
+| startPolygon  | latlng\*, options  | created L.Polygon instance | Start drawing a polygon. If latlng is given, a first point will be added. In any case, continuing on user click. If options is given, it will be passed to the polygon class constructor. |
+| startMarker  | latlng\*, options  | created L.Marker instance | Start adding a marker. If latlng is given, the marker will be shown first at this point. In any case, it will follow the user mouse, and will have a final latlng on next click (or touch). If options is given, it will be passed to the marker class constructor.|
 | stopDrawing  | — | — | When you need to stop any ongoing drawing, without needing to know which editor is active. |
 
 #### Events
