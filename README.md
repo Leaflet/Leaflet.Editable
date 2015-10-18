@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/yohanboniface/Leaflet.Editable.svg)](https://travis-ci.org/yohanboniface/Leaflet.Editable)
+[![Build Status](https://travis-ci.org/Leaflet/Leaflet.Editable.svg)](https://travis-ci.org/Leaflet/Leaflet.Editable)
 # Leaflet.Editable
 
 Make geometries editable in Leaflet.
@@ -11,7 +11,7 @@ This is not a plug and play UI, and will not. This is a minimal, lightweight,
 and fully extendable API to control editing of geometries. So you can easily
 build your own UI with your own needs and choices.
 
-See the [demo UI](http://yohanboniface.github.io/Leaflet.Editable/example/index.html), an more [examples below](#examples).
+See the [demo UI](http://Leaflet.github.io/Leaflet.Editable/example/index.html), an more [examples below](#examples).
 This is also the drawing engine behind [uMap](http://wiki.openstreetmap.org/wiki/UMap).
 
 
@@ -57,14 +57,14 @@ If you want to continue an existing line:
 
 ## Examples
 
-- [Basic controls](http://yohanboniface.github.io/Leaflet.Editable/example/index.html)
-- [Continue line by ctrl-clicking on first/last point](http://yohanboniface.github.io/Leaflet.Editable/example/continue-line.html)
-- [Create hole in a polygon by ctrl-clicking on it](http://yohanboniface.github.io/Leaflet.Editable/example/create-hole-on-click.html)
-- [Change line colour on editing](http://yohanboniface.github.io/Leaflet.Editable/example/change-line-colour-on-editing.html)
-- [Display a tooltip near cursor while drawing](http://yohanboniface.github.io/Leaflet.Editable/example/tooltip-when-drawing.html)
-- [Basic demo of undo/redo](http://yohanboniface.github.io/Leaflet.Editable/example/undo-redo.html) (Use ctrl-Z to undo and ctrl-shift-Z to redo)
-- [Multipolygon example](http://yohanboniface.github.io/Leaflet.Editable/example/multipolygon.html)
-- Example of [Leaflet.Snap](https://github.com/makinacorpus/Leaflet.Snap/) integration [to enable snapping](http://yohanboniface.github.io/Leaflet.Editable/example/snapping.html)
+- [Basic controls](http://Leaflet.github.io/Leaflet.Editable/example/index.html)
+- [Continue line by ctrl-clicking on first/last point](http://Leaflet.github.io/Leaflet.Editable/example/continue-line.html)
+- [Create hole in a polygon by ctrl-clicking on it](http://Leaflet.github.io/Leaflet.Editable/example/create-hole-on-click.html)
+- [Change line colour on editing](http://Leaflet.github.io/Leaflet.Editable/example/change-line-colour-on-editing.html)
+- [Display a tooltip near cursor while drawing](http://Leaflet.github.io/Leaflet.Editable/example/tooltip-when-drawing.html)
+- [Basic demo of undo/redo](http://Leaflet.github.io/Leaflet.Editable/example/undo-redo.html) (Use ctrl-Z to undo and ctrl-shift-Z to redo)
+- [Multipolygon example](http://Leaflet.github.io/Leaflet.Editable/example/multipolygon.html)
+- Example of [Leaflet.Snap](https://github.com/makinacorpus/Leaflet.Snap/) integration [to enable snapping](http://Leaflet.github.io/Leaflet.Editable/example/snapping.html)
 
 
 ## API

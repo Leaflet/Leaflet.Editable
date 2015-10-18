@@ -20,12 +20,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/yohanboniface/Leaflet.Editable.git"
+    "url": "git://github.com/Leaflet/Leaflet.Editable.git"
   },
   "bugs": {
-    "url": "https://github.com/yohanboniface/Leaflet.Editable/issues"
+    "url": "https://github.com/Leaflet/Leaflet.Editable/issues"
   },
-  "homepage": "https://github.com/yohanboniface/Leaflet.Editable/",
+  "homepage": "https://github.com/Leaflet/Leaflet.Editable/",
   "dependencies": {
     "leaflet": "1.0.0-beta.2"
   }
