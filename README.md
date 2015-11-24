@@ -58,11 +58,12 @@ If you want to continue an existing line:
 ## Examples
 
 - [Basic controls](http://Leaflet.github.io/Leaflet.Editable/example/index.html)
-- [Continue line by ctrl-clicking on first/last point](http://Leaflet.github.io/Leaflet.Editable/example/continue-line.html)
+- [Continue line by ctrl/command-clicking on first/last point](http://Leaflet.github.io/Leaflet.Editable/example/continue-line.html)
 - [Create hole in a polygon by ctrl-clicking on it](http://Leaflet.github.io/Leaflet.Editable/example/create-hole-on-click.html)
 - [Change line colour on editing](http://Leaflet.github.io/Leaflet.Editable/example/change-line-colour-on-editing.html)
 - [Display a tooltip near cursor while drawing](http://Leaflet.github.io/Leaflet.Editable/example/tooltip-when-drawing.html)
 - [Basic demo of undo/redo](http://Leaflet.github.io/Leaflet.Editable/example/undo-redo.html) (Use ctrl-Z to undo and ctrl-shift-Z to redo)
+- [Deleting shapes by ctrl/command clicking on it](http://Leaflet.github.io/Leaflet.Editable/example/delete-shape.html)
 - [Multipolygon example](http://Leaflet.github.io/Leaflet.Editable/example/multipolygon.html)
 - Example of [Leaflet.Snap](https://github.com/makinacorpus/Leaflet.Snap/) integration [to enable snapping](http://Leaflet.github.io/Leaflet.Editable/example/snapping.html)
 
