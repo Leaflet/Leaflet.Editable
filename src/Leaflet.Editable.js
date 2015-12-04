@@ -12,6 +12,7 @@ L.Editable = L.Class.extend({
         polygonClass: L.Polygon,
         polylineClass: L.Polyline,
         markerClass: L.Marker,
+        rectangleClass: L.Rectangle,
         drawingCSSClass: 'leaflet-editable-drawing'
     },
 
@@ -164,6 +165,16 @@ L.Editable = L.Class.extend({
         return marker;
     },
 
+    startRectangle: function(latlng, options) {
+        var corner = latlng || new L.LatLng(0, 0);
+        var bounds = new L.LatLngBounds(corner, corner);
+        var rectangle = this.createRectangle(bounds, options);
+        this.connectCreatedToMap(rectangle);
+        var editor = rectangle.enableEdit();
+        editor.startDrawing();
+        return rectangle;
+    },
+
     startHole: function (editor, latlng) {
         editor.newHole(latlng);
     },
@@ -196,6 +207,13 @@ L.Editable = L.Class.extend({
         var marker = new this.options.markerClass(latlng, options);
         this.fireAndForward('editable:created', {layer: marker});
         return marker;
+    },
+
+    createRectangle: function (latlngBounds, options) {
+        options = L.Util.extend({editOptions: {editTools: this}}, options);
+        var rectangle = new this.options.rectangleClass(latlngBounds, options);
+        this.fireAndForward('editable:created', {layer: rectangle});
+        return rectangle;
     }
 
 });
@@ -880,6 +898,162 @@ L.Editable.PolygonEditor = L.Editable.PathEditor.extend({
 
 });
 
+L.Editable.RectangleEditor = L.Editable.BaseEditor.extend({
+
+    initialize: function (map, feature, options) {
+        L.Editable.BaseEditor.prototype.initialize.call(this, map, feature, options);
+        this.anchorPoint = null;
+        this.vertexMarkers = null;
+        if (!this.isZeroRect()) {
+            this.anchorPoint = this.feature.getBounds().getNorthWest();
+            this.initVertexMarkers();
+        }
+    },
+
+    enable: function () {
+        if (this._enabled) return this;
+        L.Editable.BaseEditor.prototype.enable.call(this);
+        return this;
+    },
+
+    disable: function() {
+        return L.Editable.BaseEditor.prototype.disable.call(this);
+    },
+
+    initVertexMarkers: function () {
+        var points = this.getLatLngs();
+        this.vertexMarkers = points.map(function(p) {
+            return new this.tools.options.vertexMarkerClass(p, points, this);
+        }, this);
+    },
+
+    updateVertexMarkers: function(ignoreVertex, ignoreLatLng) {
+        var point = 0;
+        var marker = 0;
+        var points = this.getLatLngs();
+        while (point < 4 && marker < 4) {
+            if (ignoreLatLng && points[point].equals(ignoreLatLng)) {
+                point++;
+            } else if (this.vertexMarkers[marker] === ignoreVertex) {
+                marker++;
+            } else {
+                this.vertexMarkers[marker++].setLatLng(points[point++]);
+            }
+        }
+    },
+
+    addMiddleMarker: function (left, right, latlngs) {
+        // no-op
+    },
+
+    getLatLngs: function() {
+        var bounds = this.feature.getBounds();
+        return [bounds.getNorthWest(), bounds.getNorthEast(), bounds.getSouthEast(), bounds.getSouthWest()];
+    },
+
+    onMouseMove: function (e) {
+        if (this.drawing) {
+            L.Editable.BaseEditor.prototype.onMouseMove.call(this, e);
+            if (!this.isZeroRect()) {
+                this.feature.setBounds(new L.LatLngBounds([this.anchorPoint, e.latlng]));
+                this.updateVertexMarkers();
+            }
+        }
+    },
+
+    onNewClickHandlerClicked: function (e) {
+        if (!this.isNewClickValid(e.latlng)) return;
+        if (this.isZeroRect()) {
+            this.anchorPoint = e.latlng;
+            this.feature.setBounds(new L.LatLngBounds(e.latlng, e.latlng));
+            this.initVertexMarkers();
+        }
+        L.Editable.BaseEditor.prototype.onNewClickHandlerClicked.call(this, e);
+    },
+
+    onVertexMarkerClick: function (e) {
+        if (this.drawing) {
+            this.commitDrawing();
+        }
+        // var index = e.vertex.getIndex();
+        // if (e.originalEvent.ctrlKey) {
+        //     this.onVertexMarkerCtrlClick(e);
+        // } else if (e.originalEvent.altKey) {
+        //     this.onVertexMarkerAltClick(e);
+        // } else if (e.originalEvent.shiftKey) {
+        //     this.onVertexMarkerShiftClick(e);
+        // } else {
+        //     this.onVertexRawMarkerClick(e);
+        // }
+    },
+
+    // onVertexRawMarkerClick: function (e) {
+    //     if (!this.vertexCanBeDeleted(e.vertex)) return;
+    //     e.vertex.delete();
+    //     this.refresh();
+    // },
+
+    // vertexCanBeDeleted: function (vertex) {
+    //     return false;
+    // },
+
+    onVertexMarkerCtrlClick: function (e) {
+        this.fireAndForward('editable:vertex:ctrlclick', e);
+    },
+
+    onVertexMarkerShiftClick: function (e) {
+        this.fireAndForward('editable:vertex:shiftclick', e);
+    },
+
+    onVertexMarkerAltClick: function (e) {
+        this.fireAndForward('editable:vertex:altclick', e);
+    },
+
+    onVertexMarkerContextMenu: function (e) {
+        this.fireAndForward('editable:vertex:contextmenu', e);
+    },
+
+    onVertexMarkerMouseDown: function (e) {
+        this.fireAndForward('editable:vertex:mousedown', e);
+    },
+
+    onVertexMarkerDrag: function (e) {
+        this.feature.setBounds(new L.LatLngBounds([this.anchorPoint, e.vertex.getLatLng()]));
+        this.updateVertexMarkers(e.vertex, e.vertex.getLatLng());
+        this.fireAndForward('editable:vertex:drag', e);
+    },
+
+    onVertexMarkerDragStart: function (e) {
+        var pos = e.vertex.getLatLng();
+        var maxDistance = -Infinity;
+        for (var i = 0; i < this.vertexMarkers.length; i++) {
+            var thisMarker = this.vertexMarkers[i];
+            var distanceToVertex = thisMarker.getLatLng().distanceTo(pos);
+            if (distanceToVertex > maxDistance) {
+                this.anchorPoint = thisMarker.getLatLng();
+                maxDistance = distanceToVertex;
+            }
+        }
+        this.fireAndForward('editable:vertex:dragstart', e);
+    },
+
+    onVertexMarkerDragEnd: function (e) {
+        this.fireAndForward('editable:vertex:dragend', e);
+    },
+
+    refresh: function () {
+        this.feature.redraw();
+        this.onEditing();
+    },
+
+    isZeroRect: function() {
+        var bounds = this.feature.getBounds();
+        return bounds.getWest() === 0 && bounds.getEast() === 0
+                && bounds.getNorth() === 0 && bounds.getSouth() === 0;
+    }
+
+});
+
 L.Map.mergeOptions({
     polylineEditorClass: L.Editable.PolylineEditor
 });
@@ -890,6 +1064,10 @@ L.Map.mergeOptions({
 
 L.Map.mergeOptions({
     markerEditorClass: L.Editable.MarkerEditor
+});
+
+L.Map.mergeOptions({
+    rectangleEditorClass: L.Editable.RectangleEditor
 });
 
 var EditableMixin = {
@@ -931,6 +1109,7 @@ var EditableMixin = {
 L.Polyline.include(EditableMixin);
 L.Polygon.include(EditableMixin);
 L.Marker.include(EditableMixin);
+L.Rectangle.include(EditableMixin);
 
 L.Polyline.include({
 
@@ -1009,6 +1188,14 @@ L.Marker.include({
     getEditorClass: function (map) {
         return map.options.markerEditorClass;
     }
+
+});
+
+L.Rectangle.include({
+
+   getEditorClass: function (map) {
+       return map.options.rectangleEditorClass;
+   }
 
 });
 
