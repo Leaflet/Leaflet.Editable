@@ -52,7 +52,7 @@
         },
 
         createLineGuide: function () {
-            var options = L.extend({dashArray: '5,10', weight: 1}, this.options.lineGuideOptions);
+            var options = L.extend({dashArray: '5,10', weight: 1, interactive: false}, this.options.lineGuideOptions);
             return L.polyline([], options);
         },
 
