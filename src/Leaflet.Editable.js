@@ -198,25 +198,23 @@
             editor.newHole(latlng);
         },
 
-        createPolyline: function (latlngs, options) {
+        createLayer: function (klass, latlngs, options) {
             options = L.Util.extend({editOptions: {editTools: this}}, options);
-            var line = new this.options.polylineClass(latlngs, options);
-            this.fireAndForward('editable:created', {layer: line});
-            return line;
+            var layer = new klass(latlngs, options);
+            this.fireAndForward('editable:created', {layer: layer});
+            return layer;
+        },
+
+        createPolyline: function (latlngs, options) {
+            return this.createLayer(this.options.polylineClass, latlngs, options);
         },
 
         createPolygon: function (latlngs, options) {
-            options = L.Util.extend({editOptions: {editTools: this}}, options);
-            var polygon = new this.options.polygonClass(latlngs, options);
-            this.fireAndForward('editable:created', {layer: polygon});
-            return polygon;
+            return this.createLayer(this.options.polygonClass, latlngs, options);
         },
 
         createMarker: function (latlng, options) {
-            options = L.Util.extend({editOptions: {editTools: this}}, options);
-            var marker = new this.options.markerClass(latlng, options);
-            this.fireAndForward('editable:created', {layer: marker});
-            return marker;
+            return this.createLayer(this.options.markerClass, latlng, options);
         }
 
     });
