@@ -1,6 +1,6 @@
 'use strict';
 describe('L.PolylineEditor', function() {
-    var polyline, p2ll;
+    var p2ll;
 
     before(function () {
         this.map = map;
@@ -10,6 +10,11 @@ describe('L.PolylineEditor', function() {
     });
 
     describe('#startNewLine()', function() {
+        var polyline;
+
+        after(function () {
+            polyline.remove();
+        })
 
         it('should create feature and editor', function() {
             polyline = this.map.editTools.startPolyline();
@@ -38,152 +43,181 @@ describe('L.PolylineEditor', function() {
 
         it('should finish shape on last point click', function () {
             happen.drawingClick(300, 250);
+            happen.at('click', 300, 250);
             assert.equal(polyline._latlngs.length, 3);
         });
 
         it('should apply passed options to the polyline', function(){
             var className = 'my-class';
-            var other = this.map.editTools.startPolyline(null, {className:className});
+            var other = this.map.editTools.startPolyline(null, {className: className});
             assert.equal(other.options.className, className);
-            this.map.removeLayer(other);
+            other.disableEdit();
         });
+
+        describe('#dragVertex()', function () {
+
+            it('should update latlng on vertex drag', function (done) {
+                var before = polyline._latlngs[1].lat,
+                    self = this;
+                happen.drag(200, 350, 220, 360, function () {
+                    assert.notEqual(before, polyline._latlngs[1].lat);
+                    done();
+                });
+            });
+
+        });
+
+        describe('#deleteVertex()', function () {
+
+            it('should delete latlng on vertex click', function () {
+                happen.drawingClick(300, 250);
+                happen.at('click', 300, 250);
+                assert.equal(polyline._latlngs.length, 2);
+            });
+
+        });
+
+        describe('#continueForward()', function () {
+
+            it('should add new latlng on map click', function () {
+                polyline.editor.continueForward();
+                happen.drawingClick(400, 400);
+                assert.equal(polyline._latlngs.length, 3);
+                happen.at('click', 400, 400);  // Finish shape
+                happen.at('click', 450, 450);  // Click elsewhere on the map
+                assert.equal(polyline._latlngs.length, 3);
+            });
+
+        });
+
+        describe('#continueBackward()', function () {
+
+            it('should add new latlng on map click', function () {
+                polyline.editor.continueBackward();
+                happen.drawingClick(400, 100);
+                assert.equal(polyline._latlngs.length, 4);
+                happen.at('click', 400, 100);  // Finish shape
+                happen.at('click', 450, 450);  // Click elsewhere on the map
+                assert.equal(polyline._latlngs.length, 4);
+            });
+
+        });
+
+        describe('#dragMiddleMarker()', function () {
+
+            it('should insert new latlng on middle marker click', function (done) {
+                var last = polyline._latlngs[3],
+                    third = polyline._latlngs[2],
+                    fromX = (400 + 220) / 2,
+                    fromY = (400 + 360) / 2;
+                happen.drag(fromX, fromY, 300, 440, function () {
+                    assert.equal(polyline._latlngs.length, 5);
+                    // New should have been inserted between third and last latlng,
+                    // so third and last should not have changed
+                    assert.equal(last, polyline._latlngs[4]);
+                    assert.equal(third, polyline._latlngs[2]);
+                    done();
+                });
+            });
+
+        });
+
+
+        describe('#removeVertex', function () {
+
+            it('should remove vertex on click', function () {
+                happen.at('click', 400, 400);
+                assert.equal(polyline._latlngs.length, 4);
+                happen.at('click', 100, 150);
+                assert.equal(polyline._latlngs.length, 3);
+                happen.at('click', 400, 100);
+                assert.equal(polyline._latlngs.length, 2);
+            });
+
+            it('should not remove last two vertex', function () {
+                happen.at('click', 220, 360);
+                assert.equal(polyline._latlngs.length, 2);
+                happen.at('click', 300, 440);
+                assert.equal(polyline._latlngs.length, 2);
+            });
+
+        });
+
     });
 
-    describe('#disable()', function () {
+    describe('#disableEdit()', function () {
 
-        it('should stop editing on disable() call', function () {
-            polyline.disableEdit();
-            assert.notOk(polyline.editor);
+        afterEach(function () {
+            this.map.editTools.editLayer.eachLayer(function (layer) {
+                assert.fail(layer, null, 'no layer expected but one found');
+            });
+        })
+
+        it('should stop editing on disableEdit() call', function () {
+            var layer = this.map.editTools.startPolyline();
+            layer.disableEdit();
+            assert.notOk(layer.editor);
         });
 
         it('should be reenabled after remove if active', function () {
-            polyline.enableEdit();
-            this.map.removeLayer(polyline);
-            assert.notOk(polyline.editEnabled());
-            this.map.addLayer(polyline);
-            assert.ok(polyline.editEnabled());
+            var layer = L.polyline([]).addTo(this.map);
+            layer.enableEdit();
+            this.map.removeLayer(layer);
+            assert.notOk(layer.editEnabled());
+            this.map.addLayer(layer);
+            assert.ok(layer.editEnabled());
+            layer.remove();
         });
 
         it('should not be reenabled after remove if not active', function () {
-            polyline.disableEdit();
-            this.map.removeLayer(polyline);
-            assert.notOk(polyline.editEnabled());
-            this.map.addLayer(polyline);
-            assert.notOk(polyline.editEnabled());
+            var layer = L.polyline([]).addTo(this.map);
+            layer.enableEdit();
+            layer.disableEdit();
+            this.map.removeLayer(layer);
+            assert.notOk(layer.editEnabled());
+            this.map.addLayer(layer);
+            assert.notOk(layer.editEnabled());
         });
 
     });
 
     describe('#enable()', function () {
 
+        afterEach(function () {
+            this.map.editTools.editLayer.eachLayer(function (layer) {
+                assert.fail(layer, null, 'no layer expected but one found');
+            });
+        })
+
         it('should start editing on enableEdit() call', function () {
-            polyline.enableEdit();
-            assert.ok(polyline.editor._enabled);
+            var layer = L.polyline([]).addTo(this.map);
+            layer.enableEdit();
+            assert.ok(layer.editEnabled());
+            layer.remove();
         });
 
         it('should not reset editor when calling enableEdit() twice', function () {
-            var editor = polyline.editor;
-            polyline.enableEdit();
-            assert.equal(editor, polyline.editor);
+            var layer = L.polyline([]).addTo(this.map);
+            layer.enableEdit();
+            var editor = layer.editor;
+            layer.enableEdit();
+            assert.equal(editor, layer.editor);
+            layer.remove();
         });
 
     });
-
-    describe('#dragVertex()', function () {
-
-        it('should update latlng on vertex drag', function (done) {
-            var before = polyline._latlngs[1].lat,
-                self = this;
-            happen.drag(200, 350, 220, 360, function () {
-                assert.notEqual(before, polyline._latlngs[1].lat);
-                done();
-            });
-        });
-
-    });
-
-    describe('#deleteVertex()', function () {
-
-        it('should delete latlng on vertex click', function () {
-            happen.drawingClick(300, 250);
-            happen.at('click', 300, 250);
-            assert.equal(polyline._latlngs.length, 2);
-        });
-
-    });
-
-    describe('#continueForward()', function () {
-
-        it('should add new latlng on map click', function () {
-            polyline.editor.continueForward();
-            happen.drawingClick(400, 400);
-            assert.equal(polyline._latlngs.length, 3);
-            happen.at('click', 400, 400);  // Finish shape
-            happen.at('click', 450, 450);  // Click elsewhere on the map
-            assert.equal(polyline._latlngs.length, 3);
-        });
-
-    });
-
-    describe('#continueBackward()', function () {
-
-        it('should add new latlng on map click', function () {
-            polyline.editor.continueBackward();
-            happen.drawingClick(400, 100);
-            assert.equal(polyline._latlngs.length, 4);
-            happen.at('click', 400, 100);  // Finish shape
-            happen.at('click', 450, 450);  // Click elsewhere on the map
-            assert.equal(polyline._latlngs.length, 4);
-        });
-
-    });
-
-    describe('#dragMiddleMarker()', function () {
-
-        it('should insert new latlng on middle marker click', function (done) {
-            var last = polyline._latlngs[3],
-                third = polyline._latlngs[2],
-                fromX = (400 + 220) / 2,
-                fromY = (400 + 360) / 2;
-            happen.drag(fromX, fromY, 300, 440, function () {
-                assert.equal(polyline._latlngs.length, 5);
-                // New should have been inserted between third and last latlng,
-                // so third and last should not have changed
-                assert.equal(last, polyline._latlngs[4]);
-                assert.equal(third, polyline._latlngs[2]);
-                done();
-            });
-        });
-
-    });
-
-
-    describe('#removeVertex', function () {
-
-        it('should remove vertex on click', function () {
-            happen.at('click', 400, 400);
-            assert.equal(polyline._latlngs.length, 4);
-            happen.at('click', 100, 150);
-            assert.equal(polyline._latlngs.length, 3);
-            happen.at('click', 400, 100);
-            assert.equal(polyline._latlngs.length, 2);
-        });
-
-        it('should not remove last two vertex', function () {
-            happen.at('click', 220, 360);
-            assert.equal(polyline._latlngs.length, 2);
-            happen.at('click', 300, 440);
-            assert.equal(polyline._latlngs.length, 2);
-        });
-
-    });
-
 
     describe('#onRemove', function () {
+
         it('should remove every edit related layer on remove', function () {
-            polyline.remove();
             this.map.editTools.editLayer.eachLayer(function (layer) {
-                assert.fail(layer, null, 'no layer expected but one found');
+                assert.fail(layer, null, 'no layer expected but one found before');
+            });
+            var layer = L.polyline([p2ll(100, 150), p2ll(150, 200)]).addTo(this.map);
+            layer.enableEdit();
+            layer.remove();
+            this.map.editTools.editLayer.eachLayer(function (layer) {
+                assert.fail(layer, null, 'no layer expected but one found after');
             });
         });
 
@@ -285,6 +319,12 @@ describe('L.PolylineEditor', function() {
 
     describe('#endDrawing', function () {
 
+        afterEach(function () {
+            this.map.editTools.editLayer.eachLayer(function (layer) {
+                assert.fail(layer, null, 'no layer expected but one found');
+            });
+        })
+
         it('should remove shape if not enough latlngs', function () {
             var layer = this.map.editTools.startPolyline();
             happen.drawingClick(450, 450);
@@ -328,6 +368,12 @@ describe('L.PolylineEditor', function() {
 
     describe('#events', function () {
 
+        afterEach(function () {
+            this.map.editTools.editLayer.eachLayer(function (layer) {
+                assert.fail(layer, null, 'no layer expected but one found');
+            });
+        })
+
         it('should fire editable:drawing:start on startPolyline call', function () {
             var called = 0,
                 call = function () {called++;};
@@ -335,7 +381,7 @@ describe('L.PolylineEditor', function() {
             var other = this.map.editTools.startPolyline();
             assert.equal(called, 1);
             this.map.off('editable:drawing:start', call);
-            this.map.removeLayer(other);
+            other.editor.disable();  // Not added to the map, just disable ongoing drawing.
             assert.notOk(this.map.editTools._drawingEditor);
         });
 
@@ -437,7 +483,7 @@ describe('L.PolylineEditor', function() {
             assert.equal(called, 1);
             assert.notOk(layer._latlngs.length);
             this.map.off('editable:drawing:click', call);
-            layer.remove();
+            layer.editor.disable();
         });
 
         it('should send editable:drawing:move while drawing', function () {
@@ -449,7 +495,7 @@ describe('L.PolylineEditor', function() {
             happen.at('mousemove', 250, 250);
             assert.equal(called, 1);
             this.map.off('editable:drawing:move', call);
-            layer.remove();
+            layer.editor.disable();
         });
 
         it('should send editable:drawing:move when dragging vertex', function (done) {
@@ -481,6 +527,7 @@ describe('L.PolylineEditor', function() {
             assert.equal(called, 1);
             assert.ok(calledAfterClick);
             assert.ok(line._latlngs.length);
+            assert.ok(this.map.hasLayer(line));
             this.map.off('editable:editing', call);
             line.remove();
         });

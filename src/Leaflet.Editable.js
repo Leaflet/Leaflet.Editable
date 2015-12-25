@@ -173,23 +173,20 @@
 
         startPolyline: function (latlng, options) {
             var line = this.createPolyline([], options);
-            this.connectCreatedToMap(line);
-            line.enableEdit().newShape(latlng);
+            line.enableEdit(this.map).newShape(latlng);
             return line;
         },
 
         startPolygon: function (latlng, options) {
             var polygon = this.createPolygon([], options);
-            this.connectCreatedToMap(polygon);
-            polygon.enableEdit().newShape(latlng);
+            polygon.enableEdit(this.map).newShape(latlng);
             return polygon;
         },
 
         startMarker: function (latlng, options) {
             latlng = latlng || this.map.getCenter();
             var marker = this.createMarker(latlng, options);
-            this.connectCreatedToMap(marker);
-            var editor = marker.enableEdit();
+            var editor = marker.enableEdit(this.map);
             editor.startDrawing();
             return marker;
         },
@@ -633,6 +630,7 @@
             L.Editable.makeCancellable(e);
             this.fireAndForward('editable:drawing:click', e);
             if (e._cancelled) return;
+            if (!this.map.hasLayer(this.feature)) this.tools.connectCreatedToMap(this.feature);
             this.processDrawingClick(e);
         },
 
@@ -651,7 +649,8 @@
         enable: function () {
             if (this._enabled) return this;
             L.Editable.BaseEditor.prototype.enable.call(this);
-            this.feature.dragging.enable();
+            if (this.map.hasLayer(this.feature)) this.enableDragging();
+            else this.feature.on('add', this.enableDragging, this);
             this.feature.on('dragstart', this.onEditing, this);
             this.feature.on('drag', this.onMove, this);
             return this;
@@ -659,10 +658,14 @@
 
         disable: function () {
             L.Editable.BaseEditor.prototype.disable.call(this);
-            this.feature.dragging.disable();
+            if (this.feature.dragging) this.feature.dragging.disable();
             this.feature.off('dragstart', this.onEditing, this);
             this.feature.off('drag', this.onMove, this);
             return this;
+        },
+
+        enableDragging: function () {
+            this.feature.dragging.enable();
         },
 
         onMouseMove: function (e) {
@@ -1107,8 +1110,8 @@
             return new Klass(map, this, this.options.editOptions);
         },
 
-        enableEdit: function () {
-            if (!this.editor) this.createEditor();
+        enableEdit: function (map) {
+            if (!this.editor) this.createEditor(map);
             return this.editor.enable();
         },
 

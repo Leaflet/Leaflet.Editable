@@ -1,3 +1,4 @@
+'use strict';
 describe('L.PolygonEditor', function() {
     var p2ll, polygon;
 
@@ -50,14 +51,14 @@ describe('L.PolygonEditor', function() {
             assert.equal(other._latlngs[0].length, 3);
             happen.drawingClick(400, 450);
             assert.equal(other._latlngs[0].length, 3);
-            this.map.removeLayer(other);
+            other.remove();
         });
 
         it('should apply passed options to the polygon', function(){
             var className = 'my-class';
             var other = this.map.editTools.startPolygon(null, {className:className});
             assert.equal(other.options.className, className);
-            this.map.removeLayer(other);
+            other.editor.disable();
         });
     });
 
@@ -193,7 +194,7 @@ describe('L.PolygonEditor', function() {
         it('should return true if an editor is active and drawing forward', function () {
             var layer = this.map.editTools.startPolygon();
             assert.ok(layer.editor.drawing());
-            layer.remove();
+            layer.editor.disable();
         });
 
     });
@@ -212,7 +213,7 @@ describe('L.PolygonEditor', function() {
             assert.ok(latlng);
             assert.equal(layer._latlngs[0].length, 1);
             assert.notInclude(layer._latlngs[0], last);
-            this.map.removeLayer(layer);
+            layer.remove();
         });
 
     });
@@ -230,7 +231,7 @@ describe('L.PolygonEditor', function() {
             var last = layer._latlngs[0][2];
             assert.equal(latlng.lat, last.lat);
             assert.equal(layer._latlngs[0].length, 3);
-            this.map.removeLayer(layer);
+            layer.remove();
         });
 
     });
@@ -280,6 +281,12 @@ describe('L.PolygonEditor', function() {
 
     describe('Events', function () {
 
+        afterEach(function () {
+            this.map.editTools.editLayer.eachLayer(function (layer) {
+                assert.fail(layer, null, 'no layer expected but one found');
+            });
+        });
+
         it('should fire editable:drawing:start on startPolygon call', function () {
             var called = 0,
                 call = function () {called++;};
@@ -287,7 +294,7 @@ describe('L.PolygonEditor', function() {
             var layer = this.map.editTools.startPolygon();
             assert.equal(called, 1);
             this.map.off('editable:drawing:start', call);
-            layer.remove();
+            layer.editor.disable();
             assert.notOk(this.map.editTools._drawingEditor);
         });
 
@@ -343,7 +350,7 @@ describe('L.PolygonEditor', function() {
             this.map.editTools.stopDrawing();
             assert.equal(called, 1);
             this.map.off('editable:drawing:end', call);
-            layer.remove();
+            layer.editor.disable();
             assert.equal(called, 1);
         });
 
@@ -355,7 +362,7 @@ describe('L.PolygonEditor', function() {
             this.map.editTools.stopDrawing();
             assert.equal(called, 0);
             this.map.off('editable:drawing:commit', call);
-            layer.remove();
+            layer.editor.disable();
             assert.equal(called, 0);
         });
 
@@ -443,7 +450,7 @@ describe('L.PolygonEditor', function() {
             assert.equal(called, 1);
             assert.notOk(polygon._latlngs[0].length);
             this.map.off('editable:drawing:click', call);
-            polygon.remove();
+            polygon.editor.disable();
         });
 
         it('should be possible to cancel editable:vertex:rawclick', function () {

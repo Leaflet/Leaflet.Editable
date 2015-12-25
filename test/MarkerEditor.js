@@ -104,7 +104,7 @@ describe('L.MarkerEditor', function() {
             var other = this.map.editTools.startMarker();
             assert.equal(called, 1);
             this.map.off('editable:drawing:start', call);
-            other.remove();
+            other.editor.disable();
             assert.notOk(this.map.editTools._drawingEditor);
         });
 
