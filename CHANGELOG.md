@@ -21,6 +21,7 @@
 - added editable:drawing:move
 - added drawingCursor option to L.Editable
 - added editable:vertex:metakeyclick event
+- reenable edit if the layer was active when removed from the map
 
 ## 0.5.0
 - added editable:vertex:drag event
