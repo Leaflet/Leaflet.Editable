@@ -68,6 +68,22 @@ describe('L.PolygonEditor', function() {
             assert.notOk(polygon.editor);
         });
 
+        it('should be reenabled after remove if active', function () {
+            polygon.enableEdit();
+            this.map.removeLayer(polygon);
+            assert.notOk(polygon.editEnabled());
+            this.map.addLayer(polygon);
+            assert.ok(polygon.editEnabled());
+        });
+
+        it('should not be reenabled after remove if not active', function () {
+            polygon.disableEdit();
+            this.map.removeLayer(polygon);
+            assert.notOk(polygon.editEnabled());
+            this.map.addLayer(polygon);
+            assert.notOk(polygon.editEnabled());
+        });
+
     });
 
     describe('#enable()', function () {

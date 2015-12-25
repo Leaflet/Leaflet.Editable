@@ -1,7 +1,7 @@
 'use strict';
 
 describe('L.MarkerEditor', function() {
-    var marker, p2ll;
+    var p2ll;
 
     before(function () {
         this.map = map;
@@ -9,11 +9,13 @@ describe('L.MarkerEditor', function() {
             return map.layerPointToLatLng([x, y]);
         };
     });
-    after(function () {
-        if (marker) marker.remove();
-    });
 
     describe('#startNewMarker()', function() {
+        var marker;
+
+        after(function () {
+            marker.remove();
+        });
 
         it('should create feature and editor', function() {
             marker = this.map.editTools.startMarker();
@@ -39,29 +41,8 @@ describe('L.MarkerEditor', function() {
             var title = 'My title';
             var other = this.map.editTools.startPolygon(null, {title:title});
             assert.equal(other.options.title, title);
-            this.map.removeLayer(other);
+            other.remove();
         });
-    });
-
-    describe('#disable()', function () {
-
-        it('should stop editing on disable() call', function () {
-            marker.disableEdit();
-            assert.notOk(marker.editor);
-        });
-
-    });
-
-    describe('#enable()', function () {
-
-        it('should start editing on enable() call', function () {
-            marker.enableEdit();
-            assert.ok(marker.editor);
-        });
-
-    });
-
-    describe('#drag()', function () {
 
         it('should update latlng on marker drag', function (done) {
             var before = marker._latlng.lat;
@@ -73,6 +54,46 @@ describe('L.MarkerEditor', function() {
 
     });
 
+    describe('#enable()', function () {
+
+        it('should start editing on enable() call', function () {
+            var marker = L.marker([0, 0]).addTo(this.map);
+            marker.enableEdit();
+            assert.ok(marker.editor);
+        });
+
+    });
+
+    describe('#disable()', function () {
+
+        it('should stop editing on disable() call', function () {
+            var marker = L.marker([0, 0]).addTo(this.map);
+            marker.enableEdit();
+            assert.ok(marker.editEnabled());
+            marker.disableEdit();
+            assert.notOk(marker.editor);
+        });
+
+        it('should be reenabled after remove if active', function () {
+            var marker = L.marker([0, 0]).addTo(this.map);
+            marker.enableEdit();
+            this.map.removeLayer(marker);
+            assert.notOk(marker.editEnabled());
+            this.map.addLayer(marker);
+            assert.ok(marker.editEnabled());
+        });
+
+        it('should not be reenabled after remove if not active', function () {
+            var marker = L.marker([0, 0]).addTo(this.map);
+            marker.enableEdit();
+            marker.disableEdit();
+            this.map.removeLayer(marker);
+            assert.notOk(marker.editEnabled());
+            this.map.addLayer(marker);
+            assert.notOk(marker.editEnabled());
+        });
+
+    });
 
     describe('#events', function () {
 

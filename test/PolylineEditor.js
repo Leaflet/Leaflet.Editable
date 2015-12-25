@@ -56,6 +56,22 @@ describe('L.PolylineEditor', function() {
             assert.notOk(polyline.editor);
         });
 
+        it('should be reenabled after remove if active', function () {
+            polyline.enableEdit();
+            this.map.removeLayer(polyline);
+            assert.notOk(polyline.editEnabled());
+            this.map.addLayer(polyline);
+            assert.ok(polyline.editEnabled());
+        });
+
+        it('should not be reenabled after remove if not active', function () {
+            polyline.disableEdit();
+            this.map.removeLayer(polyline);
+            assert.notOk(polyline.editEnabled());
+            this.map.addLayer(polyline);
+            assert.notOk(polyline.editEnabled());
+        });
+
     });
 
     describe('#enable()', function () {
