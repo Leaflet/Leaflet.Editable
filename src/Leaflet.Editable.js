@@ -630,8 +630,16 @@
             L.Editable.makeCancellable(e);
             this.fireAndForward('editable:drawing:click', e);
             if (e._cancelled) return;
-            if (!this.map.hasLayer(this.feature)) this.tools.connectCreatedToMap(this.feature);
+            if (!this.isConnected()) this.connect(e);
             this.processDrawingClick(e);
+        },
+
+        isConnected: function () {
+            return this.map.hasLayer(this.feature);
+        },
+
+        connect: function (e) {
+            this.tools.connectCreatedToMap(this.feature);
         },
 
         onMove: function (e) {
@@ -649,7 +657,7 @@
         enable: function () {
             if (this._enabled) return this;
             L.Editable.BaseEditor.prototype.enable.call(this);
-            if (this.map.hasLayer(this.feature)) this.enableDragging();
+            if (this.isConnected()) this.enableDragging();
             else this.feature.on('add', this.enableDragging, this);
             this.feature.on('dragstart', this.onEditing, this);
             this.feature.on('drag', this.onMove, this);
@@ -678,6 +686,13 @@
         processDrawingClick: function (e) {
             this.fireAndForward('editable:drawing:clicked', e);
             this.commitDrawing(e);
+        },
+
+        connect: function (e) {
+            // On touch, the latlng has not been updated because there is
+            // no mousemove.
+            if (e) this.feature._latlng = e.latlng;
+            L.Editable.BaseEditor.prototype.connect.call(this, e);
         }
 
     });
