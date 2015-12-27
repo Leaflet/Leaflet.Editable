@@ -1163,6 +1163,7 @@
     L.Editable.RectangleEditor = L.Editable.PathEditor.extend({
 
         CLOSED: true,
+        MIN_VERTEX: 4,
 
         options: {
             skipMiddleMarkers: true
