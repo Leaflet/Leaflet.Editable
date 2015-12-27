@@ -20,10 +20,13 @@ var startPoint = [43.1249, 1.254];
 var map = L.map('map', {editable: true}).setView(startPoint, 16),
     tilelayer = L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {maxZoom: 20, attribution: 'Data \u00a9 <a href="http://www.openstreetmap.org/copyright"> OpenStreetMap Contributors </a> Tiles \u00a9 HOT'}).addTo(map);
 
-    L.NewLineControl = L.Control.extend({
+    L.EditControl = L.Control.extend({
 
         options: {
-            position: 'topleft'
+            position: 'topleft',
+            callback: null,
+            kind: '',
+            html: ''
         },
 
         onAdd: function (map) {
@@ -31,64 +34,66 @@ var map = L.map('map', {editable: true}).setView(startPoint, 16),
                 link = L.DomUtil.create('a', '', container);
 
             link.href = '#';
-            link.title = 'Create a new line';
-            link.innerHTML = '/\\/';
+            link.title = 'Create a new ' + this.options.kind;
+            link.innerHTML = this.options.html;
             L.DomEvent.on(link, 'click', L.DomEvent.stop)
                       .on(link, 'click', function () {
-                        map.editTools.startPolyline();
-                      });
+                        window.LAYER = this.options.callback.call(map.editTools);
+                      }, this);
 
             return container;
         }
+
     });
 
-    L.NewPolygonControl = L.Control.extend({
+    L.NewLineControl = L.EditControl.extend({
 
         options: {
-            position: 'topleft'
-        },
-
-        onAdd: function (map) {
-            var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar'),
-                link = L.DomUtil.create('a', '', container);
-
-            link.href = '#';
-            link.title = 'Create a new polygon';
-            link.innerHTML = '▱';
-            L.DomEvent.on(link, 'click', L.DomEvent.stop)
-                      .on(link, 'click', function () {
-                        map.editTools.startPolygon();
-                      });
-
-            return container;
+            position: 'topleft',
+            callback: map.editTools.startPolyline,
+            kind: 'line',
+            html: '/\\/'
         }
+
     });
 
-    L.NewMarkerControl = L.Control.extend({
+    L.NewPolygonControl = L.EditControl.extend({
 
         options: {
-            position: 'topleft'
-        },
-
-        onAdd: function (map) {
-            var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar'),
-                link = L.DomUtil.create('a', '', container);
-
-            link.href = '#';
-            link.title = 'Add a new marker';
-            link.innerHTML = '⚫';
-            L.DomEvent.on(link, 'click', L.DomEvent.stop)
-                      .on(link, 'click', function () {
-                        map.editTools.startMarker();
-                      });
-
-            return container;
+            position: 'topleft',
+            callback: map.editTools.startPolygon,
+            kind: 'polygon',
+            html: '▱'
         }
+
+    });
+
+    L.NewMarkerControl = L.EditControl.extend({
+
+        options: {
+            position: 'topleft',
+            callback: map.editTools.startMarker,
+            kind: 'marker',
+            html: '⚫'
+        }
+
+    });
+
+    L.NewRectangleControl = L.EditControl.extend({
+
+        options: {
+            position: 'topleft',
+            callback: map.editTools.startRectangle,
+            kind: 'rectangle',
+            html: '▭'
+        }
+
     });
 
     map.addControl(new L.NewMarkerControl());
     map.addControl(new L.NewLineControl());
     map.addControl(new L.NewPolygonControl());
+    map.addControl(new L.NewRectangleControl());
 
     var line = L.polyline([
         [43.1292, 1.256],
@@ -146,6 +151,13 @@ var map = L.map('map', {editable: true}).setView(startPoint, 16),
     ]).addTo(map);
     poly.enableEdit();
     poly.on('dblclick', L.DomEvent.stop).on('dblclick', poly.toggleEdit);
+
+    var rec = L.rectangle([
+        [43.1235, 1.255],
+        [43.1225, 1.2605]
+    ]).addTo(map);
+    rec.enableEdit();
+    rec.on('dblclick', L.DomEvent.stop).on('dblclick', rec.toggleEdit);
 
 </script>
 </body>

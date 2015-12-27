@@ -30,6 +30,7 @@
             polygonClass: L.Polygon,
             polylineClass: L.Polyline,
             markerClass: L.Marker,
+            rectangleClass: L.Rectangle,
             drawingCSSClass: 'leaflet-editable-drawing',
             drawingCursor: 'crosshair'
         },
@@ -191,6 +192,15 @@
             return marker;
         },
 
+        startRectangle: function(latlng, options) {
+            var corner = latlng || L.latLng([0, 0]);
+            var bounds = new L.LatLngBounds(corner, corner);
+            var rectangle = this.createRectangle(bounds, options);
+            var editor = rectangle.enableEdit(this.map);
+            editor.startDrawing();
+            return rectangle;
+        },
+
         startHole: function (editor, latlng) {
             editor.newHole(latlng);
         },
@@ -212,6 +222,10 @@
 
         createMarker: function (latlng, options) {
             return this.createLayer(this.options.markerClass, latlng, options);
+        },
+
+        createRectangle: function (bounds, options) {
+            return this.createLayer(this.options.rectangleClass, bounds, options);
         }
 
     });
@@ -265,6 +279,8 @@
         },
 
         initialize: function (latlng, latlngs, editor, options) {
+            // We don't use this._latlng, because on drag Leaflet replace it while
+            // we want to keep reference.
             this.latlng = latlng;
             this.latlngs = latlngs;
             this.editor = editor;
@@ -307,6 +323,7 @@
                 latlng = this._map.layerPointToLatLng(iconPos);
             this.latlng.lat = latlng.lat;
             this.latlng.lng = latlng.lng;
+            this._latlng = this.latlng;  // Push back to Leaflet our reference.
             this.editor.refresh();
             if (this.middleMarker) {
                 this.middleMarker.updateLatLng();
@@ -350,7 +367,7 @@
 
         delete: function () {
             var next = this.getNext();  // Compute before changing latlng
-            this.latlngs.splice(this.latlngs.indexOf(this.latlng), 1);
+            this.latlngs.splice(this.getIndex(), 1);
             this.editor.editLayer.removeLayer(this);
             this.editor.onVertexDeleted({latlng: this.latlng, vertex: this});
             if (!this.latlngs.length) this.editor.deleteShape(this.latlngs);
@@ -385,13 +402,13 @@
         },
 
         addMiddleMarker: function (previous) {
-            if (this.editor.tools.options.skipMiddleMarkers) return;
+            if (!this.editor.hasMiddleMarkers()) return;
             previous = previous || this.getPrevious();
             if (previous && !this.middleMarker) this.middleMarker = this.editor.addMiddleMarker(previous, this, this.latlngs, this.editor);
         },
 
         addMiddleMarkers: function () {
-            if (this.editor.tools.options.skipMiddleMarkers) return;
+            if (!this.editor.hasMiddleMarkers()) return;
             var previous = this.getPrevious();
             if (previous) {
                 this.addMiddleMarker(previous);
@@ -568,6 +585,10 @@
             return !!this._drawing;
         },
 
+        hasMiddleMarkers: function () {
+            return !this.options.skipMiddleMarkers && !this.tools.options.skipMiddleMarkers;
+        },
+
         fireAndForward: function (type, e) {
             e = e || {};
             e.layer = this.feature;
@@ -740,8 +761,16 @@
         },
 
         addVertexMarkers: function (latlngs) {
+            latlngs = latlngs || this.getDefaultLatLngs();
             for (var i = 0; i < latlngs.length; i++) {
                 this.addVertexMarker(latlngs[i], latlngs);
+            }
+        },
+
+        refreshVertexMarkers: function (latlngs) {
+            latlngs = latlngs || this.getDefaultLatLngs();
+            for (var i = 0; i < latlngs.length; i++) {
+                latlngs[i].__vertex.update();
             }
         },
 
@@ -821,7 +850,7 @@
 
         onVertexMarkerDrag: function (e) {
             this.onMove(e);
-            this.feature._bounds.extend(e.vertex._latlng);
+            this.extendBounds(e);
             this.fireAndForward('editable:vertex:drag', e);
         },
 
@@ -980,6 +1009,10 @@
             this.feature._latlngs.splice(index, 0, shape);
             this.feature.redraw();
             if (this._enabled) this.reset();
+        },
+
+        extendBounds: function (e) {
+            this.feature._bounds.extend(e.vertex.latlng);
         }
 
     });
@@ -1116,6 +1149,74 @@
 
     });
 
+    L.Editable.RectangleEditor = L.Editable.PathEditor.extend({
+
+        CLOSED: true,
+
+        options: {
+            skipMiddleMarkers: true
+        },
+
+        extendBounds: function (e) {
+            var index = e.vertex.getIndex(),
+                oppositeIndex = (index + 2) % 4,
+                opposite = e.vertex.latlngs[oppositeIndex],
+                bounds = new L.LatLngBounds(e.latlng, opposite);
+            this.updateBounds(bounds);
+            this.refreshVertexMarkers();
+        },
+
+        processDrawingClick: function (e) {
+            if (e.vertex && e.vertex.editor === this) return;
+            var latlngs = this.getDefaultLatLngs();
+            if (this.isPristine()) {
+                // L.Polygon._convertLatLngs removes last latlng if it equals first point,
+                // which is the case here as all latlngs are [0, 0]
+                if (latlngs.length === 3) latlngs.push(e.latlng);
+                var bounds = new L.LatLngBounds(e.latlng, e.latlng);
+                this.updateBounds(bounds);
+            } else if (this.isEmbrio()) {
+                latlngs[3].lat = e.latlng.lat;
+                latlngs[3].lng = e.latlng.lng;
+                var bounds = new L.LatLngBounds(latlngs);
+                this.updateBounds(bounds);
+                this.commitDrawing(e);
+            }
+            this.refresh();
+            this.reset();
+            this.fireAndForward('editable:drawing:clicked', e);
+        },
+
+        getDefaultLatLngs: function (latlngs) {
+            return latlngs || this.feature._latlngs[0];
+        },
+
+        isPristine: function () {
+            // // Untouched by user.
+            var sw = this._drawnLatLngs[0],
+                ne = this._drawnLatLngs[2];
+            return sw.lat === 0 && sw.lng === 0 && ne.lat === 0 && ne.lng === 0;
+        },
+
+        isEmbrio: function () {
+            // Only one corner has been set.
+            var sw = this._drawnLatLngs[0],
+                ne = this._drawnLatLngs[2];
+            return sw.lat === ne.lat && sw.lng == ne.lng;
+        },
+
+        updateBounds: function (bounds) {
+            this.feature._bounds = bounds;
+            var latlngs = this.getDefaultLatLngs(),
+                newLatlngs = this.feature._boundsToLatLngs(bounds);
+            // Keep references.
+            for (var i = 0; i < latlngs.length; i++) {
+                latlngs[i].lat = newLatlngs[i].lat;
+                latlngs[i].lng = newLatlngs[i].lng;
+            };
+        }
+
+    });
 
     var EditableMixin = {
 
@@ -1158,6 +1259,7 @@
     L.Polyline.include(EditableMixin);
     L.Polygon.include(EditableMixin);
     L.Marker.include(EditableMixin);
+    L.Rectangle.include(EditableMixin);
 
     L.Polyline.include({
 
@@ -1239,6 +1341,14 @@
 
         getEditorClass: function (map) {
             return (map && map.options.markerEditorClass) ? map.options.markerEditorClass : L.Editable.MarkerEditor;
+        }
+
+    });
+
+    L.Rectangle.include({
+
+        getEditorClass: function (map) {
+            return (map && map.options.rectangleEditorClass) ? map.options.rectangleEditorClass : L.Editable.RectangleEditor;
         }
 
     });
