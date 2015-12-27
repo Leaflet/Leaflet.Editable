@@ -141,6 +141,7 @@
 
         onMousedown: function (e) {
             this._mouseDown = e;
+            this._drawingEditor.onDrawingMouseDown(e);
         },
 
         onMouseup: function (e) {
@@ -150,6 +151,8 @@
                     .distanceTo(origin);
                 if (Math.abs(distance) < 9 * (window.devicePixelRatio || 1)) {
                     this._drawingEditor.onDrawingClick(e);
+                } else {
+                    this._drawingEditor.onDrawingMouseUp(e);
                 }
             }
             this._mouseDown = null;
@@ -622,6 +625,14 @@
 
         onCommitDrawing: function (e) {
             this.fireAndForward('editable:drawing:commit', e);
+        },
+
+        onDrawingMouseDown: function (e) {
+            this.fireAndForward('editable:drawing:mousedown', e);
+        },
+
+        onDrawingMouseUp: function (e) {
+            this.fireAndForward('editable:drawing:mouseup', e);
         },
 
         startDrawing: function () {
@@ -1166,43 +1177,26 @@
             this.refreshVertexMarkers();
         },
 
-        processDrawingClick: function (e) {
-            if (e.vertex && e.vertex.editor === this) return;
+        onDrawingMouseDown: function (e) {
+            this.connect();
             var latlngs = this.getDefaultLatLngs();
-            if (this.isPristine()) {
-                // L.Polygon._convertLatLngs removes last latlng if it equals first point,
-                // which is the case here as all latlngs are [0, 0]
-                if (latlngs.length === 3) latlngs.push(e.latlng);
-                var bounds = new L.LatLngBounds(e.latlng, e.latlng);
-                this.updateBounds(bounds);
-            } else if (this.isEmbrio()) {
-                latlngs[3].lat = e.latlng.lat;
-                latlngs[3].lng = e.latlng.lng;
-                var bounds = new L.LatLngBounds(latlngs);
-                this.updateBounds(bounds);
-                this.commitDrawing(e);
-            }
+            // L.Polygon._convertLatLngs removes last latlng if it equals first point,
+            // which is the case here as all latlngs are [0, 0]
+            if (latlngs.length === 3) latlngs.push(e.latlng);
+            var bounds = new L.LatLngBounds(e.latlng, e.latlng);
+            this.updateBounds(bounds);
             this.refresh();
             this.reset();
-            this.fireAndForward('editable:drawing:clicked', e);
+            this.commitDrawing(e);
+            // Now transfer ongoing drag action to the bottom right corner.
+            // Should we refine which corne will handle the drag according to
+            // drag direction?
+            L.Draggable._dragging = false;
+            latlngs[3].__vertex.dragging._draggable._onDown(e.originalEvent);
         },
 
         getDefaultLatLngs: function (latlngs) {
             return latlngs || this.feature._latlngs[0];
-        },
-
-        isPristine: function () {
-            // // Untouched by user.
-            var sw = this._drawnLatLngs[0],
-                ne = this._drawnLatLngs[2];
-            return sw.lat === 0 && sw.lng === 0 && ne.lat === 0 && ne.lng === 0;
-        },
-
-        isEmbrio: function () {
-            // Only one corner has been set.
-            var sw = this._drawnLatLngs[0],
-                ne = this._drawnLatLngs[2];
-            return sw.lat === ne.lat && sw.lng == ne.lng;
         },
 
         updateBounds: function (bounds) {
