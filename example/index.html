@@ -53,7 +53,7 @@ var map = L.map('map', {editable: true}).setView(startPoint, 16),
             position: 'topleft',
             callback: map.editTools.startPolyline,
             kind: 'line',
-            html: '/\\/'
+            html: '\\/\\'
         }
 
     });
@@ -64,7 +64,7 @@ var map = L.map('map', {editable: true}).setView(startPoint, 16),
             position: 'topleft',
             callback: map.editTools.startPolygon,
             kind: 'polygon',
-            html: '▱'
+            html: '▰'
         }
 
     });
@@ -75,7 +75,7 @@ var map = L.map('map', {editable: true}).setView(startPoint, 16),
             position: 'topleft',
             callback: map.editTools.startMarker,
             kind: 'marker',
-            html: '⚫'
+            html: '🖈'
         }
 
     });
@@ -86,7 +86,18 @@ var map = L.map('map', {editable: true}).setView(startPoint, 16),
             position: 'topleft',
             callback: map.editTools.startRectangle,
             kind: 'rectangle',
-            html: '▭'
+            html: '⬛'
+        }
+
+    });
+
+    L.NewCircleControl = L.EditControl.extend({
+
+        options: {
+            position: 'topleft',
+            callback: map.editTools.startCircle,
+            kind: 'circle',
+            html: '⬤'
         }
 
     });
@@ -95,6 +106,7 @@ var map = L.map('map', {editable: true}).setView(startPoint, 16),
     map.addControl(new L.NewLineControl());
     map.addControl(new L.NewPolygonControl());
     map.addControl(new L.NewRectangleControl());
+    map.addControl(new L.NewCircleControl());
 
     var line = L.polyline([
         [43.1292, 1.256],
@@ -155,10 +167,14 @@ var map = L.map('map', {editable: true}).setView(startPoint, 16),
 
     var rec = L.rectangle([
         [43.1235, 1.255],
-        [43.1225, 1.2605]
+        [43.1215, 1.259]
     ]).addTo(map);
     rec.enableEdit();
     rec.on('dblclick', L.DomEvent.stop).on('dblclick', rec.toggleEdit);
+
+    var circle = L.circle([43.1220, 1.250], {radius: 100}).addTo(map);
+    circle.enableEdit();
+    circle.on('dblclick', L.DomEvent.stop).on('dblclick', circle.toggleEdit);
 
 </script>
 </body>
