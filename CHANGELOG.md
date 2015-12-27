@@ -22,6 +22,7 @@
 - added drawingCursor option to L.Editable
 - added editable:vertex:metakeyclick event
 - reenable edit if the layer was active when removed from the map
+- only add created feature to the map at first user click (instead of adding it at startMarker/startPolygon call)
 
 ## 0.5.0
 - added editable:vertex:drag event
