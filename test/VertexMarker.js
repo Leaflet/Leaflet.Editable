@@ -1,3 +1,4 @@
+'use strict';
 describe('L.Editable.VertexMarker', function() {
     var polyline, p2ll;
 
@@ -6,6 +7,12 @@ describe('L.Editable.VertexMarker', function() {
         p2ll = function (x, y) {
             return map.layerPointToLatLng([x, y]);
         };
+    });
+
+    afterEach(function () {
+        this.map.editTools.editLayer.eachLayer(function (layer) {
+            assert.fail(layer, null, 'no layer expected but one found');
+        });
     });
 
     describe('#split', function () {

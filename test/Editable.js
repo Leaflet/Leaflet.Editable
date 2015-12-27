@@ -1,9 +1,14 @@
+'use strict';
 describe('L.Editable', function () {
 
     before(function () {
         this.map = map;
     });
-    after(function () {
+
+    afterEach(function () {
+        this.map.editTools.editLayer.eachLayer(function (layer) {
+            assert.fail(layer, null, 'no layer expected but one found');
+        });
     });
 
     describe('#init', function () {
@@ -13,6 +18,7 @@ describe('L.Editable', function () {
         });
 
     });
+
     describe('#drawing on top of other elements', function () {
 
         xit('should be possible to create latlng on top of previously created vertex', function () {
@@ -29,8 +35,8 @@ describe('L.Editable', function () {
             happen.drawingClick(500, 500);
             assert.equal(line2._latlngs.length, 2);
             assert.equal(line1._latlngs.length, 2);
-            this.map.removeLayer(line1);
-            this.map.removeLayer(line2);
+            line1.remove();
+            line2.remove();
         });
 
         it('should be possible to delete other vertex of currently drawn path', function () {
@@ -109,7 +115,7 @@ describe('L.Editable', function () {
         it('should return true if an editor is active and drawing forward', function () {
             var layer = this.map.editTools.startPolyline();
             assert.ok(this.map.editTools.drawing());
-            layer.remove();
+            layer.editor.disable();
         });
 
         it('should return true if an editor is active and drawing backward', function () {

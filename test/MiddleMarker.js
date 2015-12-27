@@ -1,17 +1,22 @@
+'use strict';
 describe('L.MiddleMarker', function () {
     var mouse, polyline;
 
     before(function () {
         this.map = map;
     });
-    after(function () {
+
+    afterEach(function () {
+        this.map.editTools.editLayer.eachLayer(function (layer) {
+            assert.fail(layer, null, 'no layer expected but one found');
+        });
     });
 
     describe('#setVisibility()', function () {
         var line;
 
         afterEach(function () {
-            this.map.removeLayer(line);
+            line.remove();
         });
 
         it('should be visible if space is enough', function () {
