@@ -1192,10 +1192,11 @@
             this.refresh();
             this.reset();
             this.commitDrawing(e);
+            // Stop dragging map.
+            this.map.dragging._draggable._onUp(e.originalEvent);
             // Now transfer ongoing drag action to the bottom right corner.
             // Should we refine which corne will handle the drag according to
             // drag direction?
-            L.Draggable._dragging = false;
             latlngs[3].__vertex.dragging._draggable._onDown(e.originalEvent);
         },
 
@@ -1229,7 +1230,7 @@
         },
 
         computeResizeLatLng: function () {
-            // While circle is not added to the map, _radius does not exist.
+            // While circle is not added to the map, _radius is not set.
             var delta = (this.feature._radius || this.feature._mRadius) * Math.cos(Math.PI / 4),
                 point = this.map.project(this.feature._latlng);
             return this.map.unproject([point.x + delta, point.y - delta]);
@@ -1261,10 +1262,12 @@
 
         onDrawingMouseDown: function (e) {
             this._resizeLatLng.update(e.latlng);
+            this.feature._latlng.update(e.latlng);
             this.connect();
             this.commitDrawing(e);
+            // Stop dragging map.
+            this.map.dragging._draggable._onUp(e.originalEvent);
             // Now transfer ongoing drag action to the radius handler.
-            L.Draggable._dragging = false;
             this._resizeLatLng.__vertex.dragging._draggable._onDown(e.originalEvent);
         },
 
