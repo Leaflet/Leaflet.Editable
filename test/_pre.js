@@ -38,3 +38,9 @@ happen.drawingClick = function (x, y) {
     this.at('mousedown', x, y);
     this.at('mouseup', x, y);
 };
+chai.Assertion.addMethod('nearLatLng', function (expected, delta) {
+    delta = delta || 1e-4;
+    expect(this._obj.lat).to.be.within(expected.lat - delta, expected.lat + delta);
+    expect(this._obj.lng).to.be.within(expected.lng - delta, expected.lng + delta);
+    return this;
+});
