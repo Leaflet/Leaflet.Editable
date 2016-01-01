@@ -753,13 +753,8 @@
 
         initVertexMarkers: function (latlngs) {
             latlngs = latlngs || this.getLatLngs();
-            if (L.Polyline._flat(latlngs)) {
-                this.addVertexMarkers(latlngs);
-            } else {
-                for (var i = 0; i < latlngs.length; i++) {
-                    this.initVertexMarkers(latlngs[i]);
-                }
-            }
+            if (L.Polyline._flat(latlngs)) this.addVertexMarkers(latlngs);
+            else for (var i = 0; i < latlngs.length; i++) this.initVertexMarkers(latlngs[i]);
         },
 
         getLatLngs: function () {
