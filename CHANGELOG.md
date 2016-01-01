@@ -2,27 +2,31 @@
 
 # dev
 - hide middle markers if there is not enough space
-- make possible to add new vertex on top of other
-  paths vertex
+- make possible to add new vertex on top of other paths vertex
 - leaflet 1.0 support
 - make editable:drawing:click and editable:vertex:click cancellable
 - add editable:drawing:clicked and editable:vertex:clicked events
 - add L.Editable.commitDrawing, to commit any ongoing drawing
 - AMD/UMD compliancy
-- fix middleMarker still trigering some events while not being visible
-- add map option editToolsClass, that allow to override L.Editable class to be used
+- fix middleMarker still triggering some events while not being visible
+- add map option editToolsClass, that allow to override L.Editable class to be
+  used
 - added deleteShapeAt method
 - added events editable:shape:delete and editable:shape:deleted
 - added event editable:vertex:rawclick
 - added splitShape method
 - added appendShape method
 - added Vertex.continue, as a shortcut to continueBackward / continueForward
-- removed newClickHandler, now relying only on mousedown/mouseup event (simpler touch support)
+- removed newClickHandler, now relying only on mousedown/mouseup event (simpler
+  touch support)
 - added editable:drawing:move
 - added drawingCursor option to L.Editable
 - added editable:vertex:metakeyclick event
 - reenable edit if the layer was active when removed from the map
-- only add created feature to the map at first user click (instead of adding it at startMarker/startPolygon call)
+- only add created feature to the map at first user click (instead of adding it
+  at startMarker/startPolygon call)
+- added editable:drawing:mousedown and editable:drawing:mouseup events
+- added support for L.Rectangle and L.Circle drawing and editing
 
 ## 0.5.0
 - added editable:vertex:drag event

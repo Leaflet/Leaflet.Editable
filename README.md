@@ -25,9 +25,6 @@ Design keys:
 - touch support
 - tests
 
-Note: only [geojson](http://geojson.org/) features are supported for now:
-Marker, Polyline, Polygon, and MultiPolygon/MultiPolylines (no Rectangle, Circle…)
-
 ## Install
 
 You need Leaflet >= 0.7.3, and then include `src/Leaflet.Editable.js`.
@@ -97,6 +94,8 @@ Leaflet.Editable add options and events to the `L.Map` object.
 | editable:drawing:end | layer | false | Fired when a feature is not drawn anymore |
 | editable:drawing:cancel | layer | false | Fired when user cancel drawing while a feature is being drawn |
 | editable:drawing:commit | layer | false | Fired when user finish drawing a feature |
+| editable:drawing:mousedown | layer | false | Fired when user mousedown while drawing |
+| editable:drawing:mouseup | layer | false | Fired when user mouseup while drawing |
 | editable:drawing:click | layer | true | Fired when user click while drawing, before any internal action is being processed |
 | editable:drawing:clicked | layer | false | Fired when user click while drawing, after all internal actions |
 | editable:drawing:move | layer | false | Fired when move mouse while drawing, while dragging a marker, and while dragging a vertex |
@@ -246,6 +245,14 @@ Inherit from `L.Editable.PathEditor`.
 |  method name   |  params | return |              usage              |
 |----------------|---------|--------|---------------------------------|
 | newHole  | latlng\*  | — | Set up drawing tools for creating a new hole on the polygon. If the latlng param is given, a first point is created. |
+
+### L.Editable.RectangleEditor
+
+Inherit from `L.Editable.PathEditor`.
+
+### L.Editable.CircleEditor
+
+Inherit from `L.Editable.PathEditor`.
 
 
 ### EditableMixin
