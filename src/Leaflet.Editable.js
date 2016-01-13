@@ -1139,7 +1139,7 @@
         },
 
         vertexCanBeDeleted: function (vertex) {
-            if (vertex.latlngs === this.getLatLngs()) return L.Editable.PathEditor.prototype.vertexCanBeDeleted.call(this, vertex);
+            if (vertex.latlngs === this.getLatLngs()[0]) return L.Editable.PathEditor.prototype.vertexCanBeDeleted.call(this, vertex);
             else return true;  // Holes can be totally deleted without removing the layer itself
         },
 
