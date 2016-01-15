@@ -1139,8 +1139,10 @@
         },
 
         vertexCanBeDeleted: function (vertex) {
-            if (vertex.latlngs === this.getLatLngs()) return L.Editable.PathEditor.prototype.vertexCanBeDeleted.call(this, vertex);
-            else return true;  // Holes can be totally deleted without removing the layer itself
+            var parent = this.feature.parentShape(vertex.latlngs),
+                idx = L.Util.indexOf(parent, vertex.latlngs);
+            if (idx > 0) return true;  // Holes can be totally deleted without removing the layer itself.
+            return L.Editable.PathEditor.prototype.vertexCanBeDeleted.call(this, vertex);
         },
 
         getDefaultLatLngs: function () {
@@ -1390,6 +1392,17 @@
             }
 
             return inside;
+        },
+
+        parentShape: function (shape, latlngs) {
+            latlngs = latlngs || this._latlngs;
+            if (!latlngs) return;
+            var idx = L.Util.indexOf(latlngs, shape);
+            if (idx !== -1) return latlngs;
+            for (var i = 0; i < latlngs.length; i++) {
+                idx = L.Util.indexOf(latlngs[i], shape);
+                if (idx !== -1) return latlngs[i];
+            }
         }
 
     });

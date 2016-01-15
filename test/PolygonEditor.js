@@ -115,6 +115,16 @@ describe('L.PolygonEditor', function() {
             assert.equal(polygon._latlngs[0].length, 3);
         });
 
+        it('should not delete last latlng on vertex click if only three vertices', function () {
+            var latlngs = [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                layer = L.polygon(latlngs).addTo(this.map);
+            assert.equal(layer._latlngs[0].length, 3);
+            layer.enableEdit();
+            happen.at('click', 200, 100);
+            assert.equal(layer._latlngs[0].length, 3);
+            layer.remove();
+        });
+
     });
 
     describe('#dragMiddleMarker()', function () {
@@ -274,6 +284,43 @@ describe('L.PolygonEditor', function() {
             assert.equal(layer._latlngs.length, 2);
             layer.editor.cancelDrawing();
             assert.equal(layer._latlngs.length, 2);
+            layer.remove();
+        });
+
+    });
+
+    describe('#parentShape()', function () {
+
+        it('should find parent shape on simple polygon', function () {
+            var latlngs = [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                layer = L.polygon(latlngs).addTo(this.map);
+            assert.equal(layer.parentShape(layer._latlngs[0]), layer._latlngs);
+            layer.remove();
+        });
+
+        it('should find parent shape on multi polygon', function () {
+            var latlngs = [
+                    [[p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)]],
+                    [[p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]]
+                ],
+                layer = L.polygon(latlngs).addTo(this.map);
+            assert.equal(layer.parentShape(layer._latlngs[0][0]), layer._latlngs[0]);
+            assert.equal(layer.parentShape(layer._latlngs[1][0]), layer._latlngs[1]);
+            layer.remove();
+        });
+
+        it('should find parent shape on multi polygon with hole', function () {
+            var latlngs = [
+                    [
+                        [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                        [p2ll(120, 160), p2ll(150, 170), p2ll(180, 120)]
+                    ],
+                    [[p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]]
+                ],
+                layer = L.polygon(latlngs).addTo(this.map);
+            assert.equal(layer.parentShape(layer._latlngs[0][0]), layer._latlngs[0]);
+            assert.equal(layer.parentShape(layer._latlngs[0][1]), layer._latlngs[0]);
+            assert.equal(layer.parentShape(layer._latlngs[1][0]), layer._latlngs[1]);
             layer.remove();
         });
 
@@ -513,7 +560,7 @@ describe('L.PolygonEditor', function() {
                 assert.ok(multi._latlngs[1][0][0].__vertex.middleMarker);
                 multi.remove();
                 this.map.editTools.editLayer.eachLayer(function (layer) {
-                    assert.fail(layer, null, "no layer expected but one found");
+                    assert.fail(layer, null, 'no layer expected but one found');
                 });
             });
 
