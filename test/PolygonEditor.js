@@ -125,6 +125,27 @@ describe('L.PolygonEditor', function() {
             layer.remove();
         });
 
+        it('should delete multi polygon hole shape at last vertex delete', function () {
+            var latlngs = [
+                    [
+                        [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                        [p2ll(120, 160), p2ll(150, 170), p2ll(180, 120)]
+                    ],
+                    [[p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]]
+                ],
+                layer = L.polygon(latlngs).addTo(this.map);
+            layer.enableEdit();
+            assert.equal(layer._latlngs[0][1].length, 3);
+            happen.at('click', 120, 160);
+            happen.at('click', 150, 170);
+            happen.at('click', 180, 120);
+            assert.notOk(layer._latlngs[0][1]);
+            assert.ok(layer._latlngs[0]);
+            assert.ok(layer._latlngs[1]);
+            assert.ok(this.map.hasLayer(layer));
+            layer.remove();
+        });
+
     });
 
     describe('#dragMiddleMarker()', function () {
@@ -186,6 +207,9 @@ describe('L.PolygonEditor', function() {
         it('should remove hole array on last click', function () {
             happen.at('click', 250, 200);
             assert.notOk(polygon._latlngs[1]);
+            assert.ok(polygon._latlngs[0]);
+            assert.ok(polygon._latlngs);
+            assert.ok(this.map.hasLayer(polygon));
             polygon.remove();
         });
 

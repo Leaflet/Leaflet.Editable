@@ -966,9 +966,22 @@
         },
 
         deleteShape: function (shape, latlngs) {
+            var e = {shape: shape};
+            L.Editable.makeCancellable(e);
+            this.fireAndForward('editable:shape:delete', e);
+            if (e._cancelled) return;
+            shape = this._deleteShape(shape, latlngs);
+            if (this.ensureNotFlat) this.ensureNotFlat();  // Polygon
+            this.refresh();
+            this.reset();
+            this.fireAndForward('editable:shape:deleted', {shape: shape});
+            return shape;
+        },
+
+        _deleteShape: function (shape, latlngs) {
             latlngs = latlngs || this.getLatLngs();
             if (!latlngs.length) return;
-            var e, self = this,
+            var self = this,
                 inplaceDelete = function (latlngs, shape) {
                     // Called when deleting a flat latlngs
                     shape = latlngs.splice(0, Number.MAX_VALUE);
@@ -977,24 +990,13 @@
                 spliceDelete = function (latlngs, shape) {
                     // Called when removing a latlngs inside an array
                     latlngs.splice(latlngs.indexOf(shape), 1);
-                    return shape;
-                },
-                doDelete = function (callback, shape) {
-                    e = {shape: shape};
-                    L.Editable.makeCancellable(e);
-                    self.fireAndForward('editable:shape:delete', e);
-                    if (e._cancelled) return;
-                    shape = callback(latlngs, shape);
-                    if (self.ensureNotFlat) self.ensureNotFlat();  // Polygon
-                    self.refresh();
-                    self.reset();
-                    self.fireAndForward('editable:shape:deleted', {shape: shape});
+                    if (!latlngs.length) self._deleteShape(latlngs);
                     return shape;
                 };
-            if (latlngs === shape) return doDelete(inplaceDelete, shape);
+            if (latlngs === shape) return inplaceDelete(latlngs, shape);
             for (var i = 0; i < latlngs.length; i++) {
-                if (latlngs[i] === shape) return doDelete(spliceDelete, shape);
-                else if (L.Util.indexOf(latlngs[i], shape) !== -1) return doDelete(spliceDelete, latlngs[i]);
+                if (latlngs[i] === shape) return spliceDelete(latlngs, shape);
+                else if (latlngs[i].indexOf(shape) !== -1) return spliceDelete(latlngs[i], shape);
             }
         },
 
