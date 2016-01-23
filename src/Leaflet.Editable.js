@@ -107,12 +107,12 @@
         },
 
         detachForwardLineGuide: function () {
-            this.forwardLineGuide._latlngs = [];
+            this.forwardLineGuide.setLatLngs([]);
             this.editLayer.removeLayer(this.forwardLineGuide);
         },
 
         detachBackwardLineGuide: function () {
-            this.backwardLineGuide._latlngs = [];
+            this.backwardLineGuide.setLatLngs([]);
             this.editLayer.removeLayer(this.backwardLineGuide);
         },
 
@@ -971,7 +971,8 @@
             this.fireAndForward('editable:shape:delete', e);
             if (e._cancelled) return;
             shape = this._deleteShape(shape, latlngs);
-            if (this.ensureNotFlat) this.ensureNotFlat();  // Polygon
+            if (this.ensureNotFlat) this.ensureNotFlat();  // Polygon.
+            this.feature.setLatLngs(this.getLatLngs());  // Force bounds reset.
             this.refresh();
             this.reset();
             this.fireAndForward('editable:shape:deleted', {shape: shape});
@@ -1344,7 +1345,7 @@
             if (!latlngs) return false;
             var i, k, len, part = [], p,
                 w = this._clickTolerance();
-            this._projectLatlngs(latlngs, part);
+            this._projectLatlngs(latlngs, part, this._pxBounds);
             part = part[0];
             p = this._map.latLngToLayerPoint(l);
 
