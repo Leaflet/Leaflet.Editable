@@ -148,6 +148,7 @@ var map = L.map('map', {editable: true}).setView(startPoint, 16),
     ]).addTo(map);
     multi.enableEdit();
     multi.on('dblclick', L.DomEvent.stop).on('dblclick', multi.toggleEdit);
+    multi.bindPopup('hi!');
 
     var poly = L.polygon([
       [

@@ -116,9 +116,26 @@
             this.editLayer.removeLayer(this.backwardLineGuide);
         },
 
+        blockEvents: function () {
+            // Hack: force map not to listen to other layers events while drawing.
+            if (!this._oldTargets) {
+                this._oldTargets = this.map._targets;
+                this.map._targets = {};
+            }
+        },
+
+        unblockEvents: function () {
+            if (this._oldTargets) {
+                // Reset, but keep targets created while drawing.
+                this.map._targets = L.extend(this.map._targets, this._oldTargets);
+                delete this._oldTargets;
+            }
+        },
+
         registerForDrawing: function (editor) {
-            this.map.on('mousemove touchmove', editor.onDrawingMouseMove, editor);
             if (this._drawingEditor) this.unregisterForDrawing(this._drawingEditor);
+            this.map.on('mousemove touchmove', editor.onDrawingMouseMove, editor);
+            this.blockEvents();
             this._drawingEditor = editor;
             this.map.on('mousedown', this.onMousedown, this);
             this.map.on('mouseup', this.onMouseup, this);
@@ -128,6 +145,7 @@
         },
 
         unregisterForDrawing: function (editor) {
+            this.unblockEvents();
             L.DomUtil.removeClass(this.map._container, this.options.drawingCSSClass);
             this.map._container.style.cursor = this.defaultMapCursor;
             editor = editor || this._drawingEditor;
