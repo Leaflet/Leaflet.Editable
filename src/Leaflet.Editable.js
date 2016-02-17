@@ -1056,6 +1056,7 @@
         },
 
         continueBackward: function (latlngs) {
+            if (this.drawing()) return;
             latlngs = latlngs || this.getDefaultLatLngs();
             this.setDrawnLatLngs(latlngs);
             this.tools.anchorBackwardLineGuide(latlngs[0]);
@@ -1063,6 +1064,7 @@
         },
 
         continueForward: function (latlngs) {
+            if (this.drawing()) return;
             latlngs = latlngs || this.getDefaultLatLngs();
             this.setDrawnLatLngs(latlngs);
             this.tools.anchorForwardLineGuide(latlngs[latlngs.length - 1]);
