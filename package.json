@@ -26,7 +26,7 @@
     "url": "https://github.com/Leaflet/Leaflet.Editable/issues"
   },
   "homepage": "https://github.com/Leaflet/Leaflet.Editable/",
-  "dependencies": {
-    "leaflet": "1.0.0-beta.2"
+  "peerDependencies": {
+    "leaflet": "rc"
   }
 }
