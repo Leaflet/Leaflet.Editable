@@ -1202,6 +1202,7 @@
         },
 
         onDrawingMouseDown: function (e) {
+            L.Editable.PathEditor.prototype.onDrawingMouseDown.call(this, e);
             this.connect();
             var latlngs = this.getDefaultLatLngs();
             // L.Polygon._convertLatLngs removes last latlng if it equals first point,
@@ -1281,6 +1282,7 @@
         },
 
         onDrawingMouseDown: function (e) {
+            L.Editable.PathEditor.prototype.onDrawingMouseDown.call(this, e);
             this._resizeLatLng.update(e.latlng);
             this.feature._latlng.update(e.latlng);
             this.connect();
