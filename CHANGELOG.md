@@ -1,6 +1,6 @@
 # CHANGELOG
 
-# dev
+# 1.0.0-rc.1
 - hide middle markers if there is not enough space
 - make possible to add new vertex on top of other paths vertex
 - leaflet 1.0 support
