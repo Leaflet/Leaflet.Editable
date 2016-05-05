@@ -25,8 +25,5 @@
   "bugs": {
     "url": "https://github.com/Leaflet/Leaflet.Editable/issues"
   },
-  "homepage": "https://github.com/Leaflet/Leaflet.Editable/",
-  "peerDependencies": {
-    "leaflet": "rc"
-  }
+  "homepage": "https://github.com/Leaflet/Leaflet.Editable/"
 }
