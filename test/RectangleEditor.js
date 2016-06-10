@@ -17,6 +17,7 @@ describe('L.RectangleEditor', function() {
             assert.ok(layer.editor);
             assert.notOk(map.hasLayer(layer));
             layer.editor.disable();
+            layer.remove();
         });
 
         it('should add rectangle to map at first click', function() {
