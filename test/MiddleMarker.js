@@ -42,21 +42,19 @@ describe('L.MiddleMarker', function () {
             happen.at('click', 500, 500);
             assert.equal(line._latlngs[1].__vertex.middleMarker._icon.style.opacity, 0.5);
             var mustBe05 = function () {
-                map.off('zoomend', mustBe05);
                 window.setTimeout(function () {
                     assert.equal(line._latlngs[1].__vertex.middleMarker._icon.style.opacity, 0.5);
                     done();
                 }, 10);
             };
             var mustBe0 = function () {
-                map.off('zoomend', mustBe0);
                 window.setTimeout(function () {
                     assert.equal(line._latlngs[1].__vertex.middleMarker._icon.style.opacity, 0);
-                    map.on('zoomend', mustBe05);
+                    map.once('zoomend', mustBe05);
                     map.zoomIn(3);
                 }, 10);
             };
-            map.on('zoomend', mustBe0);
+            map.once('zoomend', mustBe0);
             map.zoomOut(3);
         });
 

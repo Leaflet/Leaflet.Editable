@@ -3,12 +3,14 @@
         <title>Leaflet.Editable Tests</title>
         <meta charset="utf-8">
         <link rel="stylesheet" href="../node_modules/leaflet/dist/leaflet.css" />
+        <script type="text/javascript">
+            L_NO_TOUCH = true;  // Tell the truth to PhantomJS.
+        </script>
         <script src="../node_modules/leaflet/dist/leaflet-src.js"></script>
         <script src="../src/Leaflet.Editable.js"></script>
         <script src="../node_modules/mocha/mocha.js"></script>
         <script src="../node_modules/happen/happen.js"></script>
         <script src="../node_modules/chai/chai.js"></script>
-        <script src="../node_modules/effroi/dist/effroi.js"></script>
         <link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
         <script type="text/javascript">
             chai.config.includeStack = true;
@@ -41,18 +43,18 @@
             #mocha-stats {
                 position: absolute;
             }
-            body { margin:0; padding:0; }
-            #map { position:absolute; top:0; bottom:0; right: 0; left: 0; width:100%; }
+            body, html { margin:0; padding:0; width: 100%; height: 100%; }
+            #map { position:absolute; top:0; bottom:0; right: 0; left: 0; width:100%; height: 100%; }
         </style>
     </head>
     <body>
-        <div id="mocha"></div>
         <div id="map"></div>
+        <div id="mocha"></div>
         <script>
             var startPoint = [43.1249, 1.254],
                 map = L.map('map', {editable: true}).setView(startPoint, 16),
                 tilelayer = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 19, attribution: 'Data \u00a9 <a href="http://www.openstreetmap.org/copyright"> OpenStreetMap Contributors </a>'}).addTo(map);
-            var runner = (window.mochaPhantomJS || window.mocha).run(function (failures) {
+            var runner = window.mocha.run(function (failures) {
                 if (window.location.hash !== '#debug') qs('#mocha').style.display = 'block';
                 console.log(failures);
             });
