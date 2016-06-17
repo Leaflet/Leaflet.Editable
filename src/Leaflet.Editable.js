@@ -1098,6 +1098,8 @@
         _onDragStart: function () {
             this.editLayer.clearLayers();
             this.feature.dragging = this;  // Leaflet wants dragging property to check moved on it.
+            // See https://github.com/Leaflet/Leaflet/pull/4638
+            this.feature.options.draggable = true;
             this._startPoint = this.draggable._startPoint;
             this.feature.closePopup();
             this.fireAndForward('editable:dragstart');
