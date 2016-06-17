@@ -33,7 +33,8 @@
             rectangleClass: L.Rectangle,
             circleClass: L.Circle,
             drawingCSSClass: 'leaflet-editable-drawing',
-            drawingCursor: 'crosshair'
+            drawingCursor: 'crosshair',
+            clickTolerance: 2  // For dragging.
         },
 
         initialize: function (map, options) {
@@ -790,7 +791,7 @@
         MIN_VERTEX: 2,
 
         enable: function () {
-            if (this._enabled) return this;
+            if (this.enabled()) return this;
             L.Editable.BaseEditor.prototype.enable.call(this);
             if (this.feature) this.initVertexMarkers();
             return this;
@@ -805,12 +806,13 @@
         },
 
         enableDragging: function () {
-            if (!this.draggable) this.draggable = new L.PathDraggable(this.feature);
+            if (!this.draggable) this.draggable = new L.PathDraggable(this.feature, {clickTolerance: this.tools.options.clickTolerance});
             this.draggable.on(this._getDragEvents(), this).enable();
             L.DomUtil.addClass(this.draggable._element, 'leaflet-path-draggable');
         },
 
         initVertexMarkers: function (latlngs) {
+            if (!this.enabled()) return;
             latlngs = latlngs || this.getLatLngs();
             if (L.Polyline._flat(latlngs)) this.addVertexMarkers(latlngs);
             else for (var i = 0; i < latlngs.length; i++) this.initVertexMarkers(latlngs[i]);
