@@ -1,9 +1,10 @@
 'use strict';
-describe('L.PolylineEditor', function() {
+[false, true].forEach(function (preferCanvas) {
+describe.only('L.PolylineEditor preferCanvas=' + preferCanvas, function() {
     var p2ll;
 
     before(function () {
-        this.map = map;
+        var map = this.map = initMap(preferCanvas);
         p2ll = function (x, y) {
             return map.layerPointToLatLng([x, y]);
         };
@@ -18,6 +19,7 @@ describe('L.PolylineEditor', function() {
 
         it('should create feature and editor', function() {
             polyline = this.map.editTools.startPolyline();
+            // if (preferCanvas) assert.ok(polyline._renderer instanceof L.Canvas);
             assert.ok(polyline);
             assert.ok(polyline.editor);
             assert.notOk(polyline._latlngs.length);
@@ -1024,5 +1026,7 @@ describe('L.PolylineEditor', function() {
         });
 
     });
+
+});
 
 });

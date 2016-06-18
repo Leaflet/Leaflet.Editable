@@ -44,3 +44,14 @@ chai.Assertion.addMethod('nearLatLng', function (expected, delta) {
     expect(this._obj.lng).to.be.within(expected.lng - delta, expected.lng + delta);
     return this;
 });
+var initMap = function (preferCanvas) {
+    var startPoint = [43.1249, 1.254],
+        map = L.map('map', {editable: true, preferCanvas: preferCanvas}).setView(startPoint, 16),
+        tilelayer = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 19, attribution: 'OSM'}).addTo(map);
+    return map;
+}
+var resetMap = function () {
+    var el = qs('#map');
+    el.innerHTML = 'Done';
+    delete el._leaflet;
+};
