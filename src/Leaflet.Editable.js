@@ -1104,6 +1104,7 @@
             this.feature.options.draggable = true;
             this._startPoint = this.draggable._startPoint;
             this.feature.closePopup();
+            this.onEditing();
             this.fireAndForward('editable:dragstart');
         },
 
