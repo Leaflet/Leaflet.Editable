@@ -922,9 +922,6 @@
         newPointForward: function (latlng) {
             this.addLatLng(latlng);
             this.tools.anchorForwardLineGuide(latlng);
-            if (!this.tools.backwardLineGuide._latlngs[0]) {
-                this.tools.anchorBackwardLineGuide(latlng);
-            }
         },
 
         newPointBackward: function (latlng) {
@@ -1119,9 +1116,10 @@
         CLOSED: true,
         MIN_VERTEX: 3,
 
-        startDrawingForward: function () {
-            L.Editable.PathEditor.prototype.startDrawingForward.call(this);
-            this.tools.attachBackwardLineGuide();
+        newPointForward: function (latlng) {
+            L.Editable.PathEditor.prototype.newPointForward.call(this, latlng);
+            if (!this.tools.backwardLineGuide._latlngs.length) this.tools.anchorBackwardLineGuide(latlng);
+            if (this._drawnLatLngs.length === 2) this.tools.attachBackwardLineGuide();
         },
 
         addNewEmptyHole: function (latlng) {
