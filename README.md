@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/Leaflet/Leaflet.Editable.svg)](https://travis-ci.org/Leaflet/Leaflet.Editable)
+[![Build Status](https://travis-ci.org/Leaflet/Leaflet.Editable.svg?branch=gh-pages)](https://travis-ci.org/Leaflet/Leaflet.Editable)
 # Leaflet.Editable
 
 Make geometries editable in Leaflet.
