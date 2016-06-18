@@ -900,7 +900,6 @@
 
         startDrawingForward: function () {
             this.startDrawing();
-            this.tools.attachForwardLineGuide();
         },
 
         endDrawing: function () {
@@ -921,6 +920,7 @@
 
         newPointForward: function (latlng) {
             this.addLatLng(latlng);
+            this.tools.attachForwardLineGuide();
             this.tools.anchorForwardLineGuide(latlng);
         },
 
