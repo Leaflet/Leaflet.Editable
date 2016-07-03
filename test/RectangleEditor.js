@@ -17,6 +17,7 @@ describe('L.RectangleEditor', function() {
             assert.ok(layer.editor);
             assert.notOk(map.hasLayer(layer));
             layer.editor.disable();
+            layer.remove();
         });
 
         it('should add rectangle to map at first click', function() {
@@ -83,6 +84,81 @@ describe('L.RectangleEditor', function() {
 
     });
 
+
+    describe('#enableDragging()', function () {
+
+        it('should drag a rectangle', function (done) {
+            var latlngs = [p2ll(100, 100), p2ll(200, 200)],
+                layer = L.rectangle(latlngs).addTo(this.map),
+                before = layer._latlngs[0][1].lat;
+            layer.enableEdit();
+            assert.equal(before, layer._latlngs[0][1].lat);
+            happen.drag(100, 130, 120, 150, function () {
+                assert.notEqual(before, layer._latlngs[0][1].lat);
+                layer.remove();
+                done();
+            });
+        });
+
+        it('can enable dragging without enabling edit', function (done) {
+            var latlngs = [p2ll(100, 100), p2ll(200, 200)],
+                layer = L.rectangle(latlngs).addTo(this.map),
+                before = layer._latlngs[0][1].lat;
+            layer.createEditor().enableDragging();
+            assert.equal(before, layer._latlngs[0][1].lat);
+            happen.drag(100, 130, 120, 150, function () {
+                assert.notEqual(before, layer._latlngs[0][1].lat);
+                layer.remove();
+                done();
+            });
+        });
+
+        it('should send editable:dragstart event', function (done) {
+            var latlngs = [p2ll(100, 100), p2ll(200, 200)],
+                layer = L.rectangle(latlngs).addTo(this.map),
+                called = 0,
+                call = function () {called++;};
+            layer.on('editable:dragstart', call);
+            layer.enableEdit();
+            assert.equal(called, 0);
+            happen.drag(100, 130, 120, 150, function () {
+                assert.equal(called, 1);
+                layer.remove();
+                done();
+            });
+        });
+
+        it('should send editable:dragend event', function (done) {
+            var latlngs = [p2ll(100, 100), p2ll(200, 200)],
+                layer = L.rectangle(latlngs).addTo(this.map),
+                called = 0,
+                call = function () {called++;};
+            layer.on('editable:dragend', call);
+            layer.enableEdit();
+            assert.equal(called, 0);
+            happen.drag(100, 130, 120, 150, function () {
+                assert.equal(called, 1);
+                layer.remove();
+                done();
+            });
+        });
+
+        it('should send editable:drag event', function (done) {
+            var latlngs = [p2ll(100, 100), p2ll(200, 200)],
+                layer = L.rectangle(latlngs).addTo(this.map),
+                called = 0,
+                call = function () {called++;};
+            layer.on('editable:drag', call);
+            layer.enableEdit();
+            assert.notOk(called);
+            happen.drag(100, 130, 120, 150, function () {
+                assert.ok(called);
+                layer.remove();
+                done();
+            });
+        });
+
+    });
 
     describe('#events', function () {
 
