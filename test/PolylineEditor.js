@@ -381,12 +381,12 @@ describe('L.PolylineEditor', function() {
             });
         });
 
-        it('should drag a multipolygon with hole', function (done) {
+        it('should drag a multipolyline', function (done) {
             var latlngs = [
                     [p2ll(100, 100), p2ll(100, 200)],
                     [p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)]
                 ],
-                layer = L.polygon(latlngs).addTo(this.map),
+                layer = L.polyline(latlngs).addTo(this.map),
                 before = layer._latlngs[1][2].lat;
             layer.enableEdit();
             assert.equal(before, layer._latlngs[1][2].lat);
