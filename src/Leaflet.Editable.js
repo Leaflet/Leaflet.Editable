@@ -577,7 +577,7 @@
         middleMarkerClass: L.Editable.MiddleMarker
     });
 
-    L.Editable.BaseEditor = L.Class.extend({
+    L.Editable.BaseEditor = L.Handler.extend({
 
         initialize: function (map, feature, options) {
             L.setOptions(this, options);
@@ -588,29 +588,22 @@
             this.tools = this.options.editTools || map.editTools;
         },
 
-        enable: function () {
-            if (this._enabled) return this;
+        addHooks: function () {
             if (this.isConnected()) this.onFeatureAdd();
             else this.feature.once('add', this.onFeatureAdd, this);
             this.onEnable();
-            this._enabled = true;
             this.feature.on(this._getEvents(), this);
-            return this;
+            return;
         },
 
-        disable: function () {
+        removeHooks: function () {
             this.feature.off(this._getEvents(), this);
             if (this.feature.dragging) this.feature.dragging.disable();
             this.editLayer.clearLayers();
             this.tools.editLayer.removeLayer(this.editLayer);
             this.onDisable();
-            delete this._enabled;
             if (this._drawing) this.cancelDrawing();
-            return this;
-        },
-
-        enabled: function () {
-            return !!this._enabled;
+            return;
         },
 
         drawing: function () {
@@ -772,9 +765,8 @@
         CLOSED: false,
         MIN_VERTEX: 2,
 
-        enable: function () {
-            if (this.enabled()) return this;
-            L.Editable.BaseEditor.prototype.enable.call(this);
+        addHooks: function () {
+            L.Editable.BaseEditor.prototype.addHooks.call(this);
             if (this.feature) this.initVertexMarkers();
             return this;
         },
@@ -1335,7 +1327,8 @@
 
         enableEdit: function (map) {
             if (!this.editor) this.createEditor(map);
-            return this.editor.enable();
+            this.editor.enable();
+            return this.editor;
         },
 
         editEnabled: function () {
