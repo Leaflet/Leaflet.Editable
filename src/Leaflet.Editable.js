@@ -33,8 +33,7 @@
             rectangleClass: L.Rectangle,
             circleClass: L.Circle,
             drawingCSSClass: 'leaflet-editable-drawing',
-            drawingCursor: 'crosshair',
-            clickTolerance: 2  // For dragging.
+            drawingCursor: 'crosshair'
         },
 
         initialize: function (map, options) {
@@ -595,12 +594,13 @@
             else this.feature.once('add', this.onFeatureAdd, this);
             this.onEnable();
             this._enabled = true;
-            this.feature.on('remove', this.disable, this);
+            this.feature.on(this._getEvents(), this);
             return this;
         },
 
         disable: function () {
-            this.feature.off('remove', this.disable, this);
+            this.feature.off(this._getEvents(), this);
+            if (this.feature.dragging) this.feature.dragging.disable();
             this.editLayer.clearLayers();
             this.tools.editLayer.removeLayer(this.editLayer);
             this.onDisable();
@@ -619,7 +619,7 @@
 
         onFeatureAdd: function () {
             this.tools.editLayer.addLayer(this.editLayer);
-            this.enableDragging();
+            if (this.feature.dragging) this.feature.dragging.enable();
         },
 
         hasMiddleMarkers: function () {
@@ -715,31 +715,33 @@
 
         onDrawingMouseMove: function (e) {
             this.onMove(e);
+        },
+
+        _getEvents: function () {
+            return {
+                dragstart: this._onDragStart,
+                drag: this._onDrag,
+                dragend: this._onDragEnd,
+                remove: this.disable
+            };
+        },
+
+        _onDragStart: function (e) {
+            this.onEditing();
+            this.fireAndForward('editable:dragstart', e);
+        },
+
+        _onDrag: function (e) {
+            this.fireAndForward('editable:drag', e);
+        },
+
+        _onDragEnd: function (e) {
+            this.fireAndForward('editable:dragend', e);
         }
 
     });
 
     L.Editable.MarkerEditor = L.Editable.BaseEditor.extend({
-
-        enable: function () {
-            if (this._enabled) return this;
-            L.Editable.BaseEditor.prototype.enable.call(this);
-            this.feature.on('dragstart', this.onEditing, this);
-            this.feature.on('drag', this.onMove, this);
-            return this;
-        },
-
-        disable: function () {
-            L.Editable.BaseEditor.prototype.disable.call(this);
-            if (this.feature.dragging) this.feature.dragging.disable();
-            this.feature.off('dragstart', this.onEditing, this);
-            this.feature.off('drag', this.onMove, this);
-            return this;
-        },
-
-        enableDragging: function () {
-            this.feature.dragging.enable();
-        },
 
         onDrawingMouseMove: function (e) {
             L.Editable.BaseEditor.prototype.onDrawingMouseMove.call(this, e);
@@ -756,31 +758,11 @@
             // no mousemove.
             if (e) this.feature._latlng = e.latlng;
             L.Editable.BaseEditor.prototype.connect.call(this, e);
-        }
-
-    });
-
-    /* A Draggable that does not update the element position
-    and takes care of only bubbling to targetted path in Canvas mode. */
-    L.PathDraggable = L.Draggable.extend({
-
-        initialize: function (feature) {
-            this.feature = feature;
-            this._canvas = (feature._map.getRenderer(feature) instanceof L.Canvas);
-            var element = this._canvas ? feature._map.getRenderer(feature)._container : feature._path;
-            L.Draggable.prototype.initialize.call(this, element, element, true);
         },
 
-        _updatePosition: function () {
-            var e = {originalEvent: this._lastEvent};
-            this.fire('drag', e);
-        },
-
-        _onDown: function (e) {
-            var event = e.touches ? e.touches[0] : e;
-            this._startPoint = new L.Point(event.clientX, event.clientY);
-            if (this._canvas && !this.feature._containsPoint(this._startPoint)) return;
-            L.Draggable.prototype._onDown.call(this, e);
+        _onDrag: function (e) {
+            this.onMove(e);
+            L.Editable.BaseEditor.prototype._onDrag.call(this, e);
         }
 
     });
@@ -795,20 +777,6 @@
             L.Editable.BaseEditor.prototype.enable.call(this);
             if (this.feature) this.initVertexMarkers();
             return this;
-        },
-
-        disable: function () {
-            if (this.draggable) {
-                this.draggable.off(this._getDragEvents(), this).disable();
-                L.DomUtil.removeClass(this.draggable._element, 'leaflet-path-draggable');
-            }
-            return L.Editable.BaseEditor.prototype.disable.call(this);
-        },
-
-        enableDragging: function () {
-            if (!this.draggable) this.draggable = new L.PathDraggable(this.feature, {clickTolerance: this.tools.options.clickTolerance});
-            this.draggable.on(this._getDragEvents(), this).enable();
-            L.DomUtil.addClass(this.draggable._element, 'leaflet-path-draggable');
         },
 
         initVertexMarkers: function (latlngs) {
@@ -1085,55 +1053,14 @@
             this.feature._bounds.extend(e.vertex.latlng);
         },
 
-        moved: function () {
-            return this.draggable && this.draggable._moved;
-        },
-
-        _getDragEvents: function () {
-            return {
-                dragstart: this._onDragStart,
-                drag: this._onDrag,
-                dragend: this._onDragEnd
-            };
-        },
-
-        _onDragStart: function () {
+        _onDragStart: function (e) {
             this.editLayer.clearLayers();
-            this.feature.dragging = this;  // Leaflet wants dragging property to check moved on it.
-            // See https://github.com/Leaflet/Leaflet/pull/4638
-            this.feature.options.draggable = true;
-            this._startPoint = this.draggable._startPoint;
-            this.feature.closePopup();
-            this.onEditing();
-            this.fireAndForward('editable:dragstart');
-        },
-
-        _onDrag: function (e) {
-            var event = (e.originalEvent.touches && e.originalEvent.touches.length === 1 ? e.originalEvent.touches[0] : e.originalEvent),
-                newPoint = L.point(event.clientX, event.clientY),
-                latlng = this.feature._map.layerPointToLatLng(newPoint);
-
-            this._offset = newPoint.subtract(this._startPoint);
-            this._startPoint = newPoint;
-
-            this.feature.eachLatLng(this._offsetLatLng, this);
-            this.feature.redraw();
-
-            e.latlng = latlng;
-            e.offset = this._offset;
-            this.fireAndForward('editable:drag', e);
+            L.Editable.BaseEditor.prototype._onDragStart.call(this, e);
         },
 
         _onDragEnd: function (e) {
             this.initVertexMarkers();
-            this.fireAndForward('editable:dragend', e);
-        },
-
-        _offsetLatLng: function (latlng) {
-            var oldPoint = this.map.latLngToLayerPoint(latlng);
-            oldPoint._add(this._offset);
-            var newLatLng = this.map.layerPointToLatLng(oldPoint);
-            latlng.update(newLatLng);
+            L.Editable.BaseEditor.prototype._onDragEnd.call(this, e);
         }
 
     });
@@ -1393,7 +1320,7 @@
 
         _onDrag: function (e) {
             L.Editable.PathEditor.prototype._onDrag.call(this, e);
-            this._offsetLatLng(this._resizeLatLng);
+            this.feature.dragging.updateLatLng(this._resizeLatLng);
         }
 
     });
@@ -1561,20 +1488,5 @@
         this.lat = latlng.lat;
         this.lng = latlng.lng;
     }
-
-    L.Path.include({
-
-        eachLatLng: function (callback, context) {
-            context = context || this;
-            var loop = function (latlngs) {
-                for (var i = 0; i < latlngs.length; i++) {
-                    if (L.Util.isArray(latlngs[i])) loop(latlngs[i]);
-                    else callback.call(context, latlngs[i]);
-                }
-            };
-            loop(this.getLatLngs ? this.getLatLngs() : [this.getLatLng()]);
-        }
-
-    });
 
 }, window));

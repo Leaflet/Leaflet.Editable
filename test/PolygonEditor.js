@@ -384,19 +384,6 @@ describe('L.PolygonEditor', function() {
             });
         });
 
-        it('can enable dragging without enabling edit', function (done) {
-            var latlngs = [[p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)]],
-                layer = L.polygon(latlngs).addTo(this.map),
-                before = layer._latlngs[0][2].lat;
-            layer.createEditor().enableDragging();
-            assert.equal(before, layer._latlngs[0][2].lat);
-            happen.drag(150, 150, 170, 170, function () {
-                assert.notEqual(before, layer._latlngs[0][2].lat);
-                layer.remove();
-                done();
-            });
-        });
-
         it('should send editable:dragstart event', function (done) {
             var latlngs = [[p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)]],
                 layer = L.polygon(latlngs).addTo(this.map),

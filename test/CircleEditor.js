@@ -92,18 +92,6 @@ describe('L.CircleEditor', function() {
             });
         });
 
-        it('can enable dragging without enabling edit', function (done) {
-            var layer = L.circle(p2ll(200, 200), {radius: 50}).addTo(this.map),
-                before = layer._latlng.lat;
-            layer.createEditor().enableDragging();
-            assert.equal(before, layer._latlng.lat);
-            happen.drag(210, 210, 220, 220, function () {
-                assert.notEqual(before, layer._latlng.lat);
-                layer.remove();
-                done();
-            });
-        });
-
         it('should send editable:dragstart event', function (done) {
             var layer = L.circle(p2ll(200, 200), {radius: 50}).addTo(this.map),
                 called = 0,
