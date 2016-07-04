@@ -78,6 +78,65 @@ describe('L.CircleEditor', function() {
     });
 
 
+    describe('#enableDragging()', function () {
+
+        it('should drag a circle', function (done) {
+            var layer = L.circle(p2ll(200, 200), {radius: 50}).addTo(this.map),
+                before = layer._latlng.lat;
+            layer.enableEdit();
+            assert.equal(before, layer._latlng.lat);
+            happen.drag(210, 210, 220, 220, function () {
+                assert.notEqual(before, layer._latlng.lat);
+                layer.remove();
+                done();
+            });
+        });
+
+        it('should send editable:dragstart event', function (done) {
+            var layer = L.circle(p2ll(200, 200), {radius: 50}).addTo(this.map),
+                called = 0,
+                call = function () {called++;};
+            layer.on('editable:dragstart', call);
+            layer.enableEdit();
+            assert.equal(called, 0);
+            happen.drag(210, 210, 220, 220, function () {
+                assert.equal(called, 1);
+                layer.remove();
+                done();
+            });
+        });
+
+        it('should send editable:dragend event', function (done) {
+            var layer = L.circle(p2ll(200, 200), {radius: 50}).addTo(this.map),
+                called = 0,
+                call = function () {called++;};
+            layer.on('editable:dragend', call);
+            layer.enableEdit();
+            assert.equal(called, 0);
+            happen.drag(210, 210, 220, 220, function () {
+                assert.equal(called, 1);
+                layer.remove();
+                done();
+            });
+        });
+
+        it('should send editable:drag event', function (done) {
+            var layer = L.circle(p2ll(200, 200), {radius: 50}).addTo(this.map),
+                called = 0,
+                call = function () {called++;};
+            layer.on('editable:drag', call);
+            layer.enableEdit();
+            assert.notOk(called);
+            happen.drag(210, 210, 220, 220, function () {
+                assert.ok(called);
+                layer.remove();
+                done();
+            });
+        });
+
+    });
+
+
     describe('#events', function () {
 
         it('should fire editable:drawing:start on startCircle call', function () {

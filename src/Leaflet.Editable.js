@@ -590,15 +590,17 @@
 
         enable: function () {
             if (this._enabled) return this;
-            if (this.isConnected()) this.tools.editLayer.addLayer(this.editLayer);
+            if (this.isConnected()) this.onFeatureAdd();
+            else this.feature.once('add', this.onFeatureAdd, this);
             this.onEnable();
             this._enabled = true;
-            this.feature.on('remove', this.disable, this);
+            this.feature.on(this._getEvents(), this);
             return this;
         },
 
         disable: function () {
-            this.feature.off('remove', this.disable, this);
+            this.feature.off(this._getEvents(), this);
+            if (this.feature.dragging) this.feature.dragging.disable();
             this.editLayer.clearLayers();
             this.tools.editLayer.removeLayer(this.editLayer);
             this.onDisable();
@@ -607,8 +609,17 @@
             return this;
         },
 
+        enabled: function () {
+            return !!this._enabled;
+        },
+
         drawing: function () {
             return !!this._drawing;
+        },
+
+        onFeatureAdd: function () {
+            this.tools.editLayer.addLayer(this.editLayer);
+            if (this.feature.dragging) this.feature.dragging.enable();
         },
 
         hasMiddleMarkers: function () {
@@ -704,33 +715,33 @@
 
         onDrawingMouseMove: function (e) {
             this.onMove(e);
+        },
+
+        _getEvents: function () {
+            return {
+                dragstart: this._onDragStart,
+                drag: this._onDrag,
+                dragend: this._onDragEnd,
+                remove: this.disable
+            };
+        },
+
+        _onDragStart: function (e) {
+            this.onEditing();
+            this.fireAndForward('editable:dragstart', e);
+        },
+
+        _onDrag: function (e) {
+            this.fireAndForward('editable:drag', e);
+        },
+
+        _onDragEnd: function (e) {
+            this.fireAndForward('editable:dragend', e);
         }
 
     });
 
     L.Editable.MarkerEditor = L.Editable.BaseEditor.extend({
-
-        enable: function () {
-            if (this._enabled) return this;
-            L.Editable.BaseEditor.prototype.enable.call(this);
-            if (this.isConnected()) this.enableDragging();
-            else this.feature.on('add', this.enableDragging, this);
-            this.feature.on('dragstart', this.onEditing, this);
-            this.feature.on('drag', this.onMove, this);
-            return this;
-        },
-
-        disable: function () {
-            L.Editable.BaseEditor.prototype.disable.call(this);
-            if (this.feature.dragging) this.feature.dragging.disable();
-            this.feature.off('dragstart', this.onEditing, this);
-            this.feature.off('drag', this.onMove, this);
-            return this;
-        },
-
-        enableDragging: function () {
-            this.feature.dragging.enable();
-        },
 
         onDrawingMouseMove: function (e) {
             L.Editable.BaseEditor.prototype.onDrawingMouseMove.call(this, e);
@@ -747,6 +758,11 @@
             // no mousemove.
             if (e) this.feature._latlng = e.latlng;
             L.Editable.BaseEditor.prototype.connect.call(this, e);
+        },
+
+        _onDrag: function (e) {
+            this.onMove(e);
+            L.Editable.BaseEditor.prototype._onDrag.call(this, e);
         }
 
     });
@@ -757,19 +773,14 @@
         MIN_VERTEX: 2,
 
         enable: function () {
-            if (this._enabled) return this;
+            if (this.enabled()) return this;
             L.Editable.BaseEditor.prototype.enable.call(this);
-            if (this.feature) {
-                this.initVertexMarkers();
-            }
+            if (this.feature) this.initVertexMarkers();
             return this;
         },
 
-        disable: function () {
-            return L.Editable.BaseEditor.prototype.disable.call(this);
-        },
-
         initVertexMarkers: function (latlngs) {
+            if (!this.enabled()) return;
             latlngs = latlngs || this.getLatLngs();
             if (L.Polyline._flat(latlngs)) this.addVertexMarkers(latlngs);
             else for (var i = 0; i < latlngs.length; i++) this.initVertexMarkers(latlngs[i]);
@@ -1040,6 +1051,16 @@
 
         extendBounds: function (e) {
             this.feature._bounds.extend(e.vertex.latlng);
+        },
+
+        _onDragStart: function (e) {
+            this.editLayer.clearLayers();
+            L.Editable.BaseEditor.prototype._onDragStart.call(this, e);
+        },
+
+        _onDragEnd: function (e) {
+            this.initVertexMarkers();
+            L.Editable.BaseEditor.prototype._onDragEnd.call(this, e);
         }
 
     });
@@ -1295,6 +1316,11 @@
             L.Editable.BaseEditor.prototype.onDrawingMouseMove.call(this, e);
             this.feature._latlng.update(e.latlng);
             this.feature._latlng.__vertex.update();
+        },
+
+        _onDrag: function (e) {
+            L.Editable.PathEditor.prototype._onDrag.call(this, e);
+            this.feature.dragging.updateLatLng(this._resizeLatLng);
         }
 
     });
@@ -1313,7 +1339,7 @@
         },
 
         editEnabled: function () {
-            return this.editor && this.editor._enabled;
+            return this.editor && this.editor.enabled();
         },
 
         disableEdit: function () {
@@ -1324,11 +1350,8 @@
         },
 
         toggleEdit: function () {
-            if (this.editEnabled()) {
-                this.disableEdit();
-            } else {
-                this.enableEdit();
-            }
+            if (this.editEnabled()) this.disableEdit();
+            else this.enableEdit();
         },
 
         _onEditableAdd: function () {

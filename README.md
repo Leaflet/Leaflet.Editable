@@ -29,6 +29,10 @@ Design keys:
 
 You need Leaflet >= 0.7.3, and then include `src/Leaflet.Editable.js`.
 
+### Path dragging
+
+If you want path dragging, you need to also include [Path.Drag.js](https://github.com/Leaflet/Path.Drag.js).
+
 
 ## Quick start
 
@@ -99,6 +103,9 @@ Leaflet.Editable add options and events to the `L.Map` object.
 | editable:drawing:click | layer | true | Fired when user click while drawing, before any internal action is being processed |
 | editable:drawing:clicked | layer | false | Fired when user click while drawing, after all internal actions |
 | editable:drawing:move | layer | false | Fired when move mouse while drawing, while dragging a marker, and while dragging a vertex |
+| editable:dragstart | layer | false | Fired before a path feature is dragged |
+| editable:drag | layer, latlng, offset | false | Fired when a path feature is being dragged |
+| editable:dragend | layer | false | Fired after a path feature has been dragged |
 | editable:vertex:click | originalEvent, latlng, vertex, layer | true | Fired when a click is issued on a vertex, before any internal action is being processed |
 | editable:vertex:clicked | originalEvent, latlng, vertex, layer | false | Fired when a click is issued on a vertex, after all internal actions |
 | editable:vertex:ctrlclick | originalEvent, latlng, vertex, layer | false | Fired when a click having ctrlKey is issued on a vertex |
