@@ -1059,17 +1059,19 @@
 
     L.Editable.PolylineEditor = L.Editable.PathEditor.extend({
 
-        startDrawingBackward: function (latlngs) {
+        startDrawingBackward: function () {
             this._drawing = L.Editable.BACKWARD;
-            this.startDrawing(latlngs);
-            this.tools.attachBackwardLineGuide();
+            this.startDrawing();
         },
 
         continueBackward: function (latlngs) {
             if (this.drawing()) return;
             latlngs = latlngs || this.getDefaultLatLngs();
             this.setDrawnLatLngs(latlngs);
-            this.tools.anchorBackwardLineGuide(latlngs[0]);
+            if (latlngs.length > 0) {
+                this.tools.attachBackwardLineGuide();
+                this.tools.anchorBackwardLineGuide(latlngs[0]);
+            }
             this.startDrawingBackward();
         },
 
@@ -1077,7 +1079,10 @@
             if (this.drawing()) return;
             latlngs = latlngs || this.getDefaultLatLngs();
             this.setDrawnLatLngs(latlngs);
-            this.tools.anchorForwardLineGuide(latlngs[latlngs.length - 1]);
+            if (latlngs.length > 0) {
+                this.tools.attachForwardLineGuide();
+                this.tools.anchorForwardLineGuide(latlngs[latlngs.length - 1]);
+            }
             this.startDrawingForward();
         },
 
