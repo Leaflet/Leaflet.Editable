@@ -1,0 +1,28 @@
+body {
+    font-family: Sans;
+}
+.container {
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+table {
+    margin-top: 10px;
+    border-collapse: collapse;
+    width: 100%;
+}
+td, th {
+    border: 1px solid #eee;
+    min-height: 1.5em;
+    padding: 5px;
+}
+th {
+    background-color: #eee;
+}
+pre code, p code {
+    background: #eee;
+    padding: 2px;
+}
+h1 {
+    text-align: center;
+}

@@ -39,7 +39,7 @@
     // 🍂method cancel()
     // Cancel any subsequent action.
 
-    // 🍂namespace L.Editable; 🍂class Editable; 🍂aka L.Editable
+    // 🍂namespace Editable; 🍂class Editable; 🍂aka L.Editable
     // Main edition handler. By default, it is attached to the map
     // as `map.editTools` property.
     // Leaflet.Editable is made to be fully extendable. You have three ways to customize
@@ -53,7 +53,6 @@
 
         options: {
 
-            // 🍂section Editable Options
             // You can pass them when creating a map using the `editOptions` key.
             // 🍂option zIndex: int = 1000
             // The default zIndex of the editing tools.
@@ -349,8 +348,7 @@
             options = L.Util.extend({editOptions: {editTools: this}}, options);
             var layer = new klass(latlngs, options);
             // 🍂namespace Editable
-            // 🍂section Events
-            // 🍂event editable.created: Event
+            // 🍂event editable:created: Event
             // Fired when a new feature (Marker, Polyline…) is created.
             this.fireAndForward('editable:created', {layer: layer});
             return layer;
@@ -388,7 +386,7 @@
 
     });
 
-    // 🍂namespace L.Map; 🍂class Map
+    // 🍂namespace Map; 🍂class Map
     // Leaflet.Editable add options and events to the `L.Map` object.
     // 🍂section Editable Map Options
     L.Map.mergeOptions({
@@ -436,7 +434,7 @@
     });
 
 
-    // 🍂namespace L.Editable; 🍂class VertexMarker; Handler for dragging path vertices.
+    // 🍂namespace Editable; 🍂class VertexMarker; Handler for dragging path vertices.
     L.Editable.VertexMarker = L.Marker.extend({
 
         options: {
@@ -625,7 +623,6 @@
     L.Editable.mergeOptions({
 
         // 🍂namespace Editable
-        // 🍂section Editable Options
         // 🍂option vertexMarkerClass: class = VertexMarker
         // Class to be used as vertex, for path editing
         vertexMarkerClass: L.Editable.VertexMarker
@@ -740,14 +737,13 @@
     L.Editable.mergeOptions({
 
         // 🍂namespace Editable
-        // 🍂section Editable Options
         // 🍂option middleMarkerClass: class = VertexMarker
         // Class to be used as middle vertex, pulled by the user to create a new point in the middle of a path.
         middleMarkerClass: L.Editable.MiddleMarker
 
     });
 
-    // 🍂namespace L.Editable; 🍂class BaseEditor; 🍂aka L.Editable.BaseEditor
+    // 🍂namespace Editable; 🍂class BaseEditor; 🍂aka L.Editable.BaseEditor
     // When editing a feature (marker, polyline…), an editor is attached to it. This
     // editor basically knows how to handle the edition.
     L.Editable.BaseEditor = L.Handler.extend({
@@ -807,7 +803,6 @@
 
         onEnable: function () {
             // 🍂namespace Editable
-            // 🍂section Events
             // 🍂event editable.enable: Event
             // Fired when an existing feature is ready to be edited.
             this.fireAndForward('editable:enable');
@@ -815,7 +810,6 @@
 
         onDisable: function () {
             // 🍂namespace Editable
-            // 🍂section Events
             // 🍂event editable.disable: Event
             // Fired when an existing feature is not ready anymore to be edited.
             this.fireAndForward('editable:disable');
@@ -823,7 +817,6 @@
 
         onEditing: function () {
             // 🍂namespace Editable
-            // 🍂section Events
             // 🍂event editable.editing: Event
             // Fired as soon as any change is made to the feature geometry.
             this.fireAndForward('editable:editing');
@@ -945,7 +938,6 @@
         onDragStart: function (e) {
             this.onEditing();
             // 🍂namespace Editable
-            // 🍂section Events
             // 🍂event editable.dragstart: Event
             // Fired before a path feature is dragged.
             this.fireAndForward('editable:dragstart', e);
@@ -954,7 +946,6 @@
         onDrag: function (e) {
             this.onMove(e);
             // 🍂namespace Editable
-            // 🍂section Events
             // 🍂event editable.drag: Event
             // Fired when a path feature is being dragged.
             this.fireAndForward('editable:drag', e);
@@ -970,7 +961,7 @@
 
     });
 
-    // 🍂namespace L.Editable; 🍂class MarkerEditor; 🍂aka L.Editable.MarkerEditor
+    // 🍂namespace Editable; 🍂class MarkerEditor; 🍂aka L.Editable.MarkerEditor
     // 🍂inherits BaseEditor
     // Editor for Marker.
     L.Editable.MarkerEditor = L.Editable.BaseEditor.extend({
@@ -998,7 +989,7 @@
 
     });
 
-    // 🍂namespace L.Editable; 🍂class PathEditor; 🍂aka L.Editable.PathEditor
+    // 🍂namespace Editable; 🍂class PathEditor; 🍂aka L.Editable.PathEditor
     // 🍂inherits BaseEditor
     // Base class for all path editors.
     L.Editable.PathEditor = L.Editable.BaseEditor.extend({
@@ -1386,7 +1377,7 @@
 
     });
 
-    // 🍂namespace L.Editable; 🍂class PolylineEditor; 🍂aka L.Editable.PolylineEditor
+    // 🍂namespace Editable; 🍂class PolylineEditor; 🍂aka L.Editable.PolylineEditor
     // 🍂inherits PathEditor
     L.Editable.PolylineEditor = L.Editable.PathEditor.extend({
 
@@ -1466,7 +1457,7 @@
 
     });
 
-    // 🍂namespace L.Editable; 🍂class PolygonEditor; 🍂aka L.Editable.PolygonEditor
+    // 🍂namespace Editable; 🍂class PolygonEditor; 🍂aka L.Editable.PolygonEditor
     // 🍂inherits PathEditor
     L.Editable.PolygonEditor = L.Editable.PathEditor.extend({
 
@@ -1540,7 +1531,7 @@
 
     });
 
-    // 🍂namespace L.Editable; 🍂class RectangleEditor; 🍂aka L.Editable.RectangleEditor
+    // 🍂namespace Editable; 🍂class RectangleEditor; 🍂aka L.Editable.RectangleEditor
     // 🍂inherits PathEditor
     L.Editable.RectangleEditor = L.Editable.PathEditor.extend({
 
@@ -1596,7 +1587,7 @@
 
     });
 
-    // 🍂namespace L.Editable; 🍂class CircleEditor; 🍂aka L.Editable.CircleEditor
+    // 🍂namespace Editable; 🍂class CircleEditor; 🍂aka L.Editable.CircleEditor
     // 🍂inherits PathEditor
     L.Editable.CircleEditor = L.Editable.PathEditor.extend({
 
@@ -1667,7 +1658,7 @@
 
     });
 
-    // 🍂namespace L.Editable; 🍂class EditableMixin
+    // 🍂namespace Editable; 🍂class EditableMixin
     // `EditableMixin` is included to `L.Polyline`, `L.Polygon`, `L.Rectangle`, `L.Circle`
     // and `L.Marker`. It adds some methods to them.
     // *When editing is enabled, the editor is accessible on the instance with the
