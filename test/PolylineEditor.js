@@ -236,7 +236,7 @@ describe('L.PolylineEditor', function() {
         it('should return true if an editor is active and drawing forward', function () {
             var layer = L.polyline([p2ll(100, 150), p2ll(150, 200)]).addTo(this.map);
             layer.enableEdit();
-            layer.editor.continueBackward();
+            layer.editor.continueForward();
             assert.ok(layer.editor.drawing());
             layer.remove();
         });
@@ -246,6 +246,46 @@ describe('L.PolylineEditor', function() {
             layer.enableEdit();
             layer.editor.continueBackward();
             assert.ok(layer.editor.drawing());
+            layer.remove();
+        });
+
+    });
+
+    describe('#continue forward', function () {
+
+        it('should attach forward line guide if points were drawn', function () {
+            var layer = L.polyline([p2ll(100, 150), p2ll(150, 200)]).addTo(this.map);
+            layer.enableEdit();
+            layer.editor.continueForward();
+            assert.equal(this.map.editTools.editLayer.hasLayer(this.map.editTools.forwardLineGuide), true, 'forward line guide is attached');
+            layer.remove();
+        });
+
+        it('should not attach forward line guide if no points were drawn', function () {
+            var layer = L.polyline([]).addTo(this.map);
+            layer.enableEdit();
+            layer.editor.continueForward();
+            assert.equal(this.map.editTools.editLayer.hasLayer(this.map.editTools.forwardLineGuide), false, 'forward line guide is not attached');
+            layer.remove();
+        });
+
+    });
+
+    describe('#continue backward', function () {
+
+        it('should attach backward line guide if points were drawn', function () {
+            var layer = L.polyline([p2ll(100, 150), p2ll(150, 200)]).addTo(this.map);
+            layer.enableEdit();
+            layer.editor.continueBackward();
+            assert.equal(this.map.editTools.editLayer.hasLayer(this.map.editTools.backwardLineGuide), true, 'backward line guide is attached');
+            layer.remove();
+        });
+
+        it('should not attach backward line guide if no points were drawn', function () {
+            var layer = L.polyline([]).addTo(this.map);
+            layer.enableEdit();
+            layer.editor.continueBackward();
+            assert.equal(this.map.editTools.editLayer.hasLayer(this.map.editTools.backwardLineGuide), false, 'backward line guide is not attached');
             layer.remove();
         });
 
