@@ -1330,6 +1330,12 @@
             return this.getLatLngs();
         },
 
+        onVertexMarkerDrag: function (e) {
+            if (e.vertex.getIndex() === 1) this.resize(e);
+            else this.updateResizeLatLng(e.latlng);
+            L.Editable.PathEditor.prototype.onVertexMarkerDrag.call(this, e);
+        },
+
         resize: function (e) {
             var radius = this.feature._latlng.distanceTo(e.latlng);
             this.feature.setRadius(radius);
