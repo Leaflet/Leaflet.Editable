@@ -167,8 +167,16 @@
             if (this._mouseDown) {
                 var origin = L.point(this._mouseDown.originalEvent.clientX, this._mouseDown.originalEvent.clientY);
                 var distance = L.point(e.originalEvent.clientX, e.originalEvent.clientY).distanceTo(origin);
-                if (Math.abs(distance) < 9 * (window.devicePixelRatio || 1)) this._drawingEditor.onDrawingClick(e);
-                else this._drawingEditor.onDrawingMouseUp(e);
+                
+                // if the mouse hasn't moved this is a click
+                if (Math.abs(distance) < 9 * (window.devicePixelRatio || 1)) {
+                    this._drawingEditor.onDrawingClick(e);
+                }
+
+                // always fire mouse up whether its a click or not, since firing a
+                // mouse down but never a mouse up if the mouse didn't move can lead
+                // code using these events to think the mouse button is still down
+                this._drawingEditor.onDrawingMouseUp(e);
             }
             this._mouseDown = null;
         },
@@ -1270,15 +1278,6 @@
             }
         },
 
-        // If the user doesn't drag the rectangle and clicks to start and end, we
-        // need to make sure we commit the shape.
-        onVertexMarkerClick: function (e) {
-            if (this._initialLatLng) {
-                this._initialLatLng = null;
-                this.commitDrawing(e);
-            }
-        },
-
         getDefaultLatLngs: function (latlngs) {
             return latlngs || this.feature._latlngs[0];
         },
@@ -1369,15 +1368,6 @@
         onDrawingMouseUp: function (e) {
             L.Editable.BaseEditor.prototype.onDrawingMouseUp.call(this, e);
 
-            if (this._started) {
-                this._started = false;
-                this.commitDrawing(e);
-            }
-        },
-
-        // If the user doesn't drag the circle and clicks to start and end, we
-        // need to make sure we commit the shape.
-        onVertexMarkerClick: function (e) {
             if (this._started) {
                 this._started = false;
                 this.commitDrawing(e);
