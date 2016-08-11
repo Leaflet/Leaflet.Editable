@@ -1332,7 +1332,7 @@
 
         onVertexMarkerDrag: function (e) {
             if (e.vertex.getIndex() === 1) this.resize(e);
-            else this.updateResizeLatLng(e.latlng);
+            else this.updateResizeLatLng(this.computeResizeLatLng());
             L.Editable.PathEditor.prototype.onVertexMarkerDrag.call(this, e);
         },
 
