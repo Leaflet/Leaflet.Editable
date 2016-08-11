@@ -165,6 +165,16 @@
 
         onMouseup: function (e) {
             if (this._mouseDown) {
+            // always fire mouse up whether its a click or not, since firing a
+            // mouse down but never a mouse up if the mouse didn't move can lead
+            // code using these events to think the mouse button is still down
+            if (this._drawingEditor) {
+                this._drawingEditor.onDrawingMouseUp(e);
+            }
+    
+            // null check for the drawing editor again, just in case the mouse up
+            // handler triggered something that nulled it out
+            if (this._drawingEditor) {
                 var origin = L.point(this._mouseDown.originalEvent.clientX, this._mouseDown.originalEvent.clientY);
                 var distance = L.point(e.originalEvent.clientX, e.originalEvent.clientY).distanceTo(origin);
                 
@@ -172,13 +182,9 @@
                 if (Math.abs(distance) < 9 * (window.devicePixelRatio || 1)) {
                     this._drawingEditor.onDrawingClick(e);
                 }
-
-                // always fire mouse up whether its a click or not, since firing a
-                // mouse down but never a mouse up if the mouse didn't move can lead
-                // code using these events to think the mouse button is still down
-                this._drawingEditor.onDrawingMouseUp(e);
             }
-            this._mouseDown = null;
+          }
+          this._mouseDown = null;
         },
 
         drawing: function () {
