@@ -1402,6 +1402,16 @@
                 this._started = false;
                 this.commitDrawing(e);
             }
+        },
+
+        // This method is fired if the circle is dragged by clicking a
+        // shaded part of the circle and dragging (not by vertex).  In
+        // that scenario we need to make sure we update the vertex that
+        // is used for resizing the circle, so that it is still on the
+        // edge of the circle.
+        _onDrag: function (e) {
+            L.Editable.PathEditor.prototype._onDrag.call(this, e);
+            this.feature.dragging.updateLatLng(this._resizeLatLng);
         }
     });
 
