@@ -165,12 +165,26 @@
 
         onMouseup: function (e) {
             if (this._mouseDown) {
+            // always fire mouse up whether its a click or not, since firing a
+            // mouse down but never a mouse up if the mouse didn't move can lead
+            // code using these events to think the mouse button is still down
+            if (this._drawingEditor) {
+                this._drawingEditor.onDrawingMouseUp(e);
+            }
+
+            // null check for the drawing editor again, just in case the mouse up
+            // handler triggered something that nulled it out
+            if (this._drawingEditor) {
                 var origin = L.point(this._mouseDown.originalEvent.clientX, this._mouseDown.originalEvent.clientY);
                 var distance = L.point(e.originalEvent.clientX, e.originalEvent.clientY).distanceTo(origin);
-                if (Math.abs(distance) < 9 * (window.devicePixelRatio || 1)) this._drawingEditor.onDrawingClick(e);
-                else this._drawingEditor.onDrawingMouseUp(e);
+
+                // if the mouse hasn't moved this is a click
+                if (Math.abs(distance) < 9 * (window.devicePixelRatio || 1)) {
+                    this._drawingEditor.onDrawingClick(e);
+                }
             }
-            this._mouseDown = null;
+          }
+          this._mouseDown = null;
         },
 
         drawing: function () {
@@ -1204,37 +1218,94 @@
         CLOSED: true,
         MIN_VERTEX: 4,
 
+        _initialLatLng: null,
+
         options: {
             skipMiddleMarkers: true
         },
 
         extendBounds: function (e) {
             var index = e.vertex.getIndex(),
+                indexAfter = (index + 1) % 4,
+                indexBefore = (index + 3) % 4,
                 oppositeIndex = (index + 2) % 4,
                 opposite = e.vertex.latlngs[oppositeIndex],
+                latlngs = this.getDefaultLatLngs(),
                 bounds = new L.LatLngBounds(e.latlng, opposite);
-            this.updateBounds(bounds);
+
+            // Instead of calling updateBounds method, we'll take care of
+            // udpating bounds and lat lngs here, since the updateBounds
+            // method can change the order of vertices if you drag a vertex
+            // across one of the rectangle edges.  We need the order to
+            // stay the same since we don't want to handle switching which
+            // vertex we are dragging mid drag.
+
+            this.feature._bounds = bounds;
+
+            // The lat lng for the index we are dragging is just the event
+            // lat lng, note that the corner opposite of the vertex we are
+            // dragging doesn't change, so we don't update it
+            latlngs[index].update(e.latlng);
+
+            // Set the lat lng for the vertices before and after the vertex
+            // that is being dragged.  Basically the lat from the vertex being
+            // dragged and the lng from the opposite vertex, and vice versa for
+            // the vertex on the other side (to make the rectangle shape).
+            latlngs[indexAfter].update(new L.LatLng(e.latlng.lat, opposite.lng));
+            latlngs[indexBefore].update(new L.LatLng(opposite.lat, e.latlng.lng));
+
             this.refreshVertexMarkers();
+        },
+
+        onDrawingMouseMove: function (e) {
+            L.Editable.PathEditor.prototype.onDrawingMouseMove.call(this, e);
+
+            if (this._initialLatLng) {
+                var bounds = new L.LatLngBounds(this._initialLatLng, e.latlng);
+                this.updateBounds(bounds);
+                this.refresh();
+                this.reset();
+            }
         },
 
         onDrawingMouseDown: function (e) {
             L.Editable.PathEditor.prototype.onDrawingMouseDown.call(this, e);
-            this.connect();
-            var latlngs = this.getDefaultLatLngs();
-            // L.Polygon._convertLatLngs removes last latlng if it equals first point,
-            // which is the case here as all latlngs are [0, 0]
-            if (latlngs.length === 3) latlngs.push(e.latlng);
-            var bounds = new L.LatLngBounds(e.latlng, e.latlng);
-            this.updateBounds(bounds);
-            this.refresh();
-            this.reset();
-            this.commitDrawing(e);
-            // Stop dragging map.
-            this.map.dragging._draggable._onUp(e.originalEvent);
-            // Now transfer ongoing drag action to the bottom right corner.
-            // Should we refine which corne will handle the drag according to
-            // drag direction?
-            latlngs[3].__vertex.dragging._draggable._onDown(e.originalEvent);
+
+            if (!this._initialLatLng) {
+
+                // must make a copy of the event lat lng, as that instance will
+                // get updated since we push it to the latlngs array
+                this._initialLatLng = L.latLng(e.latlng.lat, e.latlng.lng);
+
+                var latlngs = this.getDefaultLatLngs();
+
+                // L.Polygon._convertLatLngs removes last latlng if it equals first point,
+                // which is the case here as all latlngs are [0, 0]
+                if (latlngs.length === 3) latlngs.push(e.latlng);
+
+                this.connect();
+
+                var bounds = new L.LatLngBounds(e.latlng, e.latlng);
+                this.updateBounds(bounds);
+                this.refresh();
+                this.reset();
+            }
+
+            // Stop map dragging, need to wait a tick before firing the onUp event
+            // for the map dragging, as it may not have started dragging yet
+            var map = this.map;
+            setTimeout(function () {
+                map.dragging._draggable._onUp(e.originalEvent);
+            });
+        },
+
+        onDrawingMouseUp: function (e) {
+            L.Editable.PathEditor.prototype.onDrawingMouseUp.call(this, e);
+
+            if (this._initialLatLng) {
+                this._initialLatLng = null;
+                this.commitDrawing(e);
+            }
         },
 
         getDefaultLatLngs: function (latlngs) {
@@ -1245,17 +1316,19 @@
             this.feature._bounds = bounds;
             var latlngs = this.getDefaultLatLngs(),
                 newLatlngs = this.feature._boundsToLatLngs(bounds);
+
             // Keep references.
             for (var i = 0; i < latlngs.length; i++) {
                 latlngs[i].update(newLatlngs[i]);
-            };
+            }
         }
-
     });
 
     L.Editable.CircleEditor = L.Editable.PathEditor.extend({
 
         MIN_VERTEX: 2,
+
+        _started: false,
 
         options: {
             skipMiddleMarkers: true
@@ -1273,8 +1346,8 @@
             return this.map.unproject([point.x + delta, point.y - delta]);
         },
 
-        updateResizeLatLng: function () {
-            this._resizeLatLng.update(this.computeResizeLatLng());
+        updateResizeLatLng: function (latlng) {
+            this._resizeLatLng.update(latlng);
             this._resizeLatLng.__vertex.update();
         },
 
@@ -1288,38 +1361,58 @@
 
         onVertexMarkerDrag: function (e) {
             if (e.vertex.getIndex() === 1) this.resize(e);
-            else this.updateResizeLatLng(e);
+            else this.updateResizeLatLng(this.computeResizeLatLng());
             L.Editable.PathEditor.prototype.onVertexMarkerDrag.call(this, e);
         },
 
         resize: function (e) {
-            var radius = this.feature._latlng.distanceTo(e.latlng)
+            var radius = this.feature._latlng.distanceTo(e.latlng);
             this.feature.setRadius(radius);
+            this.updateResizeLatLng(e.latlng);
         },
 
         onDrawingMouseDown: function (e) {
             L.Editable.PathEditor.prototype.onDrawingMouseDown.call(this, e);
-            this._resizeLatLng.update(e.latlng);
-            this.feature._latlng.update(e.latlng);
-            this.connect();
-            this.commitDrawing(e);
-            // Stop dragging map.
-            this.map.dragging._draggable._onUp(e.originalEvent);
-            // Now transfer ongoing drag action to the radius handler.
-            this._resizeLatLng.__vertex.dragging._draggable._onDown(e.originalEvent);
+
+            if (!this._started) {
+                this._started = true;
+
+                this.feature._latlng.update(e.latlng);
+                this.connect();
+                this.resize(e);
+            }
+
+            // Stop map dragging, need to wait a tick before firing the onUp event
+            // for the map dragging, as it may not have started dragging yet
+            var map = this.map;
+            setTimeout(function () {
+                map.dragging._draggable._onUp(e.originalEvent);
+            });
         },
 
         onDrawingMouseMove: function (e) {
             L.Editable.BaseEditor.prototype.onDrawingMouseMove.call(this, e);
-            this.feature._latlng.update(e.latlng);
-            this.feature._latlng.__vertex.update();
+            this.resize(e);
         },
 
+        onDrawingMouseUp: function (e) {
+            L.Editable.BaseEditor.prototype.onDrawingMouseUp.call(this, e);
+
+            if (this._started) {
+                this._started = false;
+                this.commitDrawing(e);
+            }
+        },
+
+        // This method is fired if the circle is dragged by clicking a
+        // shaded part of the circle and dragging (not by vertex).  In
+        // that scenario we need to make sure we update the vertex that
+        // is used for resizing the circle, so that it is still on the
+        // edge of the circle.
         _onDrag: function (e) {
             L.Editable.PathEditor.prototype._onDrag.call(this, e);
             this.feature.dragging.updateLatLng(this._resizeLatLng);
         }
-
     });
 
     var EditableMixin = {
