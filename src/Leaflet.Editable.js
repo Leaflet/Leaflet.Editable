@@ -171,13 +171,13 @@
             if (this._drawingEditor) {
                 this._drawingEditor.onDrawingMouseUp(e);
             }
-    
+
             // null check for the drawing editor again, just in case the mouse up
             // handler triggered something that nulled it out
             if (this._drawingEditor) {
                 var origin = L.point(this._mouseDown.originalEvent.clientX, this._mouseDown.originalEvent.clientY);
                 var distance = L.point(e.originalEvent.clientX, e.originalEvent.clientY).distanceTo(origin);
-                
+
                 // if the mouse hasn't moved this is a click
                 if (Math.abs(distance) < 9 * (window.devicePixelRatio || 1)) {
                     this._drawingEditor.onDrawingClick(e);
