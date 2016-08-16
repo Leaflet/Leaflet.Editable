@@ -1226,10 +1226,34 @@
 
         extendBounds: function (e) {
             var index = e.vertex.getIndex(),
+                indexAfter = (index + 1) % 4,
+                indexBefore = (index + 3) % 4,
                 oppositeIndex = (index + 2) % 4,
                 opposite = e.vertex.latlngs[oppositeIndex],
+                latlngs = this.getDefaultLatLngs(),
                 bounds = new L.LatLngBounds(e.latlng, opposite);
-            this.updateBounds(bounds);
+
+            // Instead of calling updateBounds method, we'll take care of
+            // udpating bounds and lat lngs here, since the updateBounds
+            // method can change the order of vertices if you drag a vertex
+            // across one of the rectangle edges.  We need the order to
+            // stay the same since we don't want to handle switching which
+            // vertex we are dragging mid drag.
+
+            this.feature._bounds = bounds;
+
+            // The lat lng for the index we are dragging is just the event
+            // lat lng, note that the corner opposite of the vertex we are
+            // dragging doesn't change, so we don't update it
+            latlngs[index].update(e.latlng);
+
+            // Set the lat lng for the vertices before and after the vertex
+            // that is being dragged.  Basically the lat from the vertex being
+            // dragged and the lng from the opposite vertex, and vice versa for
+            // the vertex on the other side (to make the rectangle shape).
+            latlngs[indexAfter].update(new L.LatLng(e.latlng.lat, opposite.lng));
+            latlngs[indexBefore].update(new L.LatLng(opposite.lat, e.latlng.lng));
+
             this.refreshVertexMarkers();
         },
 
