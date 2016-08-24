@@ -556,6 +556,42 @@ editor basically knows how to handle the edition.</p>
 <h2 id='markereditor'>MarkerEditor</h2>
 <p>Editor for Marker.</p>
 
+<h3 id=''>Methods</h3>
+
+
+
+<div class='accordion'>
+<!-- 	<label>Show inherited <a href='#baseeditor-method'>Methods from BaseEditor</a>.</label> -->
+	<label><span class='expander'>▶</span> Methods inherited from <a href='#baseeditor'>BaseEditor</a></label>
+	<div class='accordion-content'><section data-type='[object Object]'>
+
+
+<table><thead>
+	<tr>
+		<th>Method</th>
+		<th>Returns</th>
+		<th>Description</th>
+	</tr>
+	</thead><tbody>
+	<tr id='markereditor-enable'>
+		<td><code><b>enable</b>()</nobr></code></td>
+		<td><code>this</code></td>
+		<td>Set up the drawing tools for the feature to be editable.</td>
+	</tr>
+	<tr id='markereditor-disable'>
+		<td><code><b>disable</b>()</nobr></code></td>
+		<td><code>this</code></td>
+		<td>Remove the drawing tools for the feature.</td>
+	</tr>
+	<tr id='markereditor-drawing'>
+		<td><code><b>drawing</b>()</nobr></code></td>
+		<td><code>boolean</code></td>
+		<td>Return true if any drawing action is ongoing with this editor.</td>
+	</tr>
+</tbody></table>
+</section></div>
+</div>
+
 <h2 id='patheditor'>PathEditor</h2>
 <p>Base class for all path editors.</p>
 
@@ -883,7 +919,195 @@ if optional <code>latlng</code> is given, start a path at this point.</td>
 
 <h2 id='rectangleeditor'>RectangleEditor</h2>
 
+<h3 id=''>Methods</h3>
+
+
+
+<div class='accordion'>
+<!-- 	<label>Show inherited <a href='#patheditor-method'>Methods from PathEditor</a>.</label> -->
+	<label><span class='expander'>▶</span> Methods inherited from <a href='#patheditor'>PathEditor</a></label>
+	<div class='accordion-content'><section data-type='[object Object]'>
+
+
+<table><thead>
+	<tr>
+		<th>Method</th>
+		<th>Returns</th>
+		<th>Description</th>
+	</tr>
+	</thead><tbody>
+	<tr id='rectangleeditor-reset'>
+		<td><code><b>reset</b>()</nobr></code></td>
+		<td><code></code></td>
+		<td>Rebuild edit elements (vertex, middlemarker, etc.).</td>
+	</tr>
+	<tr id='rectangleeditor-push'>
+		<td><code><b>push</b>()</nobr></code></td>
+		<td><code></code></td>
+		<td>Programmatically add a point while drawing.</td>
+	</tr>
+	<tr id='rectangleeditor-pop'>
+		<td><code><b>pop</b>()</nobr></code></td>
+		<td><code></code></td>
+		<td>Programatically remove last point (if any) while drawing.</td>
+	</tr>
+	<tr id='rectangleeditor-newshape'>
+		<td><code><b>newShape</b>(<nobr>&lt;L.LatLng&gt; <i>latlng?</i></nobr>)</nobr></code></td>
+		<td><code></code></td>
+		<td>Add a new shape (polyline, polygon) in a multi, and setup up drawing tools to draw it;
+if optional <code>latlng</code> is given, start a path at this point.</td>
+	</tr>
+	<tr id='rectangleeditor-deleteshapeat'>
+		<td><code><b>deleteShapeAt</b>(<nobr>&lt;L.LatLng&gt; <i>latlng</i></nobr>)</nobr></code></td>
+		<td><code></code></td>
+		<td>Remove a path shape at the given latlng.</td>
+	</tr>
+	<tr id='rectangleeditor-appendshape'>
+		<td><code><b>appendShape</b>(<nobr>&lt;Array&gt; <i>shape</i></nobr>)</nobr></code></td>
+		<td><code></code></td>
+		<td>Append a new shape to the polygon or polyline.</td>
+	</tr>
+	<tr id='rectangleeditor-prependshape'>
+		<td><code><b>prependShape</b>(<nobr>&lt;Array&gt; <i>shape</i></nobr>)</nobr></code></td>
+		<td><code></code></td>
+		<td>Prepend a new shape to the polygon or polyline.</td>
+	</tr>
+	<tr id='rectangleeditor-insertshape'>
+		<td><code><b>insertShape</b>(<nobr>&lt;Array&gt; <i>shape</i></nobr>, <nobr>&lt;int&gt; <i>index</i></nobr>)</nobr></code></td>
+		<td><code></code></td>
+		<td>Insert a new shape to the polygon or polyline at given index (default is to append)</td>
+	</tr>
+</tbody></table>
+</section></div>
+</div>
+
+<div class='accordion'>
+<!-- 	<label>Show inherited <a href='#baseeditor-method'>Methods from BaseEditor</a>.</label> -->
+	<label><span class='expander'>▶</span> Methods inherited from <a href='#baseeditor'>BaseEditor</a></label>
+	<div class='accordion-content'><section data-type='[object Object]'>
+
+
+<table><thead>
+	<tr>
+		<th>Method</th>
+		<th>Returns</th>
+		<th>Description</th>
+	</tr>
+	</thead><tbody>
+	<tr id='rectangleeditor-enable'>
+		<td><code><b>enable</b>()</nobr></code></td>
+		<td><code>this</code></td>
+		<td>Set up the drawing tools for the feature to be editable.</td>
+	</tr>
+	<tr id='rectangleeditor-disable'>
+		<td><code><b>disable</b>()</nobr></code></td>
+		<td><code>this</code></td>
+		<td>Remove the drawing tools for the feature.</td>
+	</tr>
+	<tr id='rectangleeditor-drawing'>
+		<td><code><b>drawing</b>()</nobr></code></td>
+		<td><code>boolean</code></td>
+		<td>Return true if any drawing action is ongoing with this editor.</td>
+	</tr>
+</tbody></table>
+</section></div>
+</div>
+
 <h2 id='circleeditor'>CircleEditor</h2>
+
+<h3 id=''>Methods</h3>
+
+
+
+<div class='accordion'>
+<!-- 	<label>Show inherited <a href='#patheditor-method'>Methods from PathEditor</a>.</label> -->
+	<label><span class='expander'>▶</span> Methods inherited from <a href='#patheditor'>PathEditor</a></label>
+	<div class='accordion-content'><section data-type='[object Object]'>
+
+
+<table><thead>
+	<tr>
+		<th>Method</th>
+		<th>Returns</th>
+		<th>Description</th>
+	</tr>
+	</thead><tbody>
+	<tr id='circleeditor-reset'>
+		<td><code><b>reset</b>()</nobr></code></td>
+		<td><code></code></td>
+		<td>Rebuild edit elements (vertex, middlemarker, etc.).</td>
+	</tr>
+	<tr id='circleeditor-push'>
+		<td><code><b>push</b>()</nobr></code></td>
+		<td><code></code></td>
+		<td>Programmatically add a point while drawing.</td>
+	</tr>
+	<tr id='circleeditor-pop'>
+		<td><code><b>pop</b>()</nobr></code></td>
+		<td><code></code></td>
+		<td>Programatically remove last point (if any) while drawing.</td>
+	</tr>
+	<tr id='circleeditor-newshape'>
+		<td><code><b>newShape</b>(<nobr>&lt;L.LatLng&gt; <i>latlng?</i></nobr>)</nobr></code></td>
+		<td><code></code></td>
+		<td>Add a new shape (polyline, polygon) in a multi, and setup up drawing tools to draw it;
+if optional <code>latlng</code> is given, start a path at this point.</td>
+	</tr>
+	<tr id='circleeditor-deleteshapeat'>
+		<td><code><b>deleteShapeAt</b>(<nobr>&lt;L.LatLng&gt; <i>latlng</i></nobr>)</nobr></code></td>
+		<td><code></code></td>
+		<td>Remove a path shape at the given latlng.</td>
+	</tr>
+	<tr id='circleeditor-appendshape'>
+		<td><code><b>appendShape</b>(<nobr>&lt;Array&gt; <i>shape</i></nobr>)</nobr></code></td>
+		<td><code></code></td>
+		<td>Append a new shape to the polygon or polyline.</td>
+	</tr>
+	<tr id='circleeditor-prependshape'>
+		<td><code><b>prependShape</b>(<nobr>&lt;Array&gt; <i>shape</i></nobr>)</nobr></code></td>
+		<td><code></code></td>
+		<td>Prepend a new shape to the polygon or polyline.</td>
+	</tr>
+	<tr id='circleeditor-insertshape'>
+		<td><code><b>insertShape</b>(<nobr>&lt;Array&gt; <i>shape</i></nobr>, <nobr>&lt;int&gt; <i>index</i></nobr>)</nobr></code></td>
+		<td><code></code></td>
+		<td>Insert a new shape to the polygon or polyline at given index (default is to append)</td>
+	</tr>
+</tbody></table>
+</section></div>
+</div>
+
+<div class='accordion'>
+<!-- 	<label>Show inherited <a href='#baseeditor-method'>Methods from BaseEditor</a>.</label> -->
+	<label><span class='expander'>▶</span> Methods inherited from <a href='#baseeditor'>BaseEditor</a></label>
+	<div class='accordion-content'><section data-type='[object Object]'>
+
+
+<table><thead>
+	<tr>
+		<th>Method</th>
+		<th>Returns</th>
+		<th>Description</th>
+	</tr>
+	</thead><tbody>
+	<tr id='circleeditor-enable'>
+		<td><code><b>enable</b>()</nobr></code></td>
+		<td><code>this</code></td>
+		<td>Set up the drawing tools for the feature to be editable.</td>
+	</tr>
+	<tr id='circleeditor-disable'>
+		<td><code><b>disable</b>()</nobr></code></td>
+		<td><code>this</code></td>
+		<td>Remove the drawing tools for the feature.</td>
+	</tr>
+	<tr id='circleeditor-drawing'>
+		<td><code><b>drawing</b>()</nobr></code></td>
+		<td><code>boolean</code></td>
+		<td>Return true if any drawing action is ongoing with this editor.</td>
+	</tr>
+</tbody></table>
+</section></div>
+</div>
 
 <h2 id='editablemixin'>EditableMixin</h2>
 <p><a href="#editablemixin"><code>EditableMixin</code></a> is included to <code>L.Polyline</code>, <code>L.Polygon</code>, <code>L.Rectangle</code>, <code>L.Circle</code>

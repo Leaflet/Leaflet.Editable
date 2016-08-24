@@ -7,7 +7,7 @@ test: node_modules
 test-fx:
 	firefox test/index.html
 
-builddoc:
-	@./node_modules/.bin/leafdoc -t doc/leafdoc/ src/Leaflet.Editable.js -o doc/api.html
+doc:
+	@./doc/build.js
 
-.PHONY: test test-fx
+.PHONY: test test-fx doc
