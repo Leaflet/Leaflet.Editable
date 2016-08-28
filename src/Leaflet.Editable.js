@@ -1835,6 +1835,7 @@
     L.Polyline.addInitHook(keepEditable);
 
     L.LatLng.prototype.update = function (latlng) {
+        latlng = L.latLng(latlng);
         this.lat = latlng.lat;
         this.lng = latlng.lng;
     }
