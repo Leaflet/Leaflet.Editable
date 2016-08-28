@@ -19,25 +19,28 @@
 
 }(function (L) {
     // 🍂miniclass CancelableEvent (Event objects)
-    // 🍂inherits Event
     // 🍂method cancel()
     // Cancel any subsequent action.
 
     // 🍂miniclass VertexEvent (Event objects)
-    // 🍂inherits CancelableEvent
+    // 🍂property vertex: VertexMarker
+    // The vertex that fires the event.
 
     // 🍂miniclass ShapeEvent (Event objects)
-    // 🍂inherits CancelableEvent
+    // 🍂property shape: Array
+    // The shape (LatLngs array) subject of the action.
 
     // 🍂miniclass CancelableVertexEvent (Event objects)
     // 🍂inherits VertexEvent
-    // 🍂method cancel()
-    // Cancel any subsequent action.
+    // 🍂inherits CancelableEvent
 
     // 🍂miniclass CancelableShapeEvent (Event objects)
     // 🍂inherits ShapeEvent
-    // 🍂method cancel()
-    // Cancel any subsequent action.
+    // 🍂inherits CancelableEvent
+
+    // 🍂miniclass LayerEvent (Event objects)
+    // 🍂property layer: object
+    // The Layer (Marker, Polyline…) subject of the action.
 
     // 🍂namespace Editable; 🍂class Editable; 🍂aka L.Editable
     // Main edition handler. By default, it is attached to the map
@@ -348,7 +351,7 @@
             options = L.Util.extend({editOptions: {editTools: this}}, options);
             var layer = new klass(latlngs, options);
             // 🍂namespace Editable
-            // 🍂event editable:created: Event
+            // 🍂event editable:created: LayerEvent
             // Fired when a new feature (Marker, Polyline…) is created.
             this.fireAndForward('editable:created', {layer: layer});
             return layer;
@@ -388,6 +391,17 @@
 
     // 🍂namespace Map; 🍂class Map
     // Leaflet.Editable add options and events to the `L.Map` object.
+    // See `Editable` events for the list of events fired on the Map.
+    // 🍂example
+    //
+    // ```js
+    // var map = L.map('map', {
+    //  editable: true,
+    //  editOptions: {
+    //    …
+    // }
+    // });
+    // ```
     // 🍂section Editable Map Options
     L.Map.mergeOptions({
 
@@ -1236,7 +1250,7 @@
             this.refresh();
         },
 
-        // 🍂method pop()
+        // 🍂method pop(): L.LatLng or null
         // Programatically remove last point (if any) while drawing.
         pop: function () {
             if (this._drawnLatLngs.length <= 1) return;
@@ -1331,7 +1345,7 @@
         },
 
         // 🍂namespace PathEditor
-        // 🍂method deleteShapeAt(latlng: L.LatLng)
+        // 🍂method deleteShapeAt(latlng: L.LatLng): Array
         // Remove a path shape at the given latlng.
         deleteShapeAt: function (latlng) {
             var shape = this.feature.shapeAt(latlng);
@@ -1679,7 +1693,7 @@
             return this.editor;
         },
 
-        // 🍂method editEnabled()
+        // 🍂method editEnabled(): boolean
         // Return true if current instance has an editor attached, and this editor is enabled.
         editEnabled: function () {
             return this.editor && this.editor.enabled();

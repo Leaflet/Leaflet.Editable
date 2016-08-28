@@ -9,13 +9,109 @@
 	<div class="container">
 		<h1>Leaflet.Editable API reference</h1>
 
-		<h2 id='editable'>Editable</h2>
+		<h2 id='map'>Map</h2>
+<p>Leaflet.Editable add options and events to the <code>L.Map</code> object.
+See <a href="#editable"><code>Editable</code></a> events for the list of events fired on the Map.</p>
+
+<h3 id='map-example' class="section">Usage example</h3>
+
+<section data-type='[object Object]'>
+
+
+
+<pre><code class="lang-js">var map = L.map(&#39;map&#39;, {
+ editable: true,
+ editOptions: {
+   …
+}
+});
+</code></pre>
+
+
+</section>
+
+<h3 id='map-option' class="section">Options</h3>
+
+<section data-type='[object Object]'>
+<h4 id='map-map-options'>Map Options</h4>
+
+<table><thead>
+	<tr>
+		<th>Option</th>
+		<th>Type</th>
+		<th>Default</th>
+		<th>Description</th>
+	</tr>
+	</thead><tbody>
+	<tr id='map-edittoolsclass'>
+		<td><code><b>editToolsClass</b></code></td>
+		<td><code>class</code>
+		<td><code>L.Editable</code></td>
+		<td>Class to be used as vertex, for path editing</td>
+	</tr>
+	<tr id='map-editable'>
+		<td><code><b>editable</b></code></td>
+		<td><code>boolean</code>
+		<td><code>false</code></td>
+		<td>Whether to create a L.Editable instance at map init.</td>
+	</tr>
+	<tr id='map-editoptions'>
+		<td><code><b>editOptions</b></code></td>
+		<td><code>hash</code>
+		<td><code>{}</code></td>
+		<td>Options to pass to L.Editable when instanciating.</td>
+	</tr>
+</tbody></table>
+</section>
+
+<h2 id='editablemixin'>EditableMixin</h2>
+<p><a href="#editablemixin"><code>EditableMixin</code></a> is included to <code>L.Polyline</code>, <code>L.Polygon</code>, <code>L.Rectangle</code>, <code>L.Circle</code>
+and <code>L.Marker</code>. It adds some methods to them.
+<em>When editing is enabled, the editor is accessible on the instance with the
+<code>editor</code> property.</em></p>
+
+<h3 id='editablemixin-method' class="section">Methods</h3>
+
+<section data-type='[object Object]'>
+
+
+<table><thead>
+	<tr>
+		<th>Method</th>
+		<th>Returns</th>
+		<th>Description</th>
+	</tr>
+	</thead><tbody>
+	<tr id='editablemixin-enableedit'>
+		<td><code><b>enableEdit</b>(<nobr>&lt;L.Map&gt; <i>map?</i></nobr>)</nobr></code></td>
+		<td><code>this.editor</code></td>
+		<td>Enable editing, by creating an editor if not existing, and then calling <code>enable</code> on it.</td>
+	</tr>
+	<tr id='editablemixin-editenabled'>
+		<td><code><b>editEnabled</b>()</nobr></code></td>
+		<td><code>boolean</code></td>
+		<td>Return true if current instance has an editor attached, and this editor is enabled.</td>
+	</tr>
+	<tr id='editablemixin-disableedit'>
+		<td><code><b>disableEdit</b>()</nobr></code></td>
+		<td><code></code></td>
+		<td>Disable editing, also remove the editor property reference.</td>
+	</tr>
+	<tr id='editablemixin-toggleedit'>
+		<td><code><b>toggleEdit</b>()</nobr></code></td>
+		<td><code></code></td>
+		<td>Enable or disable editing, according to current status.</td>
+	</tr>
+</tbody></table>
+</section>
+
+<h2 id='editable'>Editable</h2>
 <p>Main edition handler. By default, it is attached to the map
 as <code>map.editTools</code> property.
 Leaflet.Editable is made to be fully extendable. You have three ways to customize
 the behaviour: using options, listening to events, or extending.</p>
 
-<h3 id='editable-option'>Options</h3>
+<h3 id='editable-option' class="section">Options</h3>
 
 <section data-type='[object Object]'>
 
@@ -145,7 +241,7 @@ the behaviour: using options, listening to events, or extending.</p>
 </tbody></table>
 </section>
 
-<h3 id='editable-event'>Events</h3>
+<h3 id='editable-event' class="section">Events</h3>
 
 <section data-type='[object Object]'>
 
@@ -159,7 +255,7 @@ the behaviour: using options, listening to events, or extending.</p>
 	</thead><tbody>
 	<tr id='editable-editable:created'>
 		<td><code><b>editable:created</b>
-		<td><code>Event</code></td>
+		<td><code><a href='#layerevent'>LayerEvent</a></code></td>
 		<td>Fired when a new feature (Marker, Polyline…) is created.</td>
 	</tr>
 	<tr id='editable-editable-enable'>
@@ -365,7 +461,7 @@ Fired after a vertex is dragged by user.</td>
 </tbody></table>
 </section>
 
-<h3 id='editable-method'>Methods</h3>
+<h3 id='editable-method' class="section">Methods</h3>
 
 <section data-type='[object Object]'>
 <h4 id='editable-public-methods'>Public methods</h4>
@@ -428,102 +524,11 @@ If <code>options</code> is given, it will be passed to the Circle class construc
 </tbody></table>
 </section>
 
-<h2 id='map'>Map</h2>
-<p>Leaflet.Editable add options and events to the <code>L.Map</code> object.</p>
-
-<h3 id='map-option'>Options</h3>
-
-<section data-type='[object Object]'>
-<h4 id='map-map-options'>Map Options</h4>
-
-<table><thead>
-	<tr>
-		<th>Option</th>
-		<th>Type</th>
-		<th>Default</th>
-		<th>Description</th>
-	</tr>
-	</thead><tbody>
-	<tr id='map-edittoolsclass'>
-		<td><code><b>editToolsClass</b></code></td>
-		<td><code>class</code>
-		<td><code>L.Editable</code></td>
-		<td>Class to be used as vertex, for path editing</td>
-	</tr>
-	<tr id='map-editable'>
-		<td><code><b>editable</b></code></td>
-		<td><code>boolean</code>
-		<td><code>false</code></td>
-		<td>Whether to create a L.Editable instance at map init.</td>
-	</tr>
-	<tr id='map-editoptions'>
-		<td><code><b>editOptions</b></code></td>
-		<td><code>hash</code>
-		<td><code>{}</code></td>
-		<td>Options to pass to L.Editable when instanciating.</td>
-	</tr>
-</tbody></table>
-</section>
-
-<h2 id='vertexmarker'>VertexMarker</h2>
-<p>Handler for dragging path vertices.</p>
-
-<h3 id='vertexmarker-method'>Methods</h3>
-
-<section data-type='[object Object]'>
-<h4 id='vertexmarker-public-methods'>Public methods</h4>
-The marker used to handle path vertex. You will usually interact with a <a href="#vertexmarker"><code>VertexMarker</code></a>
-instance when listening for events like <code>editable:vertex:ctrlclick</code>.
-<table><thead>
-	<tr>
-		<th>Method</th>
-		<th>Returns</th>
-		<th>Description</th>
-	</tr>
-	</thead><tbody>
-	<tr id='vertexmarker-delete'>
-		<td><code><b>delete</b>()</nobr></code></td>
-		<td><code></code></td>
-		<td>Delete a vertex and the related latlng.</td>
-	</tr>
-	<tr id='vertexmarker-getindex'>
-		<td><code><b>getIndex</b>()</nobr></code></td>
-		<td><code>int</code></td>
-		<td>Get the index of the current vertex among others of the same LatLngs group.</td>
-	</tr>
-	<tr id='vertexmarker-getlastindex'>
-		<td><code><b>getLastIndex</b>()</nobr></code></td>
-		<td><code>int</code></td>
-		<td>Get last vertex index of the LatLngs group of the current vertex.</td>
-	</tr>
-	<tr id='vertexmarker-getprevious'>
-		<td><code><b>getPrevious</b>()</nobr></code></td>
-		<td><code><a href='#vertexmarker'>VertexMarker</a></code></td>
-		<td>Get the previous VertexMarker in the same LatLngs group.</td>
-	</tr>
-	<tr id='vertexmarker-getnext'>
-		<td><code><b>getNext</b>()</nobr></code></td>
-		<td><code><a href='#vertexmarker'>VertexMarker</a></code></td>
-		<td>Get the next VertexMarker in the same LatLngs group.</td>
-	</tr>
-	<tr id='vertexmarker-split'>
-		<td><code><b>split</b>()</nobr></code></td>
-		<td><code></code></td>
-		<td>Split the vertex LatLngs group at its index, if possible.</td>
-	</tr>
-	<tr id='vertexmarker-continue'>
-		<td><code><b>continue</b>()</nobr></code></td>
-		<td><code></code></td>
-		<td>Continue the vertex LatLngs from this vertex. Only active for first and last vertices of a Polyline.</td>
-	</tr>
-</tbody></table>
-</section>
-
 <h2 id='baseeditor'>BaseEditor</h2>
 <p>When editing a feature (marker, polyline…), an editor is attached to it. This
 editor basically knows how to handle the edition.</p>
 
-<h3 id='baseeditor-method'>Methods</h3>
+<h3 id='baseeditor-method' class="section">Methods</h3>
 
 <section data-type='[object Object]'>
 
@@ -556,7 +561,7 @@ editor basically knows how to handle the edition.</p>
 <h2 id='markereditor'>MarkerEditor</h2>
 <p>Editor for Marker.</p>
 
-<h3 id=''>Methods</h3>
+<h3 id='' class="section">Methods</h3>
 
 
 
@@ -595,7 +600,7 @@ editor basically knows how to handle the edition.</p>
 <h2 id='patheditor'>PathEditor</h2>
 <p>Base class for all path editors.</p>
 
-<h3 id='patheditor-method'>Methods</h3>
+<h3 id='patheditor-method' class="section">Methods</h3>
 
 <section data-type='[object Object]'>
 
@@ -619,7 +624,7 @@ editor basically knows how to handle the edition.</p>
 	</tr>
 	<tr id='patheditor-pop'>
 		<td><code><b>pop</b>()</nobr></code></td>
-		<td><code></code></td>
+		<td><code>L.LatLng or null</code></td>
 		<td>Programatically remove last point (if any) while drawing.</td>
 	</tr>
 	<tr id='patheditor-newshape'>
@@ -630,7 +635,7 @@ if optional <code>latlng</code> is given, start a path at this point.</td>
 	</tr>
 	<tr id='patheditor-deleteshapeat'>
 		<td><code><b>deleteShapeAt</b>(<nobr>&lt;L.LatLng&gt; <i>latlng</i></nobr>)</nobr></code></td>
-		<td><code></code></td>
+		<td><code>Array</code></td>
 		<td>Remove a path shape at the given latlng.</td>
 	</tr>
 	<tr id='patheditor-appendshape'>
@@ -685,7 +690,7 @@ if optional <code>latlng</code> is given, start a path at this point.</td>
 
 <h2 id='polylineeditor'>PolylineEditor</h2>
 
-<h3 id='polylineeditor-method'>Methods</h3>
+<h3 id='polylineeditor-method' class="section">Methods</h3>
 
 <section data-type='[object Object]'>
 
@@ -740,7 +745,7 @@ if optional <code>latlng</code> is given, start a path at this point.</td>
 	</tr>
 	<tr id='polylineeditor-pop'>
 		<td><code><b>pop</b>()</nobr></code></td>
-		<td><code></code></td>
+		<td><code>L.LatLng or null</code></td>
 		<td>Programatically remove last point (if any) while drawing.</td>
 	</tr>
 	<tr id='polylineeditor-newshape'>
@@ -751,7 +756,7 @@ if optional <code>latlng</code> is given, start a path at this point.</td>
 	</tr>
 	<tr id='polylineeditor-deleteshapeat'>
 		<td><code><b>deleteShapeAt</b>(<nobr>&lt;L.LatLng&gt; <i>latlng</i></nobr>)</nobr></code></td>
-		<td><code></code></td>
+		<td><code>Array</code></td>
 		<td>Remove a path shape at the given latlng.</td>
 	</tr>
 	<tr id='polylineeditor-appendshape'>
@@ -807,7 +812,7 @@ if optional <code>latlng</code> is given, start a path at this point.</td>
 
 <h2 id='polygoneditor'>PolygonEditor</h2>
 
-<h3 id='polygoneditor-method'>Methods</h3>
+<h3 id='polygoneditor-method' class="section">Methods</h3>
 
 <section data-type='[object Object]'>
 
@@ -852,7 +857,7 @@ if optional <code>latlng</code> is given, start a path at this point.</td>
 	</tr>
 	<tr id='polygoneditor-pop'>
 		<td><code><b>pop</b>()</nobr></code></td>
-		<td><code></code></td>
+		<td><code>L.LatLng or null</code></td>
 		<td>Programatically remove last point (if any) while drawing.</td>
 	</tr>
 	<tr id='polygoneditor-newshape'>
@@ -863,7 +868,7 @@ if optional <code>latlng</code> is given, start a path at this point.</td>
 	</tr>
 	<tr id='polygoneditor-deleteshapeat'>
 		<td><code><b>deleteShapeAt</b>(<nobr>&lt;L.LatLng&gt; <i>latlng</i></nobr>)</nobr></code></td>
-		<td><code></code></td>
+		<td><code>Array</code></td>
 		<td>Remove a path shape at the given latlng.</td>
 	</tr>
 	<tr id='polygoneditor-appendshape'>
@@ -919,7 +924,7 @@ if optional <code>latlng</code> is given, start a path at this point.</td>
 
 <h2 id='rectangleeditor'>RectangleEditor</h2>
 
-<h3 id=''>Methods</h3>
+<h3 id='' class="section">Methods</h3>
 
 
 
@@ -948,7 +953,7 @@ if optional <code>latlng</code> is given, start a path at this point.</td>
 	</tr>
 	<tr id='rectangleeditor-pop'>
 		<td><code><b>pop</b>()</nobr></code></td>
-		<td><code></code></td>
+		<td><code>L.LatLng or null</code></td>
 		<td>Programatically remove last point (if any) while drawing.</td>
 	</tr>
 	<tr id='rectangleeditor-newshape'>
@@ -959,7 +964,7 @@ if optional <code>latlng</code> is given, start a path at this point.</td>
 	</tr>
 	<tr id='rectangleeditor-deleteshapeat'>
 		<td><code><b>deleteShapeAt</b>(<nobr>&lt;L.LatLng&gt; <i>latlng</i></nobr>)</nobr></code></td>
-		<td><code></code></td>
+		<td><code>Array</code></td>
 		<td>Remove a path shape at the given latlng.</td>
 	</tr>
 	<tr id='rectangleeditor-appendshape'>
@@ -1015,7 +1020,7 @@ if optional <code>latlng</code> is given, start a path at this point.</td>
 
 <h2 id='circleeditor'>CircleEditor</h2>
 
-<h3 id=''>Methods</h3>
+<h3 id='' class="section">Methods</h3>
 
 
 
@@ -1044,7 +1049,7 @@ if optional <code>latlng</code> is given, start a path at this point.</td>
 	</tr>
 	<tr id='circleeditor-pop'>
 		<td><code><b>pop</b>()</nobr></code></td>
-		<td><code></code></td>
+		<td><code>L.LatLng or null</code></td>
 		<td>Programatically remove last point (if any) while drawing.</td>
 	</tr>
 	<tr id='circleeditor-newshape'>
@@ -1055,7 +1060,7 @@ if optional <code>latlng</code> is given, start a path at this point.</td>
 	</tr>
 	<tr id='circleeditor-deleteshapeat'>
 		<td><code><b>deleteShapeAt</b>(<nobr>&lt;L.LatLng&gt; <i>latlng</i></nobr>)</nobr></code></td>
-		<td><code></code></td>
+		<td><code>Array</code></td>
 		<td>Remove a path shape at the given latlng.</td>
 	</tr>
 	<tr id='circleeditor-appendshape'>
@@ -1109,13 +1114,65 @@ if optional <code>latlng</code> is given, start a path at this point.</td>
 </section></div>
 </div>
 
-<h2 id='editablemixin'>EditableMixin</h2>
-<p><a href="#editablemixin"><code>EditableMixin</code></a> is included to <code>L.Polyline</code>, <code>L.Polygon</code>, <code>L.Rectangle</code>, <code>L.Circle</code>
-and <code>L.Marker</code>. It adds some methods to them.
-<em>When editing is enabled, the editor is accessible on the instance with the
-<code>editor</code> property.</em></p>
+<h2 id='vertexmarker'>VertexMarker</h2>
+<p>Handler for dragging path vertices.</p>
 
-<h3 id='editablemixin-method'>Methods</h3>
+<h3 id='vertexmarker-method' class="section">Methods</h3>
+
+<section data-type='[object Object]'>
+<h4 id='vertexmarker-public-methods'>Public methods</h4>
+The marker used to handle path vertex. You will usually interact with a <a href="#vertexmarker"><code>VertexMarker</code></a>
+instance when listening for events like <code>editable:vertex:ctrlclick</code>.
+<table><thead>
+	<tr>
+		<th>Method</th>
+		<th>Returns</th>
+		<th>Description</th>
+	</tr>
+	</thead><tbody>
+	<tr id='vertexmarker-delete'>
+		<td><code><b>delete</b>()</nobr></code></td>
+		<td><code></code></td>
+		<td>Delete a vertex and the related latlng.</td>
+	</tr>
+	<tr id='vertexmarker-getindex'>
+		<td><code><b>getIndex</b>()</nobr></code></td>
+		<td><code>int</code></td>
+		<td>Get the index of the current vertex among others of the same LatLngs group.</td>
+	</tr>
+	<tr id='vertexmarker-getlastindex'>
+		<td><code><b>getLastIndex</b>()</nobr></code></td>
+		<td><code>int</code></td>
+		<td>Get last vertex index of the LatLngs group of the current vertex.</td>
+	</tr>
+	<tr id='vertexmarker-getprevious'>
+		<td><code><b>getPrevious</b>()</nobr></code></td>
+		<td><code><a href='#vertexmarker'>VertexMarker</a></code></td>
+		<td>Get the previous VertexMarker in the same LatLngs group.</td>
+	</tr>
+	<tr id='vertexmarker-getnext'>
+		<td><code><b>getNext</b>()</nobr></code></td>
+		<td><code><a href='#vertexmarker'>VertexMarker</a></code></td>
+		<td>Get the next VertexMarker in the same LatLngs group.</td>
+	</tr>
+	<tr id='vertexmarker-split'>
+		<td><code><b>split</b>()</nobr></code></td>
+		<td><code></code></td>
+		<td>Split the vertex LatLngs group at its index, if possible.</td>
+	</tr>
+	<tr id='vertexmarker-continue'>
+		<td><code><b>continue</b>()</nobr></code></td>
+		<td><code></code></td>
+		<td>Continue the vertex LatLngs from this vertex. Only active for first and last vertices of a Polyline.</td>
+	</tr>
+</tbody></table>
+</section>
+
+<h2 id='event-objects'>Event objects</h2>
+
+<h2 id='cancelableevent'></h2>
+
+<h3 id='cancelableevent-method' class="section">CancelableEvent</h3>
 
 <section data-type='[object Object]'>
 
@@ -1127,25 +1184,184 @@ and <code>L.Marker</code>. It adds some methods to them.
 		<th>Description</th>
 	</tr>
 	</thead><tbody>
-	<tr id='editablemixin-enableedit'>
-		<td><code><b>enableEdit</b>(<nobr>&lt;L.Map&gt; <i>map?</i></nobr>)</nobr></code></td>
-		<td><code>this.editor</code></td>
-		<td>Enable editing, by creating an editor if not existing, and then calling <code>enable</code> on it.</td>
-	</tr>
-	<tr id='editablemixin-editenabled'>
-		<td><code><b>editEnabled</b>()</nobr></code></td>
+	<tr id='cancelableevent-cancel'>
+		<td><code><b>cancel</b>()</nobr></code></td>
 		<td><code></code></td>
-		<td>Return true if current instance has an editor attached, and this editor is enabled.</td>
+		<td>Cancel any subsequent action.</td>
 	</tr>
-	<tr id='editablemixin-disableedit'>
-		<td><code><b>disableEdit</b>()</nobr></code></td>
-		<td><code></code></td>
-		<td>Disable editing, also remove the editor property reference.</td>
+</tbody></table>
+</section>
+
+<h2 id='vertexevent'></h2>
+
+<h3 id='vertexevent-property' class="section">VertexEvent</h3>
+
+<section data-type='[object Object]'>
+
+
+<table><thead>
+	<tr>
+		<th>Property</th>
+		<th>Type</th>
+		<th>Description</th>
 	</tr>
-	<tr id='editablemixin-toggleedit'>
-		<td><code><b>toggleEdit</b>()</nobr></code></td>
+	</thead><tbody>
+	<tr id='vertexevent-vertex'>
+		<td><code><b>vertex</b>
+		<td><code><a href='#vertexmarker'>VertexMarker</a></code></td>
+		<td>The vertex that fires the event.</td>
+	</tr>
+</tbody></table>
+</section>
+
+<h2 id='shapeevent'></h2>
+
+<h3 id='shapeevent-property' class="section">ShapeEvent</h3>
+
+<section data-type='[object Object]'>
+
+
+<table><thead>
+	<tr>
+		<th>Property</th>
+		<th>Type</th>
+		<th>Description</th>
+	</tr>
+	</thead><tbody>
+	<tr id='shapeevent-shape'>
+		<td><code><b>shape</b>
+		<td><code>Array</code></td>
+		<td>The shape (LatLngs array) subject of the action.</td>
+	</tr>
+</tbody></table>
+</section>
+
+<h2 id='cancelablevertexevent'></h2>
+
+<h3 id='' class="section">CancelableVertexEvent</h3>
+
+
+
+<div class='accordion'>
+<!-- 	<label>Show inherited <a href='#cancelableevent-method'>Methods from CancelableEvent</a>.</label> -->
+	<label><span class='expander'>▶</span> Methods inherited from <a href='#cancelableevent'>CancelableEvent</a></label>
+	<div class='accordion-content'><section data-type='[object Object]'>
+
+
+<table><thead>
+	<tr>
+		<th>Method</th>
+		<th>Returns</th>
+		<th>Description</th>
+	</tr>
+	</thead><tbody>
+	<tr id='cancelablevertexevent-cancel'>
+		<td><code><b>cancel</b>()</nobr></code></td>
 		<td><code></code></td>
-		<td>Enable or disable editing, according to current status.</td>
+		<td>Cancel any subsequent action.</td>
+	</tr>
+</tbody></table>
+</section></div>
+</div>
+
+<h3 id='' class="section">CancelableVertexEvent</h3>
+
+
+
+<div class='accordion'>
+<!-- 	<label>Show inherited <a href='#vertexevent-property'>Properties from VertexEvent</a>.</label> -->
+	<label><span class='expander'>▶</span> Properties inherited from <a href='#vertexevent'>VertexEvent</a></label>
+	<div class='accordion-content'><section data-type='[object Object]'>
+
+
+<table><thead>
+	<tr>
+		<th>Property</th>
+		<th>Type</th>
+		<th>Description</th>
+	</tr>
+	</thead><tbody>
+	<tr id='cancelablevertexevent-vertex'>
+		<td><code><b>vertex</b>
+		<td><code><a href='#vertexmarker'>VertexMarker</a></code></td>
+		<td>The vertex that fires the event.</td>
+	</tr>
+</tbody></table>
+</section></div>
+</div>
+
+<h2 id='cancelableshapeevent'></h2>
+
+<h3 id='' class="section">CancelableShapeEvent</h3>
+
+
+
+<div class='accordion'>
+<!-- 	<label>Show inherited <a href='#cancelableevent-method'>Methods from CancelableEvent</a>.</label> -->
+	<label><span class='expander'>▶</span> Methods inherited from <a href='#cancelableevent'>CancelableEvent</a></label>
+	<div class='accordion-content'><section data-type='[object Object]'>
+
+
+<table><thead>
+	<tr>
+		<th>Method</th>
+		<th>Returns</th>
+		<th>Description</th>
+	</tr>
+	</thead><tbody>
+	<tr id='cancelableshapeevent-cancel'>
+		<td><code><b>cancel</b>()</nobr></code></td>
+		<td><code></code></td>
+		<td>Cancel any subsequent action.</td>
+	</tr>
+</tbody></table>
+</section></div>
+</div>
+
+<h3 id='' class="section">CancelableShapeEvent</h3>
+
+
+
+<div class='accordion'>
+<!-- 	<label>Show inherited <a href='#shapeevent-property'>Properties from ShapeEvent</a>.</label> -->
+	<label><span class='expander'>▶</span> Properties inherited from <a href='#shapeevent'>ShapeEvent</a></label>
+	<div class='accordion-content'><section data-type='[object Object]'>
+
+
+<table><thead>
+	<tr>
+		<th>Property</th>
+		<th>Type</th>
+		<th>Description</th>
+	</tr>
+	</thead><tbody>
+	<tr id='cancelableshapeevent-shape'>
+		<td><code><b>shape</b>
+		<td><code>Array</code></td>
+		<td>The shape (LatLngs array) subject of the action.</td>
+	</tr>
+</tbody></table>
+</section></div>
+</div>
+
+<h2 id='layerevent'></h2>
+
+<h3 id='layerevent-property' class="section">LayerEvent</h3>
+
+<section data-type='[object Object]'>
+
+
+<table><thead>
+	<tr>
+		<th>Property</th>
+		<th>Type</th>
+		<th>Description</th>
+	</tr>
+	</thead><tbody>
+	<tr id='layerevent-layer'>
+		<td><code><b>layer</b>
+		<td><code>object</code></td>
+		<td>The Layer (Marker, Polyline…) subject of the action.</td>
 	</tr>
 </tbody></table>
 </section>
