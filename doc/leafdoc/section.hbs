@@ -1,1 +1,5 @@
-../../node_modules/leafdoc/templates/basic/section.hbs
+<section data-type='{{type}}'>
+{{#if name}}<h4 id='{{id}}'>{{name}}</h4>{{/if}}
+{{{markdown comments}}}
+{{{documentables}}}
+</section>

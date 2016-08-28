@@ -1,1 +1,19 @@
-../../node_modules/leafdoc/templates/basic/function.hbs
+<table><thead>
+	<tr>
+		<th>Function</th>
+		<th>Returns</th>
+		<th>Description</th>
+	</tr>
+	</thead><tbody>
+	{{#each documentables}}
+	<tr id='{{id}}'>
+		<td><code><b>{{name}}</b>(
+		{{~#each params~}}
+			<nobr>{{#if type}}&lt;{{{type type}}}&gt; {{/if}}<i>{{name}}</i></nobr>
+			{{~#unless @last}}, {{/unless}}{{/each~}}
+		)</nobr></code></td>
+		<td><code>{{{type type}}}</code></td>
+		<td>{{{markdown comments}}}</td>
+	</tr>
+	{{/each}}
+</tbody></table>
