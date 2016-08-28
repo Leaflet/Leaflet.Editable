@@ -256,10 +256,10 @@
 
         onMouseup: function (e) {
             if (this._mouseDown) {
+                this._drawingEditor.onDrawingMouseUp(e);
                 var origin = L.point(this._mouseDown.originalEvent.clientX, this._mouseDown.originalEvent.clientY);
                 var distance = L.point(e.originalEvent.clientX, e.originalEvent.clientY).distanceTo(origin);
                 if (Math.abs(distance) < 9 * (window.devicePixelRatio || 1)) this._drawingEditor.onDrawingClick(e);
-                else this._drawingEditor.onDrawingMouseUp(e);
             }
             this._mouseDown = null;
         },
