@@ -7,4 +7,7 @@ test: node_modules
 test-fx:
 	firefox test/index.html
 
-.PHONY: test test-fx
+doc:
+	@./doc/build.js
+
+.PHONY: test test-fx doc

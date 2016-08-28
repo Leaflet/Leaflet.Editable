@@ -1,0 +1,46 @@
+body {
+    font-family: Sans;
+}
+.container {
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+table {
+    margin-top: 10px;
+    border-collapse: collapse;
+    width: 100%;
+}
+td, th {
+    border: 1px solid #eee;
+    min-height: 1.5em;
+    padding: 5px;
+}
+th {
+    background-color: #e9eef8;
+}
+pre code, p code {
+    background: #f8f3e9;
+    padding: 2px;
+}
+pre code {
+    display: block;
+    padding: 10px;
+    border: #f8f3e9 solid 1px;
+    color: #333;
+}
+h1 {
+    text-align: center;
+}
+h2 {
+    margin-top: 40px;
+}
+h4,
+h3 {
+    color: #333;
+    text-transform: lowercase;
+    font-variant: small-caps;
+}
+a {
+    color: #7292d2;
+}
