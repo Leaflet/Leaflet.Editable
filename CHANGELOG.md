@@ -1,5 +1,14 @@
 # CHANGELOG
 
+# dev
+
+- BREAKING editorClass are now properly looked in editTools.options instead of map (cf #92)
+- removed Leaflet as peerDependency (cf #72)
+- fixed error in canvas due to guides being added to early (cf #80)
+- added path dragging (when [Path.Drag.js](https://github.com/Leaflet/Path.Drag.js) is loaded
+- allow to draw a rectangle in any direction (cf #87)
+- fixed editable:drawing:commit being fired on mousedown instead of mouseup for circle and rectangle (cf #70)
+
 # 1.0.0-rc.1
 - hide middle markers if there is not enough space
 - make possible to add new vertex on top of other paths vertex
