@@ -257,6 +257,7 @@
         onMouseup: function (e) {
             if (this._mouseDown) {
                 this._drawingEditor.onDrawingMouseUp(e);
+                if (!this._drawingEditor) return;  // onDrawingMouseUp may call unregisterFromDrawing.
                 var origin = L.point(this._mouseDown.originalEvent.clientX, this._mouseDown.originalEvent.clientY);
                 var distance = L.point(e.originalEvent.clientX, e.originalEvent.clientY).distanceTo(origin);
                 if (Math.abs(distance) < 9 * (window.devicePixelRatio || 1)) this._drawingEditor.onDrawingClick(e);
@@ -1572,13 +1573,17 @@
             this.updateLatLngs(bounds);
             this.refresh();
             this.reset();
-            this.commitDrawing(e);
             // Stop dragging map.
             this.map.dragging._draggable._onUp(e.originalEvent);
             // Now transfer ongoing drag action to the bottom right corner.
             // Should we refine which corne will handle the drag according to
             // drag direction?
             latlngs[3].__vertex.dragging._draggable._onDown(e.originalEvent);
+        },
+
+        onDrawingMouseUp: function (e) {
+            this.commitDrawing(e);
+            L.Editable.PathEditor.prototype.onDrawingMouseUp.call(this, e);
         },
 
         getDefaultLatLngs: function (latlngs) {
@@ -1651,17 +1656,16 @@
             this._resizeLatLng.update(e.latlng);
             this.feature._latlng.update(e.latlng);
             this.connect();
-            this.commitDrawing(e);
+            // this.commitDrawing(e);
             // Stop dragging map.
             this.map.dragging._draggable._onUp(e.originalEvent);
             // Now transfer ongoing drag action to the radius handler.
             this._resizeLatLng.__vertex.dragging._draggable._onDown(e.originalEvent);
         },
 
-        onDrawingMouseMove: function (e) {
-            L.Editable.BaseEditor.prototype.onDrawingMouseMove.call(this, e);
-            this.feature._latlng.update(e.latlng);
-            this.feature._latlng.__vertex.update();
+        onDrawingMouseUp: function (e) {
+            this.commitDrawing(e);
+            L.Editable.PathEditor.prototype.onDrawingMouseUp.call(this, e);
         },
 
         onDrag: function (e) {

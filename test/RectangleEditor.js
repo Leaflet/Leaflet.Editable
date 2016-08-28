@@ -214,6 +214,20 @@ describe('L.RectangleEditor', function() {
             });
         });
 
+        it('should not fire editable:drawing:commit on mousedown', function () {
+            var called = 0,
+                call = function () {called++;};
+            this.map.on('editable:drawing:commit', call);
+            var layer = this.map.editTools.startRectangle();
+            assert.equal(called, 0);
+            happen.at('mousedown', 200, 200);
+            assert.equal(called, 0);
+            happen.at('mouseup', 200, 200);
+            assert.equal(called, 1);
+            this.map.off('editable:drawing:commit', call);
+            layer.remove();
+        });
+
         it('should fire editable:drawing:end on stopDrawing', function () {
             var called = 0,
                 call = function () {called++;};
