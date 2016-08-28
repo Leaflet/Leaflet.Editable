@@ -622,6 +622,7 @@
             var index = this.getIndex();
             if (index === 0) this.editor.continueBackward(this.latlngs);
             else if (index === this.getLastIndex()) this.editor.continueForward(this.latlngs);
+            this.editor.reset();  // Reactivate vertex after events have been blocked.
         }
 
     });

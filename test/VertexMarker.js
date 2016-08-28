@@ -115,6 +115,18 @@ describe('L.Editable.VertexMarker', function() {
             layer.remove();
         });
 
+        it('should allow committing on clicked vertex', function () {
+            var latlngs = [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+                layer = L.polyline(latlngs).addTo(this.map);
+            layer.enableEdit();
+            layer._latlngs[0].__vertex.continue();
+            happen.at('click', 100, 150);
+            assert.equal(layer._latlngs.length, 3);
+            assert.equal(layer.editor.drawing(), false);
+            layer.disableEdit();
+            layer.remove();
+        });
+
     });
 
 });
