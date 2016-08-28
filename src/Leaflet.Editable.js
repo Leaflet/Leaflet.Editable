@@ -1547,9 +1547,14 @@
 
         extendBounds: function (e) {
             var index = e.vertex.getIndex(),
+                next = e.vertex.getNext(),
+                previous = e.vertex.getPrevious(),
                 oppositeIndex = (index + 2) % 4,
                 opposite = e.vertex.latlngs[oppositeIndex],
                 bounds = new L.LatLngBounds(e.latlng, opposite);
+            // Update latlngs by hand to preserve order.
+            previous.latlng.update([e.latlng.lat, opposite.lng]);
+            next.latlng.update([opposite.lat, e.latlng.lng]);
             this.updateBounds(bounds);
             this.refreshVertexMarkers();
         },
@@ -1563,6 +1568,7 @@
             if (latlngs.length === 3) latlngs.push(e.latlng);
             var bounds = new L.LatLngBounds(e.latlng, e.latlng);
             this.updateBounds(bounds);
+            this.updateLatLngs(bounds);
             this.refresh();
             this.reset();
             this.commitDrawing(e);
@@ -1580,6 +1586,9 @@
 
         updateBounds: function (bounds) {
             this.feature._bounds = bounds;
+        },
+
+        updateLatLngs: function (bounds) {
             var latlngs = this.getDefaultLatLngs(),
                 newLatlngs = this.feature._boundsToLatLngs(bounds);
             // Keep references.

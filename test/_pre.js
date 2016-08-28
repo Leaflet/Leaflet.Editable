@@ -14,17 +14,19 @@ happen.at = function (what, x, y, props) {
 happen.drag = function (fromX, fromY, toX, toY, then, delay) {
     happen.at('mousemove', fromX, fromY);
     happen.at('mousedown', fromX, fromY);
+    var stepX = fromX < toX ? 1 : -1,
+        stepY = fromY < toY ? 1 : -1;
     var moveX = function () {
-        if (fromX <= toX) {
-            happen.at('mousemove', fromX++, fromY);
-            window.setTimeout(moveX, 5);
+        if (fromX != toX) {
+            happen.at('mousemove', fromX += stepX, fromY);
+            window.setTimeout(moveX, 1);
         }
     };
     moveX();
     var moveY = function () {
-        if (fromY <= toY) {
-            happen.at('mousemove', fromX, fromY++);
-            window.setTimeout(moveY, 5);
+        if (fromY != toY) {
+            happen.at('mousemove', fromX, fromY += stepY);
+            window.setTimeout(moveY, 1);
         }
     };
     moveY();

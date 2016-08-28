@@ -5,7 +5,7 @@ describe('L.RectangleEditor', function() {
     before(function () {
         this.map = map;
         p2ll = function (x, y) {
-            return map.layerPointToLatLng([x, y]);
+            return map.containerPointToLatLng([x, y]);
         };
     });
 
@@ -30,14 +30,23 @@ describe('L.RectangleEditor', function() {
 
         it('should draw rectangle on click-drag', function (done) {
             var layer = this.map.editTools.startRectangle();
-            happen.drag(200, 200, 220, 220, function () {
-                // L.marker(p2ll(420, 420)).addTo(map);
-                // callPhantom({'screenshot': 'failure'});
+            happen.drag(200, 200, 240, 240, function () {
                 expect(layer._latlngs[0][3].lat).not.to.be.eql(layer._latlngs[0][1].lat);
-                if (!window.callPhantom) {
-                    expect(layer._latlngs[0][1]).to.be.nearLatLng(p2ll(200, 200));
-                    expect(layer._latlngs[0][3]).to.be.nearLatLng(p2ll(220, 220));
-                }
+                expect(layer._latlngs[0][1]).to.be.nearLatLng(p2ll(200, 200));
+                expect(layer._latlngs[0][3]).to.be.nearLatLng(p2ll(240, 240));
+                layer.remove();
+                done();
+            });
+        });
+
+        it('should draw rectangle on click-drag reverse', function (done) {
+            var layer = this.map.editTools.startRectangle();
+            happen.drag(220, 220, 200, 200, function () {
+                expect(layer._latlngs[0][3].lat).not.to.be.eql(layer._latlngs[0][1].lat);
+                expect(layer._latlngs[0][1]).to.be.nearLatLng(p2ll(220, 220));
+                expect(layer._latlngs[0][3]).to.be.nearLatLng(p2ll(200, 200));
+                // if (!window.callPhantom) {
+                // }
                 layer.remove();
                 done();
             });
@@ -63,6 +72,21 @@ describe('L.RectangleEditor', function() {
                 if (!window.callPhantom) {
                     expect(layer._latlngs[0][1]).to.be.nearLatLng(p2ll(200, 200));  // Untouched
                     expect(layer._latlngs[0][3]).to.be.nearLatLng(p2ll(240, 240));
+                }
+                layer.remove();
+                done();
+            });
+        });
+
+        it('should allow reverting rectangle', function (done) {
+            var layer = L.rectangle([p2ll(200, 200), p2ll(220, 220)]).addTo(this.map);
+            var before = layer._latlngs[0][3].lat;
+            layer.enableEdit();
+            happen.drag(220, 220, 180, 180, function () {
+                expect(layer._latlngs[0][3].lat).not.to.eql(before);
+                if (!window.callPhantom) {
+                    expect(layer._latlngs[0][1]).to.be.nearLatLng(p2ll(200, 200));  // Untouched
+                    expect(layer._latlngs[0][3]).to.be.nearLatLng(p2ll(180, 180));
                 }
                 layer.remove();
                 done();

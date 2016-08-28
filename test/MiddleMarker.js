@@ -95,6 +95,7 @@ describe('L.MiddleMarker', function () {
             assert.equal(this.map.latLngToContainerPoint(line._latlngs[1].__vertex.middleMarker._latlng).x, 300);
             assert.equal(this.map.latLngToContainerPoint(line._latlngs[1].__vertex.middleMarker._latlng).y, 300);
             this.map.removeLayer(line);
+            this.map.setView(startPoint, 16);  // Move back to avoid rounding issues when projecting.
         });
 
     });
