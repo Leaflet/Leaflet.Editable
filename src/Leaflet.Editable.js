@@ -1680,7 +1680,9 @@
 
         createEditor: function (map) {
             map = map || this._map;
-            var Klass = this.options.editorClass || this.getEditorClass(map);
+            var tools = (this.options.editOptions || {}).editTools || map.editTools;
+            if (!tools) throw Error('Unable to detect Editable instance.')
+            var Klass = this.options.editorClass || this.getEditorClass(tools);
             return new Klass(map, this, this.options.editOptions);
         },
 
@@ -1728,8 +1730,8 @@
 
     L.Polyline.include({
 
-        getEditorClass: function (map) {
-            return (map && map.options.polylineEditorClass) ? map.options.polylineEditorClass : L.Editable.PolylineEditor;
+        getEditorClass: function (tools) {
+            return (tools && tools.options.polylineEditorClass) ? tools.options.polylineEditorClass : L.Editable.PolylineEditor;
         },
 
         shapeAt: function (latlng, latlngs) {
@@ -1766,8 +1768,8 @@
 
     L.Polygon.include({
 
-        getEditorClass: function (map) {
-            return (map && map.options.polygonEditorClass) ? map.options.polygonEditorClass : L.Editable.PolygonEditor;
+        getEditorClass: function (tools) {
+            return (tools && tools.options.polygonEditorClass) ? tools.options.polygonEditorClass : L.Editable.PolygonEditor;
         },
 
         shapeAt: function (latlng, latlngs) {
@@ -1815,24 +1817,24 @@
 
     L.Marker.include({
 
-        getEditorClass: function (map) {
-            return (map && map.options.markerEditorClass) ? map.options.markerEditorClass : L.Editable.MarkerEditor;
+        getEditorClass: function (tools) {
+            return (tools && tools.options.markerEditorClass) ? tools.options.markerEditorClass : L.Editable.MarkerEditor;
         }
 
     });
 
     L.Rectangle.include({
 
-        getEditorClass: function (map) {
-            return (map && map.options.rectangleEditorClass) ? map.options.rectangleEditorClass : L.Editable.RectangleEditor;
+        getEditorClass: function (tools) {
+            return (tools && tools.options.rectangleEditorClass) ? tools.options.rectangleEditorClass : L.Editable.RectangleEditor;
         }
 
     });
 
     L.Circle.include({
 
-        getEditorClass: function (map) {
-            return (map && map.options.circleEditorClass) ? map.options.circleEditorClass : L.Editable.CircleEditor;
+        getEditorClass: function (tools) {
+            return (tools && tools.options.circleEditorClass) ? tools.options.circleEditorClass : L.Editable.CircleEditor;
         }
 
     });
