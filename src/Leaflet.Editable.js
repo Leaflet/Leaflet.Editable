@@ -507,13 +507,9 @@
             this.latlng.update(latlng);
             this._latlng = this.latlng;  // Push back to Leaflet our reference.
             this.editor.refresh();
-            if (this.middleMarker) {
-                this.middleMarker.updateLatLng();
-            }
+            if (this.middleMarker) this.middleMarker.updateLatLng();
             var next = this.getNext();
-            if (next && next.middleMarker) {
-                next.middleMarker.updateLatLng();
-            }
+            if (next && next.middleMarker) next.middleMarker.updateLatLng();
         },
 
         onDragStart: function (e) {
@@ -602,13 +598,9 @@
         addMiddleMarkers: function () {
             if (!this.editor.hasMiddleMarkers()) return;
             var previous = this.getPrevious();
-            if (previous) {
-                this.addMiddleMarker(previous);
-            }
+            if (previous) this.addMiddleMarker(previous);
             var next = this.getNext();
-            if (next) {
-                next.resetMiddleMarker();
-            }
+            if (next) next.resetMiddleMarker();
         },
 
         resetMiddleMarker: function () {
@@ -667,11 +659,8 @@
             var leftPoint = this._map.latLngToContainerPoint(this.left.latlng),
                 rightPoint = this._map.latLngToContainerPoint(this.right.latlng),
                 size = L.point(this.options.icon.options.iconSize);
-            if (leftPoint.distanceTo(rightPoint) < size.x * 3) {
-                this.hide();
-            } else {
-                this.show();
-            }
+            if (leftPoint.distanceTo(rightPoint) < size.x * 3) this.hide();
+            else this.show();
         },
 
         show: function () {
