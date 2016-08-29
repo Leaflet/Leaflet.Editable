@@ -227,6 +227,7 @@
             if (this._drawingEditor) this.unregisterForDrawing(this._drawingEditor);
             this.map.on('mousemove touchmove', editor.onDrawingMouseMove, editor);
             this.blockEvents();
+            editor.reset();  // Make sure editor tools still receive events.
             this._drawingEditor = editor;
             this.map.on('mousedown', this.onMousedown, this);
             this.map.on('mouseup', this.onMouseup, this);
@@ -623,7 +624,6 @@
             var index = this.getIndex();
             if (index === 0) this.editor.continueBackward(this.latlngs);
             else if (index === this.getLastIndex()) this.editor.continueForward(this.latlngs);
-            this.editor.reset();  // Reactivate vertex after events have been blocked.
         }
 
     });
@@ -789,6 +789,8 @@
         drawing: function () {
             return !!this._drawing;
         },
+
+        reset: function () {},
 
         onFeatureAdd: function () {
             this.tools.editLayer.addLayer(this.editLayer);
