@@ -257,8 +257,9 @@
 
         onMouseup: function (e) {
             if (this._mouseDown) {
-                this._drawingEditor.onDrawingMouseUp(e);
-                if (!this._drawingEditor) return;  // onDrawingMouseUp may call unregisterFromDrawing.
+                var editor = this._drawingEditor;
+                editor.onDrawingMouseUp(e);
+                if (this._drawingEditor !== editor) return;  // onDrawingMouseUp may call unregisterFromDrawing.
                 var origin = L.point(this._mouseDown.originalEvent.clientX, this._mouseDown.originalEvent.clientY);
                 var distance = L.point(e.originalEvent.clientX, e.originalEvent.clientY).distanceTo(origin);
                 if (Math.abs(distance) < 9 * (window.devicePixelRatio || 1)) this._drawingEditor.onDrawingClick(e);
@@ -278,13 +279,13 @@
             return this._drawingEditor && this._drawingEditor.drawing();
         },
 
-        // 🍂method commitDrawing()
+        // 🍂method stopDrawing()
         // When you need to stop any ongoing drawing, without needing to know which editor is active..
         stopDrawing: function () {
             this.unregisterForDrawing();
         },
 
-        // 🍂method stopDrawing()
+        // 🍂method commitDrawing()
         // When you need to commit any ongoing drawing, without needing to know which editor is active.
         commitDrawing: function (e) {
             if (!this._drawingEditor) return;
@@ -900,7 +901,7 @@
         },
 
         onDrawingClick: function (e) {
-            if (!this.drawing) return;
+            if (!this.drawing()) return;
             L.Editable.makeCancellable(e);
             // 🍂namespace Editable
             // 🍂section Drawing events
