@@ -257,6 +257,7 @@
 
         onMouseup: function (e) {
             if (this._mouseDown) {
+                this._mouseDown = null;
                 var editor = this._drawingEditor;
                 editor.onDrawingMouseUp(e);
                 if (this._drawingEditor !== editor) return;  // onDrawingMouseUp may call unregisterFromDrawing.
@@ -264,7 +265,6 @@
                 var distance = L.point(e.originalEvent.clientX, e.originalEvent.clientY).distanceTo(origin);
                 if (Math.abs(distance) < 9 * (window.devicePixelRatio || 1)) this._drawingEditor.onDrawingClick(e);
             }
-            this._mouseDown = null;
         },
 
         // 🍂section Public methods
@@ -890,6 +890,10 @@
         },
 
         cancelDrawing: function () {
+            // If called during a vertex drag, the vertex will be removed before
+            // the mouseup fires on it. This is a workaround. Maybe better fix is
+            // To have L.Draggable reset it's status on disable (Leaflet side).
+            L.Draggable._dragging = false;
             this.onCancelDrawing();
             this.endDrawing();
         },
