@@ -257,14 +257,15 @@
 
         onMouseup: function (e) {
             if (this._mouseDown) {
-                var editor = this._drawingEditor;
+                var editor = this._drawingEditor,
+                    mouseDown = this._mouseDown;
+                this._mouseDown = null;
                 editor.onDrawingMouseUp(e);
                 if (this._drawingEditor !== editor) return;  // onDrawingMouseUp may call unregisterFromDrawing.
-                var origin = L.point(this._mouseDown.originalEvent.clientX, this._mouseDown.originalEvent.clientY);
+                var origin = L.point(mouseDown.originalEvent.clientX, mouseDown.originalEvent.clientY);
                 var distance = L.point(e.originalEvent.clientX, e.originalEvent.clientY).distanceTo(origin);
                 if (Math.abs(distance) < 9 * (window.devicePixelRatio || 1)) this._drawingEditor.onDrawingClick(e);
             }
-            this._mouseDown = null;
         },
 
         // 🍂section Public methods
