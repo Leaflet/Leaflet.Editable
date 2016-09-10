@@ -2,4 +2,4 @@ language: node_js
 sudo: false
 branches:
   only:
-  - gh-pages
+  - master
