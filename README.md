@@ -1,9 +1,9 @@
-[![Build Status](https://travis-ci.org/Leaflet/Leaflet.Editable.svg?branch=gh-pages)](https://travis-ci.org/Leaflet/Leaflet.Editable)
+[![Build Status](https://travis-ci.org/Leaflet/Leaflet.Editable.svg?branch=master)](https://travis-ci.org/Leaflet/Leaflet.Editable)
 # Leaflet.Editable
 
 Make geometries editable in Leaflet.
 
-**WARNING: the `gh-pages` branch needs latest Leaflet master (future 1.0). To use the stable
+**WARNING: the `master` branch needs latest Leaflet master (future 1.0). To use the stable
 Leaflet release, please use the `leaflet0.7` branch.**
 
 
