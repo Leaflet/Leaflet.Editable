@@ -1734,13 +1734,7 @@
 
     };
 
-    L.Polyline.include(EditableMixin);
-    L.Polygon.include(EditableMixin);
-    L.Marker.include(EditableMixin);
-    L.Rectangle.include(EditableMixin);
-    L.Circle.include(EditableMixin);
-
-    L.Polyline.include({
+    var PolylineMixin = {
 
         getEditorClass: function (tools) {
             return (tools && tools.options.polylineEditorClass) ? tools.options.polylineEditorClass : L.Editable.PolylineEditor;
@@ -1776,9 +1770,9 @@
             return false;
         }
 
-    });
+    };
 
-    L.Polygon.include({
+    var PolygonMixin = {
 
         getEditorClass: function (tools) {
             return (tools && tools.options.polygonEditorClass) ? tools.options.polygonEditorClass : L.Editable.PolygonEditor;
@@ -1825,38 +1819,62 @@
             }
         }
 
-    });
+    };
 
-    L.Marker.include({
+
+    var MarkerMixin = {
 
         getEditorClass: function (tools) {
             return (tools && tools.options.markerEditorClass) ? tools.options.markerEditorClass : L.Editable.MarkerEditor;
         }
 
-    });
+    };
 
-    L.Rectangle.include({
+    var RectangleMixin = {
 
         getEditorClass: function (tools) {
             return (tools && tools.options.rectangleEditorClass) ? tools.options.rectangleEditorClass : L.Editable.RectangleEditor;
         }
 
-    });
+    };
 
-    L.Circle.include({
+    var CircleMixin = {
 
         getEditorClass: function (tools) {
             return (tools && tools.options.circleEditorClass) ? tools.options.circleEditorClass : L.Editable.CircleEditor;
         }
 
-    });
+    };
 
     var keepEditable = function () {
         // Make sure you can remove/readd an editable layer.
         this.on('add', this._onEditableAdd);
     };
-    L.Marker.addInitHook(keepEditable);
-    L.Polyline.addInitHook(keepEditable);
+
+
+
+    if (L.Polyline) {
+        L.Polyline.include(EditableMixin);
+        L.Polyline.include(PolylineMixin);
+        L.Polyline.addInitHook(keepEditable);
+    }
+    if (L.Polygon) {
+        L.Polygon.include(EditableMixin);
+        L.Polygon.include(PolygonMixin);
+    }
+    if (L.Marker) {
+        L.Marker.include(EditableMixin);
+        L.Marker.include(MarkerMixin);
+        L.Marker.addInitHook(keepEditable);
+    }
+    if (L.Rectangle) {
+        L.Rectangle.include(EditableMixin);
+        L.Rectangle.include(RectangleMixin);
+    }
+    if (L.Circle) {
+        L.Circle.include(EditableMixin);
+        L.Circle.include(CircleMixin);
+    }
 
     L.LatLng.prototype.update = function (latlng) {
         latlng = L.latLng(latlng);
