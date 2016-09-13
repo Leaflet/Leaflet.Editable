@@ -48,7 +48,7 @@ See <a href="#editable"><code>Editable</code></a> events for the list of events 
 		<td><code><b>editToolsClass</b></code></td>
 		<td><code>class</code>
 		<td><code>L.Editable</code></td>
-		<td>Class to be used as vertex, for path editing</td>
+		<td>Class to be used as vertex, for path editing.</td>
 	</tr>
 	<tr id='map-editable'>
 		<td><code><b>editable</b></code></td>
@@ -135,55 +135,55 @@ the behaviour: using options, listening to events, or extending.</p>
 		<td><code><b>polygonClass</b></code></td>
 		<td><code>class</code>
 		<td><code>L.Polygon</code></td>
-		<td>Class to be used when creating a new Polygon</td>
+		<td>Class to be used when creating a new Polygon.</td>
 	</tr>
 	<tr id='editable-polylineclass'>
 		<td><code><b>polylineClass</b></code></td>
 		<td><code>class</code>
 		<td><code>L.Polyline</code></td>
-		<td>Class to be used when creating a new Polyline</td>
+		<td>Class to be used when creating a new Polyline.</td>
 	</tr>
 	<tr id='editable-markerclass'>
 		<td><code><b>markerClass</b></code></td>
 		<td><code>class</code>
 		<td><code>L.Marker</code></td>
-		<td>Class to be used when creating a new Marker</td>
+		<td>Class to be used when creating a new Marker.</td>
 	</tr>
 	<tr id='editable-rectangleclass'>
 		<td><code><b>rectangleClass</b></code></td>
 		<td><code>class</code>
 		<td><code>L.Rectangle</code></td>
-		<td>Class to be used when creating a new Rectangle</td>
+		<td>Class to be used when creating a new Rectangle.</td>
 	</tr>
 	<tr id='editable-circleclass'>
 		<td><code><b>circleClass</b></code></td>
 		<td><code>class</code>
 		<td><code>L.Circle</code></td>
-		<td>Class to be used when creating a new Circle</td>
+		<td>Class to be used when creating a new Circle.</td>
 	</tr>
 	<tr id='editable-drawingcssclass'>
 		<td><code><b>drawingCSSClass</b></code></td>
 		<td><code>string</code>
 		<td><code>&#x27;leaflet-editable-drawing&#x27;</code></td>
-		<td>CSS class to be added to the map container while drawing</td>
+		<td>CSS class to be added to the map container while drawing.</td>
 	</tr>
 	<tr id='editable-drawingcursor'>
 		<td><code><b>drawingCursor</b></code></td>
 		<td><code>const</code>
 		<td><code>&#x27;crosshair&#x27;</code></td>
-		<td>cursor mode set to the map while drawing</td>
+		<td>Cursor mode set to the map while drawing.</td>
 	</tr>
 	<tr id='editable-editlayer'>
 		<td><code><b>editLayer</b></code></td>
 		<td><code>Layer</code>
 		<td><code>new L.LayerGroup()</code></td>
-		<td>Layer used to store edit tools (vertex, line guide…)</td>
+		<td>Layer used to store edit tools (vertex, line guide…).</td>
 	</tr>
 	<tr id='editable-featureslayer'>
 		<td><code><b>featuresLayer</b></code></td>
 		<td><code>Layer</code>
 		<td><code>new L.LayerGroup()</code></td>
-		<td>Default layer used to store drawn features (marker, polyline…)</td>
+		<td>Default layer used to store drawn features (Marker, Polyline…).</td>
 	</tr>
 	<tr id='editable-polylineeditorclass'>
 		<td><code><b>polylineEditorClass</b></code></td>
@@ -231,7 +231,7 @@ the behaviour: using options, listening to events, or extending.</p>
 		<td><code><b>vertexMarkerClass</b></code></td>
 		<td><code>class</code>
 		<td><code>VertexMarker</code></td>
-		<td>Class to be used as vertex, for path editing</td>
+		<td>Class to be used as vertex, for path editing.</td>
 	</tr>
 	<tr id='editable-middlemarkerclass'>
 		<td><code><b>middleMarkerClass</b></code></td>
@@ -259,30 +259,35 @@ the behaviour: using options, listening to events, or extending.</p>
 		<td><code><a href='#layerevent'>LayerEvent</a></code></td>
 		<td>Fired when a new feature (Marker, Polyline…) is created.</td>
 	</tr>
-	<tr id='editable-editable-enable'>
-		<td><code><b>editable.enable</b>
+	<tr id='editable-editable:enable'>
+		<td><code><b>editable:enable</b>
 		<td><code>Event</code></td>
 		<td>Fired when an existing feature is ready to be edited.</td>
 	</tr>
-	<tr id='editable-editable-disable'>
-		<td><code><b>editable.disable</b>
+	<tr id='editable-editable:disable'>
+		<td><code><b>editable:disable</b>
 		<td><code>Event</code></td>
 		<td>Fired when an existing feature is not ready anymore to be edited.</td>
 	</tr>
-	<tr id='editable-editable-editing'>
-		<td><code><b>editable.editing</b>
+	<tr id='editable-editable:editing'>
+		<td><code><b>editable:editing</b>
 		<td><code>Event</code></td>
 		<td>Fired as soon as any change is made to the feature geometry.</td>
 	</tr>
-	<tr id='editable-editable-dragstart'>
-		<td><code><b>editable.dragstart</b>
+	<tr id='editable-editable:dragstart'>
+		<td><code><b>editable:dragstart</b>
 		<td><code>Event</code></td>
 		<td>Fired before a path feature is dragged.</td>
 	</tr>
-	<tr id='editable-editable-drag'>
-		<td><code><b>editable.drag</b>
+	<tr id='editable-editable:drag'>
+		<td><code><b>editable:drag</b>
 		<td><code>Event</code></td>
 		<td>Fired when a path feature is being dragged.</td>
+	</tr>
+	<tr id='editable-editable:dragend'>
+		<td><code><b>editable:dragend</b>
+		<td><code>Event</code></td>
+		<td>Fired after a path feature has been dragged.</td>
 	</tr>
 </tbody></table>
 </section><section data-type='[object Object]'>
@@ -295,55 +300,50 @@ the behaviour: using options, listening to events, or extending.</p>
 		<th>Description</th>
 	</tr>
 	</thead><tbody>
-	<tr id='editable-editable-drawing-start'>
-		<td><code><b>editable.drawing.start</b>
+	<tr id='editable-editable:drawing:start'>
+		<td><code><b>editable:drawing:start</b>
 		<td><code>Event</code></td>
 		<td>Fired when a feature is to be drawn.</td>
 	</tr>
-	<tr id='editable-editable-drawing-end'>
-		<td><code><b>editable.drawing.end</b>
+	<tr id='editable-editable:drawing:end'>
+		<td><code><b>editable:drawing:end</b>
 		<td><code>Event</code></td>
 		<td>Fired when a feature is not drawn anymore.</td>
 	</tr>
-	<tr id='editable-editable-drawing-cancel'>
-		<td><code><b>editable.drawing.cancel</b>
+	<tr id='editable-editable:drawing:cancel'>
+		<td><code><b>editable:drawing:cancel</b>
 		<td><code>Event</code></td>
 		<td>Fired when user cancel drawing while a feature is being drawn.</td>
 	</tr>
-	<tr id='editable-editable-drawing-commit'>
-		<td><code><b>editable.drawing.commit</b>
+	<tr id='editable-editable:drawing:commit'>
+		<td><code><b>editable:drawing:commit</b>
 		<td><code>Event</code></td>
 		<td>Fired when user finish drawing a feature.</td>
 	</tr>
-	<tr id='editable-editable-drawing-mousedown'>
-		<td><code><b>editable.drawing.mousedown</b>
+	<tr id='editable-editable:drawing:mousedown'>
+		<td><code><b>editable:drawing:mousedown</b>
 		<td><code>Event</code></td>
-		<td>Fired when user mousedown while drawing.</td>
+		<td>Fired when user <code>mousedown</code> while drawing.</td>
 	</tr>
-	<tr id='editable-editable-drawing-mouseup'>
-		<td><code><b>editable.drawing.mouseup</b>
+	<tr id='editable-editable:drawing:mouseup'>
+		<td><code><b>editable:drawing:mouseup</b>
 		<td><code>Event</code></td>
-		<td>Fired when user mouseup while drawing.</td>
+		<td>Fired when user <code>mouseup</code> while drawing.</td>
 	</tr>
-	<tr id='editable-editable-drawing-click'>
-		<td><code><b>editable.drawing.click</b>
+	<tr id='editable-editable:drawing:click'>
+		<td><code><b>editable:drawing:click</b>
 		<td><code><a href='#cancelableevent'>CancelableEvent</a></code></td>
-		<td>Fired when user click while drawing, before any internal action is being processed.</td>
+		<td>Fired when user <code>click</code> while drawing, before any internal action is being processed.</td>
 	</tr>
-	<tr id='editable-editable-drawing-move'>
-		<td><code><b>editable.drawing.move</b>
+	<tr id='editable-editable:drawing:move'>
+		<td><code><b>editable:drawing:move</b>
 		<td><code>Event</code></td>
-		<td>Fired when move mouse while drawing, while dragging a marker, and while dragging a vertex.</td>
+		<td>Fired when <code>move</code> mouse while drawing, while dragging a marker, and while dragging a vertex.</td>
 	</tr>
-	<tr id='editable-editable-dragend'>
-		<td><code><b>editable.dragend</b>
+	<tr id='editable-editable:drawing:clicked'>
+		<td><code><b>editable:drawing:clicked</b>
 		<td><code>Event</code></td>
-		<td>Fired after a path feature has been dragged.</td>
-	</tr>
-	<tr id='editable-editable-drawing-clicked'>
-		<td><code><b>editable.drawing.clicked</b>
-		<td><code>Event</code></td>
-		<td>Fired when user click while drawing, after all internal actions.</td>
+		<td>Fired when user <code>click</code> while drawing, after all internal actions.</td>
 	</tr>
 </tbody></table>
 </section><section data-type='[object Object]'>
@@ -356,70 +356,74 @@ the behaviour: using options, listening to events, or extending.</p>
 		<th>Description</th>
 	</tr>
 	</thead><tbody>
-	<tr id='editable-editable-vertex-click'>
-		<td><code><b>editable.vertex.click</b>
+	<tr id='editable-editable:vertex:click'>
+		<td><code><b>editable:vertex:click</b>
 		<td><code><a href='#cancelablevertexevent'>CancelableVertexEvent</a></code></td>
-		<td>Fired when a click is issued on a vertex, before any internal action is being processed.</td>
+		<td>Fired when a <code>click</code> is issued on a vertex, before any internal action is being processed.</td>
 	</tr>
-	<tr id='editable-editable-vertex-clicked'>
-		<td><code><b>editable.vertex.clicked</b>
+	<tr id='editable-editable:vertex:clicked'>
+		<td><code><b>editable:vertex:clicked</b>
 		<td><code><a href='#vertexevent'>VertexEvent</a></code></td>
-		<td>Fired when a click is issued on a vertex, after all internal actions.</td>
+		<td>Fired when a <code>click</code> is issued on a vertex, after all internal actions.</td>
 	</tr>
-	<tr id='editable-editable-vertex-rawclick'>
-		<td><code><b>editable.vertex.rawclick</b>
+	<tr id='editable-editable:vertex:rawclick'>
+		<td><code><b>editable:vertex:rawclick</b>
 		<td><code><a href='#cancelablevertexevent'>CancelableVertexEvent</a></code></td>
-		<td>Fired when a click is issued on a vertex without any special key and without being in drawing mode.</td>
+		<td>Fired when a <code>click</code> is issued on a vertex without any special key and without being in drawing mode.</td>
 	</tr>
-	<tr id='editable-editable-vertex-deleted'>
-		<td><code><b>editable.vertex.deleted</b>
+	<tr id='editable-editable:vertex:deleted'>
+		<td><code><b>editable:vertex:deleted</b>
 		<td><code><a href='#vertexevent'>VertexEvent</a></code></td>
 		<td>Fired after a vertex has been deleted by user.</td>
 	</tr>
-	<tr id='editable-editable-vertex-ctrlclick'>
-		<td><code><b>editable.vertex.ctrlclick</b>
+	<tr id='editable-editable:vertex:ctrlclick'>
+		<td><code><b>editable:vertex:ctrlclick</b>
 		<td><code><a href='#vertexevent'>VertexEvent</a></code></td>
-		<td>Fired when a click with ctrlKey is issued on a vertex</td>
+		<td>Fired when a <code>click</code> with <code>ctrlKey</code> is issued on a vertex.</td>
 	</tr>
-	<tr id='editable-editable-vertex-shiftclick'>
-		<td><code><b>editable.vertex.shiftclick</b>
+	<tr id='editable-editable:vertex:shiftclick'>
+		<td><code><b>editable:vertex:shiftclick</b>
 		<td><code><a href='#vertexevent'>VertexEvent</a></code></td>
-		<td>Fired when a click with shiftKey is issued on a vertex</td>
+		<td>Fired when a <code>click</code> with <code>shiftKey</code> is issued on a vertex.</td>
 	</tr>
-	<tr id='editable-editable-vertex-metakeyclick'>
-		<td><code><b>editable.vertex.metakeyclick</b>
+	<tr id='editable-editable:vertex:metakeyclick'>
+		<td><code><b>editable:vertex:metakeyclick</b>
 		<td><code><a href='#vertexevent'>VertexEvent</a></code></td>
-		<td>Fired when a click with metaKey is issued on a vertex</td>
+		<td>Fired when a <code>click</code> with <code>metaKey</code> is issued on a vertex.</td>
 	</tr>
-	<tr id='editable-editable-vertex-altclick'>
-		<td><code><b>editable.vertex.altclick</b>
+	<tr id='editable-editable:vertex:altclick'>
+		<td><code><b>editable:vertex:altclick</b>
 		<td><code><a href='#vertexevent'>VertexEvent</a></code></td>
-		<td>Fired when a click with altKey is issued on a vertex</td>
+		<td>Fired when a <code>click</code> with <code>altKey</code> is issued on a vertex.</td>
 	</tr>
-	<tr id='editable-editable-vertex-contextmenu'>
-		<td><code><b>editable.vertex.contextmenu</b>
+	<tr id='editable-editable:vertex:contextmenu'>
+		<td><code><b>editable:vertex:contextmenu</b>
 		<td><code><a href='#vertexevent'>VertexEvent</a></code></td>
-		<td>Fired when a contextmenu is issued on a vertex.</td>
+		<td>Fired when a <code>contextmenu</code> is issued on a vertex.</td>
 	</tr>
-	<tr id='editable-editable-vertex-mousedown'>
-		<td><code><b>editable.vertex.mousedown</b>
+	<tr id='editable-editable:vertex:mousedown'>
+		<td><code><b>editable:vertex:mousedown</b>
 		<td><code><a href='#vertexevent'>VertexEvent</a></code></td>
-		<td>Fired when user mousedown a vertex.</td>
+		<td>Fired when user <code>mousedown</code> a vertex.</td>
 	</tr>
-	<tr id='editable-editable-vertex-drag'>
-		<td><code><b>editable.vertex.drag</b>
+	<tr id='editable-editable:vertex:drag'>
+		<td><code><b>editable:vertex:drag</b>
 		<td><code><a href='#vertexevent'>VertexEvent</a></code></td>
 		<td>Fired when a vertex is dragged by user.</td>
 	</tr>
-	<tr id='editable-editable-vertex-dragstart'>
-		<td><code><b>editable.vertex.dragstart</b>
+	<tr id='editable-editable:vertex:dragstart'>
+		<td><code><b>editable:vertex:dragstart</b>
 		<td><code><a href='#vertexevent'>VertexEvent</a></code></td>
-		<td>Fired before a vertex is dragged by user.
-Fired after a vertex is dragged by user.</td>
+		<td>Fired before a vertex is dragged by user.</td>
+	</tr>
+	<tr id='editable-editable:vertex:dragend'>
+		<td><code><b>editable:vertex:dragend</b>
+		<td><code><a href='#vertexevent'>VertexEvent</a></code></td>
+		<td>Fired after a vertex is dragged by user.</td>
 	</tr>
 </tbody></table>
 </section><section data-type='[object Object]'>
-<h4 id='editable-middlemarker-events'>Middlemarker events</h4>
+<h4 id='editable-middlemarker-events'>MiddleMarker events</h4>
 
 <table><thead>
 	<tr>
@@ -428,10 +432,10 @@ Fired after a vertex is dragged by user.</td>
 		<th>Description</th>
 	</tr>
 	</thead><tbody>
-	<tr id='editable-editable-middlemarker-mousedown'>
-		<td><code><b>editable.middlemarker.mousedown</b>
+	<tr id='editable-editable:middlemarker:mousedown'>
+		<td><code><b>editable:middlemarker:mousedown</b>
 		<td><code><a href='#vertexevent'>VertexEvent</a></code></td>
-		<td>Fired when user mousedown a middle marker</td>
+		<td>Fired when user <code>mousedown</code> a middle marker.</td>
 	</tr>
 </tbody></table>
 </section><section data-type='[object Object]'>
@@ -444,20 +448,20 @@ Fired after a vertex is dragged by user.</td>
 		<th>Description</th>
 	</tr>
 	</thead><tbody>
-	<tr id='editable-editable-shape-new'>
-		<td><code><b>editable.shape.new</b>
+	<tr id='editable-editable:shape:new'>
+		<td><code><b>editable:shape:new</b>
 		<td><code><a href='#shapeevent'>ShapeEvent</a></code></td>
-		<td>Fired when a new shape is created in a multi (polygon or polyline).</td>
+		<td>Fired when a new shape is created in a multi (Polygon or Polyline).</td>
 	</tr>
-	<tr id='editable-editable-shape-delete'>
-		<td><code><b>editable.shape.delete</b>
+	<tr id='editable-editable:shape:delete'>
+		<td><code><b>editable:shape:delete</b>
 		<td><code><a href='#cancelableshapeevent'>CancelableShapeEvent</a></code></td>
-		<td>Fired before a new shape is deleted in a multi (polygon or polyline).</td>
+		<td>Fired before a new shape is deleted in a multi (Polygon or Polyline).</td>
 	</tr>
-	<tr id='editable-editable-vertex-deleted'>
-		<td><code><b>editable.vertex.deleted</b>
+	<tr id='editable-editable:shape:deleted'>
+		<td><code><b>editable:shape:deleted</b>
 		<td><code><a href='#shapeevent'>ShapeEvent</a></code></td>
-		<td>Fired after a new shape is deleted in a multi (polygon or polyline).</td>
+		<td>Fired after a new shape is deleted in a multi (Polygon or Polyline).</td>
 	</tr>
 </tbody></table>
 </section>
@@ -481,52 +485,52 @@ instance:
 		<td><code>boolean</code></td>
 		<td>Return true if any drawing action is ongoing.</td>
 	</tr>
-	<tr id='editable-commitdrawing'>
-		<td><code><b>commitDrawing</b>()</nobr></code></td>
-		<td><code></code></td>
-		<td>When you need to stop any ongoing drawing, without needing to know which editor is active..</td>
-	</tr>
 	<tr id='editable-stopdrawing'>
 		<td><code><b>stopDrawing</b>()</nobr></code></td>
+		<td><code></code></td>
+		<td>When you need to stop any ongoing drawing, without needing to know which editor is active.</td>
+	</tr>
+	<tr id='editable-commitdrawing'>
+		<td><code><b>commitDrawing</b>()</nobr></code></td>
 		<td><code></code></td>
 		<td>When you need to commit any ongoing drawing, without needing to know which editor is active.</td>
 	</tr>
 	<tr id='editable-startpolyline'>
 		<td><code><b>startPolyline</b>(<nobr>&lt;L.LatLng&gt; <i>latlng</i></nobr>, <nobr>&lt;hash&gt; <i>options</i></nobr>)</nobr></code></td>
 		<td><code>L.Polyline</code></td>
-		<td>Start drawing a polyline. If latlng is given, a first point will be added. In any case, continuing on user click.
-If <code>options</code> is given, it will be passed to the polyline class constructor.</td>
+		<td>Start drawing a Polyline. If <code>latlng</code> is given, a first point will be added. In any case, continuing on user click.
+If <code>options</code> is given, it will be passed to the Polyline class constructor.</td>
 	</tr>
 	<tr id='editable-startpolygon'>
 		<td><code><b>startPolygon</b>(<nobr>&lt;L.LatLng&gt; <i>latlng</i></nobr>, <nobr>&lt;hash&gt; <i>options</i></nobr>)</nobr></code></td>
 		<td><code>L.Polygon</code></td>
-		<td>Start drawing a polygon. If latlng is given, a first point will be added. In any case, continuing on user click.
-If <code>options</code> is given, it will be passed to the polygon class constructor.</td>
+		<td>Start drawing a Polygon. If <code>latlng</code> is given, a first point will be added. In any case, continuing on user click.
+If <code>options</code> is given, it will be passed to the Polygon class constructor.</td>
 	</tr>
 	<tr id='editable-startmarker'>
 		<td><code><b>startMarker</b>(<nobr>&lt;L.LatLng&gt; <i>latlng</i></nobr>, <nobr>&lt;hash&gt; <i>options</i></nobr>)</nobr></code></td>
 		<td><code>L.Marker</code></td>
-		<td>Start adding a marker. If latlng is given, the marker will be shown first at this point.
-In any case, it will follow the user mouse, and will have a final latlng on next click (or touch).
-If <code>options</code> is given, it will be passed to the marker class constructor.</td>
+		<td>Start adding a Marker. If <code>latlng</code> is given, the Marker will be shown first at this point.
+In any case, it will follow the user mouse, and will have a final <code>latlng</code> on next click (or touch).
+If <code>options</code> is given, it will be passed to the Marker class constructor.</td>
 	</tr>
 	<tr id='editable-startrectangle'>
 		<td><code><b>startRectangle</b>(<nobr>&lt;L.LatLng&gt; <i>latlng</i></nobr>, <nobr>&lt;hash&gt; <i>options</i></nobr>)</nobr></code></td>
 		<td><code>L.Rectangle</code></td>
-		<td>Start drawing a rectangle. If latlng is given, the rectangle anchor will be added. In any case, continuing on user drag.
-If <code>options</code> is given, it will be passed to the rectangle class constructor.</td>
+		<td>Start drawing a Rectangle. If <code>latlng</code> is given, the Rectangle anchor will be added. In any case, continuing on user drag.
+If <code>options</code> is given, it will be passed to the Rectangle class constructor.</td>
 	</tr>
 	<tr id='editable-startcircle'>
 		<td><code><b>startCircle</b>(<nobr>&lt;L.LatLng&gt; <i>latlng</i></nobr>, <nobr>&lt;hash&gt; <i>options</i></nobr>)</nobr></code></td>
 		<td><code>L.Circle</code></td>
-		<td>Start drawing a circle. If latlng is given, the circle anchor will be added. In any case, continuing on user drag.
+		<td>Start drawing a Circle. If <code>latlng</code> is given, the Circle anchor will be added. In any case, continuing on user drag.
 If <code>options</code> is given, it will be passed to the Circle class constructor.</td>
 	</tr>
 </tbody></table>
 </section>
 
 <h2 id='baseeditor'>BaseEditor</h2>
-<p>When editing a feature (marker, polyline…), an editor is attached to it. This
+<p>When editing a feature (Marker, Polyline…), an editor is attached to it. This
 editor basically knows how to handle the edition.</p>
 
 <h3 id='baseeditor-method' class="section">Methods</h3>
@@ -616,7 +620,7 @@ editor basically knows how to handle the edition.</p>
 	<tr id='patheditor-reset'>
 		<td><code><b>reset</b>()</nobr></code></td>
 		<td><code></code></td>
-		<td>Rebuild edit elements (vertex, middlemarker, etc.).</td>
+		<td>Rebuild edit elements (Vertex, MiddleMarker, etc.).</td>
 	</tr>
 	<tr id='patheditor-push'>
 		<td><code><b>push</b>()</nobr></code></td>
@@ -626,33 +630,33 @@ editor basically knows how to handle the edition.</p>
 	<tr id='patheditor-pop'>
 		<td><code><b>pop</b>()</nobr></code></td>
 		<td><code>L.LatLng or null</code></td>
-		<td>Programatically remove last point (if any) while drawing.</td>
+		<td>Programmatically remove last point (if any) while drawing.</td>
 	</tr>
 	<tr id='patheditor-newshape'>
 		<td><code><b>newShape</b>(<nobr>&lt;L.LatLng&gt; <i>latlng?</i></nobr>)</nobr></code></td>
 		<td><code></code></td>
-		<td>Add a new shape (polyline, polygon) in a multi, and setup up drawing tools to draw it;
+		<td>Add a new shape (Polyline, Polygon) in a multi, and setup up drawing tools to draw it;
 if optional <code>latlng</code> is given, start a path at this point.</td>
 	</tr>
 	<tr id='patheditor-deleteshapeat'>
 		<td><code><b>deleteShapeAt</b>(<nobr>&lt;L.LatLng&gt; <i>latlng</i></nobr>)</nobr></code></td>
 		<td><code>Array</code></td>
-		<td>Remove a path shape at the given latlng.</td>
+		<td>Remove a path shape at the given <code>latlng</code>.</td>
 	</tr>
 	<tr id='patheditor-appendshape'>
 		<td><code><b>appendShape</b>(<nobr>&lt;Array&gt; <i>shape</i></nobr>)</nobr></code></td>
 		<td><code></code></td>
-		<td>Append a new shape to the polygon or polyline.</td>
+		<td>Append a new shape to the Polygon or Polyline.</td>
 	</tr>
 	<tr id='patheditor-prependshape'>
 		<td><code><b>prependShape</b>(<nobr>&lt;Array&gt; <i>shape</i></nobr>)</nobr></code></td>
 		<td><code></code></td>
-		<td>Prepend a new shape to the polygon or polyline.</td>
+		<td>Prepend a new shape to the Polygon or Polyline.</td>
 	</tr>
 	<tr id='patheditor-insertshape'>
 		<td><code><b>insertShape</b>(<nobr>&lt;Array&gt; <i>shape</i></nobr>, <nobr>&lt;int&gt; <i>index</i></nobr>)</nobr></code></td>
 		<td><code></code></td>
-		<td>Insert a new shape to the polygon or polyline at given index (default is to append)</td>
+		<td>Insert a new shape to the Polygon or Polyline at given index (default is to append).</td>
 	</tr>
 </tbody></table>
 </section>
@@ -716,7 +720,7 @@ if optional <code>latlng</code> is given, start a path at this point.</td>
 	<tr id='polylineeditor-splitshape'>
 		<td><code><b>splitShape</b>(<nobr>&lt;Array&gt; <i>latlngs?</i></nobr>, <nobr>&lt;int&gt; <i>index</i></nobr>)</nobr></code></td>
 		<td><code></code></td>
-		<td>Split the given latlngs shape at index <code>index</code> and integrate new shape in instance latlngs.</td>
+		<td>Split the given <code>latlngs</code> shape at index <code>index</code> and integrate new shape in instance <code>latlngs</code>.</td>
 	</tr>
 </tbody></table>
 </section>
@@ -737,7 +741,7 @@ if optional <code>latlng</code> is given, start a path at this point.</td>
 	<tr id='polylineeditor-reset'>
 		<td><code><b>reset</b>()</nobr></code></td>
 		<td><code></code></td>
-		<td>Rebuild edit elements (vertex, middlemarker, etc.).</td>
+		<td>Rebuild edit elements (Vertex, MiddleMarker, etc.).</td>
 	</tr>
 	<tr id='polylineeditor-push'>
 		<td><code><b>push</b>()</nobr></code></td>
@@ -747,33 +751,33 @@ if optional <code>latlng</code> is given, start a path at this point.</td>
 	<tr id='polylineeditor-pop'>
 		<td><code><b>pop</b>()</nobr></code></td>
 		<td><code>L.LatLng or null</code></td>
-		<td>Programatically remove last point (if any) while drawing.</td>
+		<td>Programmatically remove last point (if any) while drawing.</td>
 	</tr>
 	<tr id='polylineeditor-newshape'>
 		<td><code><b>newShape</b>(<nobr>&lt;L.LatLng&gt; <i>latlng?</i></nobr>)</nobr></code></td>
 		<td><code></code></td>
-		<td>Add a new shape (polyline, polygon) in a multi, and setup up drawing tools to draw it;
+		<td>Add a new shape (Polyline, Polygon) in a multi, and setup up drawing tools to draw it;
 if optional <code>latlng</code> is given, start a path at this point.</td>
 	</tr>
 	<tr id='polylineeditor-deleteshapeat'>
 		<td><code><b>deleteShapeAt</b>(<nobr>&lt;L.LatLng&gt; <i>latlng</i></nobr>)</nobr></code></td>
 		<td><code>Array</code></td>
-		<td>Remove a path shape at the given latlng.</td>
+		<td>Remove a path shape at the given <code>latlng</code>.</td>
 	</tr>
 	<tr id='polylineeditor-appendshape'>
 		<td><code><b>appendShape</b>(<nobr>&lt;Array&gt; <i>shape</i></nobr>)</nobr></code></td>
 		<td><code></code></td>
-		<td>Append a new shape to the polygon or polyline.</td>
+		<td>Append a new shape to the Polygon or Polyline.</td>
 	</tr>
 	<tr id='polylineeditor-prependshape'>
 		<td><code><b>prependShape</b>(<nobr>&lt;Array&gt; <i>shape</i></nobr>)</nobr></code></td>
 		<td><code></code></td>
-		<td>Prepend a new shape to the polygon or polyline.</td>
+		<td>Prepend a new shape to the Polygon or Polyline.</td>
 	</tr>
 	<tr id='polylineeditor-insertshape'>
 		<td><code><b>insertShape</b>(<nobr>&lt;Array&gt; <i>shape</i></nobr>, <nobr>&lt;int&gt; <i>index</i></nobr>)</nobr></code></td>
 		<td><code></code></td>
-		<td>Insert a new shape to the polygon or polyline at given index (default is to append)</td>
+		<td>Insert a new shape to the Polygon or Polyline at given index (default is to append).</td>
 	</tr>
 </tbody></table>
 </section></div>
@@ -826,9 +830,9 @@ if optional <code>latlng</code> is given, start a path at this point.</td>
 	</tr>
 	</thead><tbody>
 	<tr id='polygoneditor-newhole'>
-		<td><code><b>newHole</b>(<nobr>&lt;Array&gt; <i>latlngs?</i></nobr>, <nobr>&lt;int&gt; <i>index</i></nobr>)</nobr></code></td>
+		<td><code><b>newHole</b>(<nobr>&lt;L.LatLng&gt; <i>latlng?</i></nobr>, <nobr>&lt;int&gt; <i>index</i></nobr>)</nobr></code></td>
 		<td><code></code></td>
-		<td>Set up drawing tools for creating a new hole on the polygon. If the latlng param is given, a first point is created.</td>
+		<td>Set up drawing tools for creating a new hole on the Polygon. If the <code>latlng</code> param is given, a first point is created.</td>
 	</tr>
 </tbody></table>
 </section>
@@ -849,7 +853,7 @@ if optional <code>latlng</code> is given, start a path at this point.</td>
 	<tr id='polygoneditor-reset'>
 		<td><code><b>reset</b>()</nobr></code></td>
 		<td><code></code></td>
-		<td>Rebuild edit elements (vertex, middlemarker, etc.).</td>
+		<td>Rebuild edit elements (Vertex, MiddleMarker, etc.).</td>
 	</tr>
 	<tr id='polygoneditor-push'>
 		<td><code><b>push</b>()</nobr></code></td>
@@ -859,33 +863,33 @@ if optional <code>latlng</code> is given, start a path at this point.</td>
 	<tr id='polygoneditor-pop'>
 		<td><code><b>pop</b>()</nobr></code></td>
 		<td><code>L.LatLng or null</code></td>
-		<td>Programatically remove last point (if any) while drawing.</td>
+		<td>Programmatically remove last point (if any) while drawing.</td>
 	</tr>
 	<tr id='polygoneditor-newshape'>
 		<td><code><b>newShape</b>(<nobr>&lt;L.LatLng&gt; <i>latlng?</i></nobr>)</nobr></code></td>
 		<td><code></code></td>
-		<td>Add a new shape (polyline, polygon) in a multi, and setup up drawing tools to draw it;
+		<td>Add a new shape (Polyline, Polygon) in a multi, and setup up drawing tools to draw it;
 if optional <code>latlng</code> is given, start a path at this point.</td>
 	</tr>
 	<tr id='polygoneditor-deleteshapeat'>
 		<td><code><b>deleteShapeAt</b>(<nobr>&lt;L.LatLng&gt; <i>latlng</i></nobr>)</nobr></code></td>
 		<td><code>Array</code></td>
-		<td>Remove a path shape at the given latlng.</td>
+		<td>Remove a path shape at the given <code>latlng</code>.</td>
 	</tr>
 	<tr id='polygoneditor-appendshape'>
 		<td><code><b>appendShape</b>(<nobr>&lt;Array&gt; <i>shape</i></nobr>)</nobr></code></td>
 		<td><code></code></td>
-		<td>Append a new shape to the polygon or polyline.</td>
+		<td>Append a new shape to the Polygon or Polyline.</td>
 	</tr>
 	<tr id='polygoneditor-prependshape'>
 		<td><code><b>prependShape</b>(<nobr>&lt;Array&gt; <i>shape</i></nobr>)</nobr></code></td>
 		<td><code></code></td>
-		<td>Prepend a new shape to the polygon or polyline.</td>
+		<td>Prepend a new shape to the Polygon or Polyline.</td>
 	</tr>
 	<tr id='polygoneditor-insertshape'>
 		<td><code><b>insertShape</b>(<nobr>&lt;Array&gt; <i>shape</i></nobr>, <nobr>&lt;int&gt; <i>index</i></nobr>)</nobr></code></td>
 		<td><code></code></td>
-		<td>Insert a new shape to the polygon or polyline at given index (default is to append)</td>
+		<td>Insert a new shape to the Polygon or Polyline at given index (default is to append).</td>
 	</tr>
 </tbody></table>
 </section></div>
@@ -945,7 +949,7 @@ if optional <code>latlng</code> is given, start a path at this point.</td>
 	<tr id='rectangleeditor-reset'>
 		<td><code><b>reset</b>()</nobr></code></td>
 		<td><code></code></td>
-		<td>Rebuild edit elements (vertex, middlemarker, etc.).</td>
+		<td>Rebuild edit elements (Vertex, MiddleMarker, etc.).</td>
 	</tr>
 	<tr id='rectangleeditor-push'>
 		<td><code><b>push</b>()</nobr></code></td>
@@ -955,33 +959,33 @@ if optional <code>latlng</code> is given, start a path at this point.</td>
 	<tr id='rectangleeditor-pop'>
 		<td><code><b>pop</b>()</nobr></code></td>
 		<td><code>L.LatLng or null</code></td>
-		<td>Programatically remove last point (if any) while drawing.</td>
+		<td>Programmatically remove last point (if any) while drawing.</td>
 	</tr>
 	<tr id='rectangleeditor-newshape'>
 		<td><code><b>newShape</b>(<nobr>&lt;L.LatLng&gt; <i>latlng?</i></nobr>)</nobr></code></td>
 		<td><code></code></td>
-		<td>Add a new shape (polyline, polygon) in a multi, and setup up drawing tools to draw it;
+		<td>Add a new shape (Polyline, Polygon) in a multi, and setup up drawing tools to draw it;
 if optional <code>latlng</code> is given, start a path at this point.</td>
 	</tr>
 	<tr id='rectangleeditor-deleteshapeat'>
 		<td><code><b>deleteShapeAt</b>(<nobr>&lt;L.LatLng&gt; <i>latlng</i></nobr>)</nobr></code></td>
 		<td><code>Array</code></td>
-		<td>Remove a path shape at the given latlng.</td>
+		<td>Remove a path shape at the given <code>latlng</code>.</td>
 	</tr>
 	<tr id='rectangleeditor-appendshape'>
 		<td><code><b>appendShape</b>(<nobr>&lt;Array&gt; <i>shape</i></nobr>)</nobr></code></td>
 		<td><code></code></td>
-		<td>Append a new shape to the polygon or polyline.</td>
+		<td>Append a new shape to the Polygon or Polyline.</td>
 	</tr>
 	<tr id='rectangleeditor-prependshape'>
 		<td><code><b>prependShape</b>(<nobr>&lt;Array&gt; <i>shape</i></nobr>)</nobr></code></td>
 		<td><code></code></td>
-		<td>Prepend a new shape to the polygon or polyline.</td>
+		<td>Prepend a new shape to the Polygon or Polyline.</td>
 	</tr>
 	<tr id='rectangleeditor-insertshape'>
 		<td><code><b>insertShape</b>(<nobr>&lt;Array&gt; <i>shape</i></nobr>, <nobr>&lt;int&gt; <i>index</i></nobr>)</nobr></code></td>
 		<td><code></code></td>
-		<td>Insert a new shape to the polygon or polyline at given index (default is to append)</td>
+		<td>Insert a new shape to the Polygon or Polyline at given index (default is to append).</td>
 	</tr>
 </tbody></table>
 </section></div>
@@ -1041,7 +1045,7 @@ if optional <code>latlng</code> is given, start a path at this point.</td>
 	<tr id='circleeditor-reset'>
 		<td><code><b>reset</b>()</nobr></code></td>
 		<td><code></code></td>
-		<td>Rebuild edit elements (vertex, middlemarker, etc.).</td>
+		<td>Rebuild edit elements (Vertex, MiddleMarker, etc.).</td>
 	</tr>
 	<tr id='circleeditor-push'>
 		<td><code><b>push</b>()</nobr></code></td>
@@ -1051,33 +1055,33 @@ if optional <code>latlng</code> is given, start a path at this point.</td>
 	<tr id='circleeditor-pop'>
 		<td><code><b>pop</b>()</nobr></code></td>
 		<td><code>L.LatLng or null</code></td>
-		<td>Programatically remove last point (if any) while drawing.</td>
+		<td>Programmatically remove last point (if any) while drawing.</td>
 	</tr>
 	<tr id='circleeditor-newshape'>
 		<td><code><b>newShape</b>(<nobr>&lt;L.LatLng&gt; <i>latlng?</i></nobr>)</nobr></code></td>
 		<td><code></code></td>
-		<td>Add a new shape (polyline, polygon) in a multi, and setup up drawing tools to draw it;
+		<td>Add a new shape (Polyline, Polygon) in a multi, and setup up drawing tools to draw it;
 if optional <code>latlng</code> is given, start a path at this point.</td>
 	</tr>
 	<tr id='circleeditor-deleteshapeat'>
 		<td><code><b>deleteShapeAt</b>(<nobr>&lt;L.LatLng&gt; <i>latlng</i></nobr>)</nobr></code></td>
 		<td><code>Array</code></td>
-		<td>Remove a path shape at the given latlng.</td>
+		<td>Remove a path shape at the given <code>latlng</code>.</td>
 	</tr>
 	<tr id='circleeditor-appendshape'>
 		<td><code><b>appendShape</b>(<nobr>&lt;Array&gt; <i>shape</i></nobr>)</nobr></code></td>
 		<td><code></code></td>
-		<td>Append a new shape to the polygon or polyline.</td>
+		<td>Append a new shape to the Polygon or Polyline.</td>
 	</tr>
 	<tr id='circleeditor-prependshape'>
 		<td><code><b>prependShape</b>(<nobr>&lt;Array&gt; <i>shape</i></nobr>)</nobr></code></td>
 		<td><code></code></td>
-		<td>Prepend a new shape to the polygon or polyline.</td>
+		<td>Prepend a new shape to the Polygon or Polyline.</td>
 	</tr>
 	<tr id='circleeditor-insertshape'>
 		<td><code><b>insertShape</b>(<nobr>&lt;Array&gt; <i>shape</i></nobr>, <nobr>&lt;int&gt; <i>index</i></nobr>)</nobr></code></td>
 		<td><code></code></td>
-		<td>Insert a new shape to the polygon or polyline at given index (default is to append)</td>
+		<td>Insert a new shape to the Polygon or Polyline at given index (default is to append).</td>
 	</tr>
 </tbody></table>
 </section></div>
@@ -1134,7 +1138,7 @@ instance when listening for events like <code>editable:vertex:ctrlclick</code>.
 	<tr id='vertexmarker-delete'>
 		<td><code><b>delete</b>()</nobr></code></td>
 		<td><code></code></td>
-		<td>Delete a vertex and the related latlng.</td>
+		<td>Delete a vertex and the related LatLng.</td>
 	</tr>
 	<tr id='vertexmarker-getindex'>
 		<td><code><b>getIndex</b>()</nobr></code></td>

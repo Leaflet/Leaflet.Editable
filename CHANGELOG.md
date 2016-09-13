@@ -4,8 +4,8 @@
 
 - BREAKING editorClass are now properly looked in editTools.options instead of map (cf #92)
 - removed Leaflet as peerDependency (cf #72)
-- fixed error in canvas due to guides being added to early (cf #80)
-- added path dragging (when [Path.Drag.js](https://github.com/Leaflet/Path.Drag.js) is loaded
+- fixed error in canvas due to guides being added too early (cf #80)
+- added path dragging (when [Path.Drag.js](https://github.com/Leaflet/Path.Drag.js) is loaded)
 - allow to draw a rectangle in any direction (cf #87)
 - fixed editable:drawing:commit being fired on mousedown instead of mouseup for circle and rectangle (cf #70)
 
