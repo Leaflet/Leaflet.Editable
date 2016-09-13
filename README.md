@@ -7,7 +7,7 @@ Make geometries editable in Leaflet.
 Leaflet release, please use the `leaflet0.7` branch.**
 
 
-This is not a plug and play UI, and will not. This is a minimal, lightweight,
+This is not a plug and play UI, and will not be. This is a minimal, lightweight,
 and fully extendable API to control editing of geometries. So you can easily
 build your own UI with your own needs and choices.
 
@@ -19,7 +19,7 @@ Design keys:
 
 - only the core needs
 - no UI, instead hooks everywhere needed
-- everything programatically controlable
+- everything programmatically controllable
 - MultiPolygon/MultiPolyline support
 - Polygons' holes support
 - touch support
