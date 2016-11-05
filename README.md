@@ -3,9 +3,6 @@
 
 Make geometries editable in Leaflet.
 
-**WARNING: the `master` branch needs latest Leaflet master (future 1.0). To use the stable
-Leaflet release, please use the `leaflet0.7` branch.**
-
 
 This is not a plug and play UI, and will not be. This is a minimal, lightweight,
 and fully extendable API to control editing of geometries. So you can easily
@@ -27,7 +24,7 @@ Design keys:
 
 ## Install
 
-You need Leaflet >= 0.7.3, and then include `src/Leaflet.Editable.js`.
+You need Leaflet >= 1.0.0, and then include `src/Leaflet.Editable.js`.
 
 ### Path dragging
 
