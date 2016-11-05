@@ -1,6 +1,6 @@
 # CHANGELOG
 
-# dev
+# 1.0.0
 
 - BREAKING editorClass are now properly looked in editTools.options instead of map (cf #92)
 - removed Leaflet as peerDependency (cf #72)
@@ -8,8 +8,6 @@
 - added path dragging (when [Path.Drag.js](https://github.com/Leaflet/Path.Drag.js) is loaded)
 - allow to draw a rectangle in any direction (cf #87)
 - fixed editable:drawing:commit being fired on mousedown instead of mouseup for circle and rectangle (cf #70)
-
-# 1.0.0-rc.1
 - hide middle markers if there is not enough space
 - make possible to add new vertex on top of other paths vertex
 - leaflet 1.0 support
@@ -36,6 +34,7 @@
   at startMarker/startPolygon call)
 - added editable:drawing:mousedown and editable:drawing:mouseup events
 - added support for L.Rectangle and L.Circle drawing and editing
+- do not try to extend Leaflet classes not exposed (cf #83)
 
 ## 0.5.0
 - added editable:vertex:drag event
