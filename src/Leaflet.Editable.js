@@ -258,7 +258,7 @@
         },
 
         onMouseup: function (e) {
-            if (e.type === "click" && !this._mouseDown) {
+            if (e.type === "click" && !this._mouseDown && !(e.originalEvent instanceof MouseEvent)) {
                 this._mouseDown = e;
                 this._drawingEditor.onDrawingMouseDown(e);
             }
