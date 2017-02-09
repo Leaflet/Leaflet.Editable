@@ -715,7 +715,7 @@
             this.latlngs.splice(this.index(), 0, e.latlng);
             this.editor.refresh();
             var icon = this._icon;
-            var marker = this.editor.addVertexMarker(e.latlng, this.latlngs);
+            var marker = this.editor.addVertexMarker(e.latlng, this.latlngs, true);
             /* Hack to workaround browser not firing touchend when element is no more on DOM */
             var parent = marker._icon.parentNode;
             parent.removeChild(marker._icon);
@@ -1018,7 +1018,7 @@
         initVertexMarkers: function (latlngs) {
             if (!this.enabled()) return;
             latlngs = latlngs || this.getLatLngs();
-            if (L.Polyline._flat(latlngs)) this.addVertexMarkers(latlngs);
+            if (L.Polyline._flat(latlngs)) this.addVertexMarkers(latlngs, false);
             else for (var i = 0; i < latlngs.length; i++) this.initVertexMarkers(latlngs[i]);
         },
 
@@ -1033,13 +1033,21 @@
             this.initVertexMarkers();
         },
 
-        addVertexMarker: function (latlng, latlngs) {
-            return new this.tools.options.vertexMarkerClass(latlng, latlngs, this);
+        addVertexMarker: function (latlng, latlngs, doFire) {
+          var vertex = new this.tools.options.vertexMarkerClass(latlng, latlngs, this);
+          if (doFire) {
+            // 🍂namespace Editable
+            // 🍂section Vertex events
+            // 🍂event editable:vertex:new: VertexEvent
+            // Fired when a new vertex is created.
+            this.fireAndForward('editable:vertex:new', {latlng: latlng, vertex: vertex});
+          }
+          return vertex;
         },
 
-        addVertexMarkers: function (latlngs) {
+        addVertexMarkers: function (latlngs, doFire) {
             for (var i = 0; i < latlngs.length; i++) {
-                this.addVertexMarker(latlngs[i], latlngs);
+                this.addVertexMarker(latlngs[i], latlngs, doFire);
             }
         },
 
@@ -1219,7 +1227,7 @@
             if (this._drawing === L.Editable.FORWARD) this._drawnLatLngs.push(latlng);
             else this._drawnLatLngs.unshift(latlng);
             this.feature._bounds.extend(latlng);
-            this.addVertexMarker(latlng, this._drawnLatLngs);
+            this.addVertexMarker(latlng, this._drawnLatLngs, true);
             this.refresh();
         },
 
