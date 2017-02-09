@@ -229,7 +229,7 @@
             editor.reset();  // Make sure editor tools still receive events.
             this._drawingEditor = editor;
             this.map.on('mousemove touchmove', editor.onDrawingMouseMove, editor);
-            this.map.on('mousedown', this.onMousedown, this);
+            this.map.on('mousedown touchstart', this.onMousedown, this);
             this.map.on('mouseup', this.onMouseup, this);
             L.DomUtil.addClass(this.map._container, this.options.drawingCSSClass);
             this.defaultMapCursor = this.map._container.style.cursor;
@@ -243,7 +243,7 @@
             editor = editor || this._drawingEditor;
             if (!editor) return;
             this.map.off('mousemove touchmove', editor.onDrawingMouseMove, editor);
-            this.map.off('mousedown', this.onMousedown, this);
+            this.map.off('mousedown touchstart', this.onMousedown, this);
             this.map.off('mouseup', this.onMouseup, this);
             if (editor !== this._drawingEditor) return;
             delete this._drawingEditor;
