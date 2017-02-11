@@ -716,6 +716,7 @@
             this.editor.refresh();
             var icon = this._icon;
             var marker = this.editor.addVertexMarker(e.latlng, this.latlngs);
+            this.editor.onNewVertex(marker);
             /* Hack to workaround browser not firing touchend when element is no more on DOM */
             var parent = marker._icon.parentNode;
             parent.removeChild(marker._icon);
@@ -1037,6 +1038,14 @@
             return new this.tools.options.vertexMarkerClass(latlng, latlngs, this);
         },
 
+        onNewVertex: function (vertex) {
+            // 🍂namespace Editable
+            // 🍂section Vertex events
+            // 🍂event editable:vertex:new: VertexEvent
+            // Fired when a new vertex is created.
+            this.fireAndForward('editable:vertex:new', {latlng: vertex.latlng, vertex: vertex});
+        },
+
         addVertexMarkers: function (latlngs) {
             for (var i = 0; i < latlngs.length; i++) {
                 this.addVertexMarker(latlngs[i], latlngs);
@@ -1219,7 +1228,8 @@
             if (this._drawing === L.Editable.FORWARD) this._drawnLatLngs.push(latlng);
             else this._drawnLatLngs.unshift(latlng);
             this.feature._bounds.extend(latlng);
-            this.addVertexMarker(latlng, this._drawnLatLngs);
+            var vertex = this.addVertexMarker(latlng, this._drawnLatLngs);
+            this.onNewVertex(vertex);
             this.refresh();
         },
 

@@ -551,6 +551,18 @@ describe('L.PolylineEditor', function() {
             layer.remove();
         });
 
+        it('should fire editable:vertex:new ', function () {
+            var newCount = 0,
+                gotNew = function (e) {newCount++;};
+            this.map.on('editable:vertex:new', gotNew);
+            var layer = this.map.editTools.startPolyline();
+            happen.drawingClick(450, 450);
+            happen.drawingClick(400, 400);
+            assert.equal(newCount, 2);
+            this.map.off('editable:vertex:new', gotNew);
+            layer.remove();
+        });
+
         it('should send editable:drawing:click before adding vertex', function () {
             var called = 0,
                 line,
