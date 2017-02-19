@@ -618,6 +618,17 @@ describe('L.PolygonEditor', function() {
             });
         });
 
+        it('should not trigger editable:vertex:new when enabling edition', function () {
+            var newCount = 0,
+                gotNew = function (e) {newCount++;};
+            this.map.on('editable:vertex:new', gotNew);
+            var layer = L.polygon([p2ll(100, 150), p2ll(150, 200)]).addTo(this.map);
+            layer.enableEdit();
+            assert.equal(newCount, 0);
+            map.off('editable:vertex:new', gotNew);
+            layer.remove();
+        });
+
         it('should be possible to cancel editable:drawing:click actions', function () {
             var called = 0,
                 call = function (e) {

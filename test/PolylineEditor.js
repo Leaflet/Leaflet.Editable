@@ -579,6 +579,19 @@ describe('L.PolylineEditor', function() {
             });
         });
 
+        it('should not trigger editable:vertex:new when enabling edition', function () {
+            var newCount = 0,
+                gotNew = function (e) {newCount++;};
+            this.map.on('editable:vertex:new', gotNew);
+            var layer = L.polyline([p2ll(100, 150), p2ll(150, 200)]).addTo(this.map);
+            layer.enableEdit();
+            layer.editor.continueForward();
+            happen.drawingClick(400, 400);
+            assert.equal(newCount, 1);
+            map.off('editable:vertex:new', gotNew);
+            layer.remove();
+        });
+
         it('should send editable:drawing:click before adding vertex', function () {
             var called = 0,
                 line,
