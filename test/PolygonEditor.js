@@ -589,6 +589,46 @@ describe('L.PolygonEditor', function() {
             polygon.remove();
         });
 
+        it('should fire editable:vertex:new ', function () {
+            var newCount = 0,
+                gotNew = function (e) {newCount++;};
+            this.map.on('editable:vertex:new', gotNew);
+            var polygon = this.map.editTools.startPolygon();
+            assert.equal(newCount, 0);
+            happen.drawingClick(250, 200);
+            happen.drawingClick(350, 300);
+            assert.equal(newCount, 2);
+            this.map.off('editable:vertex:new', gotNew);
+            polygon.remove();
+        });
+
+        it('should fire editable:vertex:new on middle marker click', function (done) {
+            var newCount = 0,
+                gotNew = function (e) {newCount++;};
+            var polygon = this.map.editTools.startPolygon();
+            happen.drawingClick(500, 500);
+            happen.drawingClick(400, 400);
+            assert.equal(newCount, 0);
+            this.map.on('editable:vertex:new', gotNew);
+            happen.drag(450, 450, 300, 400, function () {
+                assert.equal(newCount, 1);
+                map.off('editable:vertex:new', gotNew);
+                polygon.remove();
+                done();
+            });
+        });
+
+        it('should not trigger editable:vertex:new when enabling edition', function () {
+            var newCount = 0,
+                gotNew = function (e) {newCount++;};
+            this.map.on('editable:vertex:new', gotNew);
+            var layer = L.polygon([p2ll(100, 150), p2ll(150, 200)]).addTo(this.map);
+            layer.enableEdit();
+            assert.equal(newCount, 0);
+            map.off('editable:vertex:new', gotNew);
+            layer.remove();
+        });
+
         it('should be possible to cancel editable:drawing:click actions', function () {
             var called = 0,
                 call = function (e) {
