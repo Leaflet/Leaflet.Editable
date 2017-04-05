@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/Leaflet/Leaflet.Editable.svg?branch=master)](https://travis-ci.org/Leaflet/Leaflet.Editable)
-# Leaflet.Editable
+# Leaflet.Editable
 
 Make geometries editable in Leaflet.
 
@@ -22,7 +22,7 @@ Design keys:
 - touch support
 - tests
 
-## Install
+## Install
 
 You need Leaflet >= 1.0.0, and then include `src/Leaflet.Editable.js`.
 
@@ -31,7 +31,7 @@ You need Leaflet >= 1.0.0, and then include `src/Leaflet.Editable.js`.
 If you want path dragging, you need to also include [Path.Drag.js](https://github.com/Leaflet/Path.Drag.js).
 
 
-## Quick start
+## Quick start
 
 Allow Leaflet.Editable in the map options:
 
@@ -53,7 +53,7 @@ If you want to continue an existing line:
     // or
     polyline.editor.continueBackward();
 
-## Examples
+## Examples
 
 - [Basic controls](http://Leaflet.github.io/Leaflet.Editable/example/index.html)
 - [Continue line by ctrl/command-clicking on first/last point](http://Leaflet.github.io/Leaflet.Editable/example/continue-line.html)
@@ -66,11 +66,11 @@ If you want to continue an existing line:
 - Example of [Leaflet.Snap](https://github.com/makinacorpus/Leaflet.Snap/) integration [to enable snapping](http://Leaflet.github.io/Leaflet.Editable/example/snapping.html)
 
 
-## API
+## API
 
 [See the reference](http://Leaflet.github.io/Leaflet.Editable/doc/api.html)
 
 
-## Licence
+## Licence
 
 `Leaflet.Editable` is released under the WTFPL licence.
