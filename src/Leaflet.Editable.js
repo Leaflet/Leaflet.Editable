@@ -231,6 +231,7 @@
             this.map.on('mousemove touchmove', editor.onDrawingMouseMove, editor);
             this.map.on('mousedown', this.onMousedown, this);
             this.map.on('mouseup', this.onMouseup, this);
+            this.map.on('click', this.onMouseup, this);
             L.DomUtil.addClass(this.map._container, this.options.drawingCSSClass);
             this.defaultMapCursor = this.map._container.style.cursor;
             this.map._container.style.cursor = this.options.drawingCursor;
@@ -245,6 +246,7 @@
             this.map.off('mousemove touchmove', editor.onDrawingMouseMove, editor);
             this.map.off('mousedown', this.onMousedown, this);
             this.map.off('mouseup', this.onMouseup, this);
+            this.map.off('click', this.onMouseup, this);
             if (editor !== this._drawingEditor) return;
             delete this._drawingEditor;
             if (editor._drawing) editor.cancelDrawing();
@@ -256,6 +258,11 @@
         },
 
         onMouseup: function (e) {
+            if (e.type === "click" && !this._mouseDown && !(e.originalEvent instanceof MouseEvent)) {
+                this._mouseDown = e;
+                this._drawingEditor.onDrawingMouseDown(e);
+            }
+            
             if (this._mouseDown) {
                 var editor = this._drawingEditor,
                     mouseDown = this._mouseDown;
