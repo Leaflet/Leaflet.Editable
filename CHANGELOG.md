@@ -1,5 +1,11 @@
 # CHANGELOG
 
+# 1.1.0
+
+- compatibility with Leaflet 1.2.0
+- add `editable:vertex:new` event
+
+
 # 1.0.0
 
 - BREAKING editorClass are now properly looked in editTools.options instead of map (cf #92)
