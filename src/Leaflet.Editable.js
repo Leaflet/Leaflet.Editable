@@ -420,7 +420,7 @@
         editable: false,
 
         // 🍂option editOptions: hash = {}
-        // Options to pass to L.Editable when instanciating.
+        // Options to pass to L.Editable when instantiating.
         editOptions: {}
 
     });
@@ -772,7 +772,6 @@
             else this.feature.once('add', this.onFeatureAdd, this);
             this.onEnable();
             this.feature.on(this._getEvents(), this);
-            return;
         },
 
         // 🍂method disable(): this
@@ -784,7 +783,6 @@
             this.tools.editLayer.removeLayer(this.editLayer);
             this.onDisable();
             if (this._drawing) this.cancelDrawing();
-            return;
         },
 
         // 🍂method drawing(): boolean
@@ -923,7 +921,7 @@
             return this.map.hasLayer(this.feature);
         },
 
-        connect: function (e) {
+        connect: function () {
             this.tools.connectCreatedToMap(this.feature);
             this.tools.editLayer.addLayer(this.editLayer);
         },
@@ -1248,7 +1246,7 @@
         // 🍂method push()
         // Programmatically add a point while drawing.
         push: function (latlng) {
-            if (!latlng) return console.error('L.Editable.PathEditor.push expect a vaild latlng as parameter');
+            if (!latlng) return console.error('L.Editable.PathEditor.push expect a valid latlng as parameter');
             if (this._drawing === L.Editable.FORWARD) this.newPointForward(latlng);
             else this.newPointBackward(latlng);
         },
@@ -1602,7 +1600,7 @@
             e.originalEvent._simulated = false;
             this.map.dragging._draggable._onUp(e.originalEvent);
             // Now transfer ongoing drag action to the bottom right corner.
-            // Should we refine which corne will handle the drag according to
+            // Should we refine which corner will handle the drag according to
             // drag direction?
             latlngs[3].__vertex.dragging._draggable._onDown(e.originalEvent);
         },
@@ -1633,7 +1631,7 @@
             // Keep references.
             for (var i = 0; i < latlngs.length; i++) {
                 latlngs[i].update(newLatlngs[i]);
-            };
+            }
         }
 
     });
@@ -1680,7 +1678,7 @@
         },
 
         resize: function (e) {
-            var radius = this.feature._latlng.distanceTo(e.latlng)
+            var radius = this.feature._latlng.distanceTo(e.latlng);
             this.feature.setRadius(radius);
         },
 
@@ -1724,7 +1722,7 @@
         createEditor: function (map) {
             map = map || this._map;
             var tools = (this.options.editOptions || {}).editTools || map.editTools;
-            if (!tools) throw Error('Unable to detect Editable instance.')
+            if (!tools) throw Error('Unable to detect Editable instance.');
             var Klass = this.options.editorClass || this.getEditorClass(tools);
             return new Klass(map, this, this.options.editOptions);
         },

@@ -6,7 +6,6 @@
   <title>Leaflet.Editable demo</title>
   <link rel="stylesheet" href="https://npmcdn.com/leaflet@1.2.0/dist/leaflet.css" />
   <script src="https://npmcdn.com/leaflet@1.2.0/dist/leaflet.js"></script>
-  <!-- <script src="../node_modules/leaflet/dist/leaflet-src.js"></script> -->
   <script src="https://npmcdn.com/leaflet.path.drag/src/Path.Drag.js"></script>
   <script src="../src/Leaflet.Editable.js"></script>
 
@@ -113,7 +112,7 @@ var map = L.map('map', {editable: true}).setView(startPoint, 16),
     var line = L.polyline([
         [43.1292, 1.256],
         [43.1295, 1.259],
-        [43.1291, 1.261],
+        [43.1291, 1.261]
     ]).addTo(map);
     line.enableEdit();
     line.on('dblclick', L.DomEvent.stop).on('dblclick', line.toggleEdit);
@@ -137,14 +136,14 @@ var map = L.map('map', {editable: true}).setView(startPoint, 16),
           [43.124, 1.251],
           [43.1236, 1.253],
           [43.12475, 1.254]
-        ],
+        ]
       ],
       [
         [
           [43.1269, 1.246],
           [43.126, 1.252],
           [43.1282, 1.255],
-          [43.1280, 1.245],
+          [43.1280, 1.245]
         ]
       ]
     ]).addTo(map);
