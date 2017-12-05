@@ -795,7 +795,6 @@
 
         onFeatureAdd: function () {
             this.tools.editLayer.addLayer(this.editLayer);
-            if (this.feature.dragging) this.feature.dragging.enable();
         },
 
         hasMiddleMarkers: function () {
