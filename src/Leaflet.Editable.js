@@ -487,6 +487,8 @@
             this.on('click', this.onClick);
             this.on('contextmenu', this.onContextMenu);
             this.on('mousedown touchstart', this.onMouseDown);
+            this.on('mouseover', this.onMouseOver);
+            this.on('mouseout', this.onMouseOut);
             this.addMiddleMarkers();
         },
 
@@ -500,6 +502,8 @@
             this.off('click', this.onClick);
             this.off('contextmenu', this.onContextMenu);
             this.off('mousedown touchstart', this.onMouseDown);
+            this.off('mouseover', this.onMouseOver);
+            this.off('mouseout', this.onMouseOut);
             L.Marker.prototype.onRemove.call(this, map);
         },
 
@@ -545,6 +549,16 @@
         onMouseDown: function (e) {
             e.vertex = this;
             this.editor.onVertexMarkerMouseDown(e);
+        },
+
+        onMouseOver: function (e) {
+            e.vertex = this;
+            this.editor.onVertexMarkerMouseOver(e);
+        },
+
+        onMouseOut: function (e) {
+            e.vertex = this;
+            this.editor.onVertexMarkerMouseOut(e);
         },
 
         // 🍂method delete()
@@ -1165,6 +1179,22 @@
             // 🍂event editable:vertex:mousedown: VertexEvent
             // Fired when user `mousedown` a vertex.
             this.fireAndForward('editable:vertex:mousedown', e);
+        },
+
+        onVertexMarkerMouseOver: function (e) {
+            // 🍂namespace Editable
+            // 🍂section Vertex events
+            // 🍂event editable:vertex:mouseover: VertexEvent
+            // Fired when a user's mouse enters the vertex
+            this.fireAndForward('editable:vertex:mouseover', e);
+        },
+
+        onVertexMarkerMouseOut: function (e) {
+            // 🍂namespace Editable
+            // 🍂section Vertex events
+            // 🍂event editable:vertex:mouseout: VertexEvent
+            // Fired when a user's mouse leaves the vertex
+            this.fireAndForward('editable:vertex:mouseout', e);
         },
 
         onMiddleMarkerMouseDown: function (e) {
