@@ -592,6 +592,32 @@ describe('L.PolylineEditor', function() {
             layer.remove();
         });
 
+        it('should fire editable:drawing:mouseover after hovering over vertex', function () {
+            var layer = L.polyline([p2ll(100, 100), p2ll(150, 150)]).addTo(this.map),
+                called = 0,
+                call = function () {called++;};
+            this.map.on('editable:vertex:mouseover', call);
+            layer.enableEdit();
+            assert.equal(called, 0);
+            happen.at("mouseover", 100, 100);
+            assert.ok(called);
+            this.map.off('editable:vertex:mouseover', call);
+            layer.remove();
+        });
+
+        it('should fire editable:drawing:mouseout after hovering out of a vertex', function () {
+            var layer = L.polyline([p2ll(100, 100), p2ll(150, 150)]).addTo(this.map),
+                called = 0,
+                call = function () {called++;};
+            this.map.on('editable:vertex:mouseout', call);
+            layer.enableEdit();
+            assert.equal(called, 0);
+            happen.at("mouseout", 100, 100);
+            assert.ok(called);
+            this.map.off('editable:vertex:mouseout', call);
+            layer.remove();
+        });
+
         it('should send editable:drawing:click before adding vertex', function () {
             var called = 0,
                 line,
