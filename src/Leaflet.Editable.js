@@ -150,7 +150,7 @@
         },
 
         createVertexIcon: function (options) {
-            return L.Browser.touch ? new L.Editable.TouchVertexIcon(options) : new L.Editable.VertexIcon(options);
+            return L.Browser.mobile && L.Browser.touch ? new L.Editable.TouchVertexIcon(options) : new L.Editable.VertexIcon(options);
         },
 
         createEditLayer: function () {
