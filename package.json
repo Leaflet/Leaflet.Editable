@@ -17,7 +17,7 @@
     "happen": "^0.3.1",
     "leafdoc": "^1.4.0",
     "leaflet": "^1.2.0",
-    "leaflet.path.drag": "0.0.2",
+    "leaflet.path.drag": "0.0.6",
     "mocha": "5.2.0",
     "mocha-phantomjs-core": "2.1.2",
     "phantomjs-prebuilt": "2.1.16"
