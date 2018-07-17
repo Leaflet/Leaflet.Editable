@@ -123,7 +123,10 @@
 
             // 🍂option skipMiddleMarkers: boolean = false
             // Set this to true if you don't want middle markers.
-            skipMiddleMarkers: false
+            skipMiddleMarkers: false,
+
+            //Default is 1 - left mouse button
+            mouseButtonToDraw: 1 
 
         },
 
@@ -919,6 +922,9 @@
         },
 
         onDrawingClick: function (e) {
+            var buttonClicked = e.originalEvent.which;
+            if (buttonClicked != this.tools.options.mouseButtonToDraw) return;
+            
             if (!this.drawing()) return;
             L.Editable.makeCancellable(e);
             // 🍂namespace Editable
