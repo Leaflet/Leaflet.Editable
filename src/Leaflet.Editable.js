@@ -251,6 +251,7 @@
         },
 
         onMousedown: function (e) {
+            if (e.originalEvent.which != 1) return;
             this._mouseDown = e;
             this._drawingEditor.onDrawingMouseDown(e);
         },
