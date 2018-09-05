@@ -1,5 +1,13 @@
 # CHANGELOG
 
+# 1.2.0
+
+- add `editable:vertex:mouseover` and `editable:vertex:mouseout` events (#159,
+  thanks to [@Git-Lior](https://github.com/Git-Lior))
+- restrict large vertex icons to mobile only (cf #171, thanks to
+  [@tyrasd](https://github.com/Git-Lior))
+- prevent to add a vertex on right click (cf #157)
+
 # 1.1.0
 
 - compatibility with Leaflet 1.2.0
