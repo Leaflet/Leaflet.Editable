@@ -60,7 +60,7 @@ See <a href="#editable"><code>Editable</code></a> events for the list of events 
 		<td><code><b>editOptions</b></code></td>
 		<td><code>hash</code>
 		<td><code>{}</code></td>
-		<td>Options to pass to L.Editable when instanciating.</td>
+		<td>Options to pass to L.Editable when instantiating.</td>
 	</tr>
 </tbody></table>
 </section>
@@ -149,6 +149,12 @@ the behaviour: using options, listening to events, or extending.</p>
 		<td><code>L.Marker</code></td>
 		<td>Class to be used when creating a new Marker.</td>
 	</tr>
+	<tr id='editable-circlemarkerclass'>
+		<td><code><b>circleMarkerClass</b></code></td>
+		<td><code>class</code>
+		<td><code>L.CircleMarker</code></td>
+		<td>Class to be used when creating a new CircleMarker.</td>
+	</tr>
 	<tr id='editable-rectangleclass'>
 		<td><code><b>rectangleClass</b></code></td>
 		<td><code>class</code>
@@ -202,6 +208,12 @@ the behaviour: using options, listening to events, or extending.</p>
 		<td><code>class</code>
 		<td><code>MarkerEditor</code></td>
 		<td>Class to be used as Marker editor.</td>
+	</tr>
+	<tr id='editable-circlemarkereditorclass'>
+		<td><code><b>circleMarkerEditorClass</b></code></td>
+		<td><code>class</code>
+		<td><code>CircleMarkerEditor</code></td>
+		<td>Class to be used as CircleMarker editor.</td>
 	</tr>
 	<tr id='editable-rectangleeditorclass'>
 		<td><code><b>rectangleEditorClass</b></code></td>
@@ -411,6 +423,16 @@ the behaviour: using options, listening to events, or extending.</p>
 		<td><code><a href='#vertexevent'>VertexEvent</a></code></td>
 		<td>Fired when user <code>mousedown</code> a vertex.</td>
 	</tr>
+	<tr id='editable-editable:vertex:mouseover'>
+		<td><code><b>editable:vertex:mouseover</b>
+		<td><code><a href='#vertexevent'>VertexEvent</a></code></td>
+		<td>Fired when user mouse enters the vertex</td>
+	</tr>
+	<tr id='editable-editable:vertex:mouseout'>
+		<td><code><b>editable:vertex:mouseout</b>
+		<td><code><a href='#vertexevent'>VertexEvent</a></code></td>
+		<td>Fired when user mouse leaves the vertex</td>
+	</tr>
 	<tr id='editable-editable:vertex:drag'>
 		<td><code><b>editable:vertex:drag</b>
 		<td><code><a href='#vertexevent'>VertexEvent</a></code></td>
@@ -518,6 +540,13 @@ If <code>options</code> is given, it will be passed to the Polygon class constru
 		<td>Start adding a Marker. If <code>latlng</code> is given, the Marker will be shown first at this point.
 In any case, it will follow the user mouse, and will have a final <code>latlng</code> on next click (or touch).
 If <code>options</code> is given, it will be passed to the Marker class constructor.</td>
+	</tr>
+	<tr id='editable-startcirclemarker'>
+		<td><code><b>startCircleMarker</b>(<nobr>&lt;L.LatLng&gt; <i>latlng</i></nobr>, <nobr>&lt;hash&gt; <i>options</i></nobr>)</nobr></code></td>
+		<td><code>L.CircleMarker</code></td>
+		<td>Start adding a CircleMarker. If <code>latlng</code> is given, the CircleMarker will be shown first at this point.
+In any case, it will follow the user mouse, and will have a final <code>latlng</code> on next click (or touch).
+If <code>options</code> is given, it will be passed to the CircleMarker class constructor.</td>
 	</tr>
 	<tr id='editable-startrectangle'>
 		<td><code><b>startRectangle</b>(<nobr>&lt;L.LatLng&gt; <i>latlng</i></nobr>, <nobr>&lt;hash&gt; <i>options</i></nobr>)</nobr></code></td>
@@ -1375,6 +1404,45 @@ instance when listening for events like <code>editable:vertex:ctrlclick</code>.
 	</tr>
 </tbody></table>
 </section>
+
+<h2 id='circlemarkereditor'>CircleMarkerEditor</h2>
+<p>Editor for CircleMarker.</p>
+
+<h3 id='' class="section">Methods</h3>
+
+
+
+<div class='accordion'>
+<!-- 	<label>Show inherited <a href='#baseeditor-method'>Methods from BaseEditor</a>.</label> -->
+	<label><span class='expander'>▶</span> Methods inherited from <a href='#baseeditor'>BaseEditor</a></label>
+	<div class='accordion-content'><section data-type='[object Object]'>
+
+
+<table><thead>
+	<tr>
+		<th>Method</th>
+		<th>Returns</th>
+		<th>Description</th>
+	</tr>
+	</thead><tbody>
+	<tr id='circlemarkereditor-enable'>
+		<td><code><b>enable</b>()</nobr></code></td>
+		<td><code>this</code></td>
+		<td>Set up the drawing tools for the feature to be editable.</td>
+	</tr>
+	<tr id='circlemarkereditor-disable'>
+		<td><code><b>disable</b>()</nobr></code></td>
+		<td><code>this</code></td>
+		<td>Remove the drawing tools for the feature.</td>
+	</tr>
+	<tr id='circlemarkereditor-drawing'>
+		<td><code><b>drawing</b>()</nobr></code></td>
+		<td><code>boolean</code></td>
+		<td>Return true if any drawing action is ongoing with this editor.</td>
+	</tr>
+</tbody></table>
+</section></div>
+</div>
 
 
 	</div>
