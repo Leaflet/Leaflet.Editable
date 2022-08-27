@@ -54,7 +54,7 @@
         <script>
             var startPoint = [43.1249, 1.254],
                 map = L.map('map', {editable: true}).setView(startPoint, 16),
-                tilelayer = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 19, attribution: 'Data \u00a9 <a href="http://www.openstreetmap.org/copyright"> OpenStreetMap Contributors </a>'}).addTo(map);
+                tilelayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 19, attribution: 'Data \u00a9 <a href="http://www.openstreetmap.org/copyright"> OpenStreetMap Contributors </a>'}).addTo(map);
             var runner = window.mocha.run(function (failures) {
                 if (window.location.hash !== '#debug') qs('#mocha').style.display = 'block';
                 console.log(failures);
