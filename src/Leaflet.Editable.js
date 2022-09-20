@@ -1928,6 +1928,11 @@
         L.Marker.include(MarkerMixin);
         L.Marker.addInitHook(keepEditable);
     }
+    if (L.CircleMarker) {
+        L.CircleMarker.include(EditableMixin);
+        L.CircleMarker.include(MarkerMixin);
+        L.CircleMarker.addInitHook(keepEditable);
+    }
     if (L.Rectangle) {
         L.Rectangle.include(EditableMixin);
         L.Rectangle.include(RectangleMixin);
