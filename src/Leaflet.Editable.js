@@ -73,6 +73,10 @@
             // Class to be used when creating a new Marker.
             markerClass: L.Marker,
 
+            // 🍂option circleMarkerClass: class = L.CircleMarker
+            // Class to be used when creating a new CircleMarker.
+            circleMarkerClass: L.CircleMarker,
+
             // 🍂option rectangleClass: class = L.Rectangle
             // Class to be used when creating a new Rectangle.
             rectangleClass: L.Rectangle,
@@ -108,6 +112,10 @@
             // 🍂option markerEditorClass: class = MarkerEditor
             // Class to be used as Marker editor.
             markerEditorClass: undefined,
+
+            // 🍂option circleMarkerEditorClass: class = CircleMarkerEditor
+            // Class to be used as CircleMarker editor.
+            circleMarkerEditorClass: undefined,
 
             // 🍂option rectangleEditorClass: class = RectangleEditor
             // Class to be used as Rectangle editor.
@@ -327,6 +335,17 @@
             return marker;
         },
 
+        // 🍂method startCircleMarker(latlng: L.LatLng, options: hash): L.CircleMarker
+        // Start adding a CircleMarker. If `latlng` is given, the CircleMarker will be shown first at this point.
+        // In any case, it will follow the user mouse, and will have a final `latlng` on next click (or touch).
+        // If `options` is given, it will be passed to the CircleMarker class constructor.
+        startCircleMarker: function (latlng, options) {
+            latlng = latlng || this.map.getCenter().clone();
+            var marker = this.createCircleMarker(latlng, options);
+            marker.enableEdit(this.map).startDrawing();
+            return marker;
+        },
+
         // 🍂method startRectangle(latlng: L.LatLng, options: hash): L.Rectangle
         // Start drawing a Rectangle. If `latlng` is given, the Rectangle anchor will be added. In any case, continuing on user drag.
         // If `options` is given, it will be passed to the Rectangle class constructor.
@@ -372,6 +391,10 @@
 
         createMarker: function (latlng, options) {
             return this.createLayer(options && options.markerClass || this.options.markerClass, latlng, options);
+        },
+
+        createCircleMarker: function (latlng, options) {
+            return this.createLayer(options && options.circleMarkerClass || this.options.circleMarkerClass, latlng, options);
         },
 
         createRectangle: function (bounds, options) {
@@ -991,6 +1014,34 @@
     // 🍂inherits BaseEditor
     // Editor for Marker.
     L.Editable.MarkerEditor = L.Editable.BaseEditor.extend({
+
+        onDrawingMouseMove: function (e) {
+            L.Editable.BaseEditor.prototype.onDrawingMouseMove.call(this, e);
+            if (this._drawing) this.feature.setLatLng(e.latlng);
+        },
+
+        processDrawingClick: function (e) {
+            // 🍂namespace Editable
+            // 🍂section Drawing events
+            // 🍂event editable:drawing:clicked: Event
+            // Fired when user `click` while drawing, after all internal actions.
+            this.fireAndForward('editable:drawing:clicked', e);
+            this.commitDrawing(e);
+        },
+
+        connect: function (e) {
+            // On touch, the latlng has not been updated because there is
+            // no mousemove.
+            if (e) this.feature._latlng = e.latlng;
+            L.Editable.BaseEditor.prototype.connect.call(this, e);
+        }
+
+    });
+
+    // 🍂namespace Editable; 🍂class CircleMarkerEditor; 🍂aka L.Editable.CircleMarkerEditor
+    // 🍂inherits BaseEditor
+    // Editor for CircleMarker.
+    L.Editable.CircleMarkerEditor = L.Editable.BaseEditor.extend({
 
         onDrawingMouseMove: function (e) {
             L.Editable.BaseEditor.prototype.onDrawingMouseMove.call(this, e);
@@ -1890,6 +1941,14 @@
 
     };
 
+    var CircleMarkerMixin = {
+
+        getEditorClass: function (tools) {
+            return (tools && tools.options.circleMarkerEditorClass) ? tools.options.circleMarkerEditorClass : L.Editable.CircleMarkerEditor;
+        }
+
+    };
+
     var RectangleMixin = {
 
         getEditorClass: function (tools) {
@@ -1927,6 +1986,11 @@
         L.Marker.include(EditableMixin);
         L.Marker.include(MarkerMixin);
         L.Marker.addInitHook(keepEditable);
+    }
+    if (L.CircleMarker) {
+        L.CircleMarker.include(EditableMixin);
+        L.CircleMarker.include(CircleMarkerMixin);
+        L.CircleMarker.addInitHook(keepEditable);
     }
     if (L.Rectangle) {
         L.Rectangle.include(EditableMixin);
