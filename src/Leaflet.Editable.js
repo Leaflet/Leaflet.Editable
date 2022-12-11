@@ -1816,6 +1816,7 @@
             if (!latlngs) return false;
             var i, k, len, part = [], p,
                 w = this._clickTolerance();
+            if (latlngs instanceof L.LatLng) latlngs = [latlngs]
             this._projectLatlngs(latlngs, part, this._pxBounds);
             part = part[0];
             p = this._map.latLngToLayerPoint(l);
