@@ -53,6 +53,10 @@ If you want to continue an existing line:
     // or
     polyline.editor.continueBackward();
 
+If you want to get your drawings in GeoJSON format:
+
+    map.editTools.featuresLayer.toGeoJSON();
+
 ## Examples
 
 - [Basic controls](http://Leaflet.github.io/Leaflet.Editable/example/index.html)
