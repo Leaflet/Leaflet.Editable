@@ -1760,7 +1760,12 @@
         },
 
         resize: function (e) {
-            var radius = this.feature._latlng.distanceTo(e.latlng);
+            var radius;
+            if (this.feature._map && this.feature._map.options && this.feature._map.options.crs) {
+                radius = this.feature._map.options.crs.distance(this.feature._latlng, e.latlng)
+            } else {
+                radius = this.feature._latlng.distanceTo(e.latlng);
+            }
             this.feature.setRadius(radius);
         },
 
