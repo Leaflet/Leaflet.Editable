@@ -18,7 +18,7 @@
     "leafdoc": "2.3.0",
     "leaflet": "1.9.4",
     "leaflet.path.drag": "0.0.6",
-    "mocha": "5.2.0",
+    "mocha": "10.7.3",
     "mocha-phantomjs-core": "2.1.2",
     "phantomjs-prebuilt": "2.1.16"
   },
