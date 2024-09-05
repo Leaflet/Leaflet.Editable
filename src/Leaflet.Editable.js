@@ -885,6 +885,13 @@
       this.fireAndForward('editable:editing')
     },
 
+    onEdited: function () {
+      // 🍂namespace Editable
+      // 🍂event editable:edited: Event
+      // Fired after any change is made to the feature geometry.
+      this.fireAndForward('editable:edited')
+    },
+
     onStartDrawing: function () {
       // 🍂namespace Editable
       // 🍂section Drawing events
@@ -915,6 +922,7 @@
       // 🍂event editable:drawing:commit: Event
       // Fired when user finish drawing a feature.
       this.fireAndForward('editable:drawing:commit', e)
+      this.onEdited()
     },
 
     onDrawingMouseDown: function (e) {
@@ -1023,6 +1031,7 @@
       // 🍂event editable:dragend: Event
       // Fired after a path feature has been dragged.
       this.fireAndForward('editable:dragend', e)
+      this.onEdited()
     },
   })
 
@@ -1313,6 +1322,7 @@
       // 🍂event editable:vertex:dragend: VertexEvent
       // Fired after a vertex is dragged by user.
       this.fireAndForward('editable:vertex:dragend', e)
+      this.onEdited()
     },
 
     setDrawnLatLngs: function (latlngs) {
@@ -1451,6 +1461,7 @@
       // 🍂event editable:shape:deleted: ShapeEvent
       // Fired after a new shape is deleted in a multi (Polygon or Polyline).
       this.fireAndForward('editable:shape:deleted', { shape: shape })
+      this.onEdited()
       return shape
     },
 
@@ -1594,6 +1605,7 @@
       this.feature._latlngs.splice(shapeIndex, 1, first, second)
       this.refresh()
       this.reset()
+      this.onEdited()
     },
   })
 

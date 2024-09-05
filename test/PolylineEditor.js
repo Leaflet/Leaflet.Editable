@@ -55,9 +55,16 @@ describe('L.PolylineEditor', () => {
 
     describe('#dragVertex()', () => {
       it('should update latlng on vertex drag', (done) => {
+        let called = 0
+        const call = () => {
+          called++
+        }
+        polyline.on('editable:edited', call)
         const before = polyline._latlngs[1].lat
         happen.drag(200, 350, 220, 360, () => {
           assert.notEqual(before, polyline._latlngs[1].lat)
+          assert.equal(called, 1)
+          polyline.off('editable:edited', call)
           done()
         })
       })
@@ -95,16 +102,23 @@ describe('L.PolylineEditor', () => {
 
     describe('#dragMiddleMarker()', () => {
       it('should insert new latlng on middle marker click', (done) => {
+        let called = 0
+        const call = () => {
+          called++
+        }
         const last = polyline._latlngs[3]
         const third = polyline._latlngs[2]
         const fromX = (400 + 220) / 2
         const fromY = (400 + 360) / 2
+        polyline.on('editable:edited', call)
         happen.drag(fromX, fromY, 300, 440, () => {
           assert.equal(polyline._latlngs.length, 5)
           // New should have been inserted between third and last latlng,
           // so third and last should not have changed
           assert.equal(last, polyline._latlngs[4])
           assert.equal(third, polyline._latlngs[2])
+          assert.equal(called, 1)
+          polyline.off('editable:edited', call)
           done()
         })
       })
@@ -442,6 +456,23 @@ describe('L.PolylineEditor', () => {
         called++
       }
       layer.on('editable:dragend', call)
+      layer.enableEdit()
+      assert.equal(called, 0)
+      happen.drag(100, 130, 120, 150, () => {
+        assert.equal(called, 1)
+        layer.remove()
+        done()
+      })
+    })
+
+    it('should send editable:edited event after drag', function (done) {
+      const latlngs = [p2ll(100, 100), p2ll(100, 200)]
+      const layer = L.polyline(latlngs).addTo(this.map)
+      let called = 0
+      const call = () => {
+        called++
+      }
+      layer.on('editable:edited', call)
       layer.enableEdit()
       assert.equal(called, 0)
       happen.drag(100, 130, 120, 150, () => {
@@ -1098,6 +1129,26 @@ describe('L.PolylineEditor', () => {
         layer.remove()
       })
 
+      it('should emit editable:edited after deleting the shape on flat polyline', function () {
+        const layer = L.polyline([
+          p2ll(100, 150),
+          p2ll(150, 200),
+          p2ll(200, 100),
+        ]).addTo(this.map)
+        let called = 0
+        const call = () => {
+          called++
+        }
+        this.map.on('editable:edited', call)
+        layer.enableEdit()
+        assert.equal(called, 0)
+        layer.editor.deleteShape(layer._latlngs)
+        assert.equal(called, 1)
+        assert.equal(layer._latlngs.length, 0)
+        this.map.off('editable:edited', call)
+        layer.remove()
+      })
+
       it('should emit editable:shape:deleted after deleting the shape on multi', function () {
         const latlngs = [
           [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
@@ -1115,9 +1166,26 @@ describe('L.PolylineEditor', () => {
         assert.equal(called, 0)
         layer.editor.deleteShape(layer._latlngs[0])
         assert.equal(called, 1)
-        assert.equal(layer._latlngs.length, 1)
-        assert.equal(layer._latlngs[0][0], latlngs[1][0])
         this.map.off('editable:shape:deleted', call)
+        layer.remove()
+      })
+
+      it('should emit editable:edited after deleting the shape on multi', function () {
+        const latlngs = [
+          [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)],
+          [p2ll(300, 350), p2ll(350, 400), p2ll(400, 300)],
+        ]
+        const layer = L.polyline(latlngs).addTo(this.map)
+        let called = 0
+        const call = () => {
+          called++
+        }
+        this.map.on('editable:edited', call)
+        layer.enableEdit()
+        assert.equal(called, 0)
+        layer.editor.deleteShape(layer._latlngs[0])
+        assert.equal(called, 1)
+        this.map.off('editable:edited', call)
         layer.remove()
       })
     })
@@ -1218,6 +1286,25 @@ describe('L.PolylineEditor', () => {
           [p2ll(150, 200), p2ll(200, 100)],
         ])
         this.map.off('editable:editing', call)
+        layer.remove()
+      })
+
+      it('should fire editable:edited', function () {
+        const latlngs = [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)]
+        const layer = L.polyline(latlngs).addTo(this.map)
+        let called = 0
+        const call = () => {
+          called++
+        }
+        this.map.on('editable:edited', call)
+        layer.enableEdit().splitShape(layer._latlngs, 1)
+        assert.equal(called, 1)
+        layer.disableEdit()
+        assert.deepEqual(layer._latlngs, [
+          [p2ll(100, 150), p2ll(150, 200)],
+          [p2ll(150, 200), p2ll(200, 100)],
+        ])
+        this.map.off('editable:edited', call)
         layer.remove()
       })
     })

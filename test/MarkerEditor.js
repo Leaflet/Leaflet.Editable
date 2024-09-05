@@ -130,6 +130,21 @@ describe('L.MarkerEditor', () => {
       assert.equal(called, 1)
     })
 
+    it('should fire editable:edited on finish', function () {
+      let called = 0
+      const call = () => {
+        called++
+      }
+      this.map.on('editable:edited', call)
+      const other = this.map.editTools.startMarker()
+      assert.equal(called, 0)
+      happen.drawingClick(450, 450)
+      assert.equal(called, 1)
+      this.map.off('editable:edited', call)
+      other.remove()
+      assert.equal(called, 1)
+    })
+
     it('should fire editable:drawing:end on stopDrawing', function () {
       let called = 0
       const call = () => {
@@ -214,6 +229,23 @@ describe('L.MarkerEditor', () => {
       happen.drag(200, 190, 210, 210, () => {
         assert.ok(called > 0)
         map.off('editable:drawing:move', call)
+        layer.remove()
+        done()
+      })
+    })
+
+    it('should fire editable:edited after moving marker', function (done) {
+      let called = 0
+      const call = () => {
+        called++
+      }
+      const layer = L.marker(p2ll(200, 200)).addTo(this.map)
+      layer.enableEdit()
+      assert.equal(called, 0)
+      this.map.on('editable:edited', call)
+      happen.drag(200, 190, 210, 210, () => {
+        assert.ok(called > 0)
+        map.off('editable:edited', call)
         layer.remove()
         done()
       })
