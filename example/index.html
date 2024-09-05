@@ -103,11 +103,23 @@ var map = L.map('map', {editable: true}).setView(startPoint, 16),
 
     });
 
+    L.NewCircleMarkerControl = L.EditControl.extend({
+
+        options: {
+            position: 'topleft',
+            callback: map.editTools.startCircleMarker,
+            kind: 'circle marker',
+            html: '◉︎'
+        }
+
+    });
+
     map.addControl(new L.NewMarkerControl());
     map.addControl(new L.NewLineControl());
     map.addControl(new L.NewPolygonControl());
     map.addControl(new L.NewRectangleControl());
     map.addControl(new L.NewCircleControl());
+    map.addControl(new L.NewCircleMarkerControl());
 
     var line = L.polyline([
         [43.1292, 1.256],
