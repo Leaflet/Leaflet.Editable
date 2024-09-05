@@ -2,7 +2,7 @@
   "linter": {
     "rules": {
       "style": {
-        "noParameterAssign": "off",
+        "noParameterAssign": "off"
       }
     }
   }
