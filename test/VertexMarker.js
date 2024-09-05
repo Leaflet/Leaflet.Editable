@@ -13,6 +13,21 @@ describe('L.Editable.VertexMarker', () => {
     })
   })
 
+  describe('#init', () => {
+    it('should only show visible vertex', function () {
+      const latlngs = [p2ll(-10, -15), p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)]
+      const layer = L.polyline(latlngs).addTo(this.map)
+      layer.enableEdit()
+      assert.notOk(latlngs[0].__vertex)
+      assert.equal(qsa('.leaflet-vertex-icon').length, 3)
+      map.zoomOut(1, {animate: false})
+      assert.ok(latlngs[0].__vertex)
+      assert.equal(qsa('.leaflet-vertex-icon').length, 4)
+      map.zoomIn()
+      layer.remove()
+    })
+  })
+
   describe('#split', () => {
     it('should split line at its index', function () {
       const latlngs = [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)]

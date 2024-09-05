@@ -515,8 +515,12 @@
         className: this.options.className,
       })
       this.latlng.__vertex = this
-      this.editor.editLayer.addLayer(this)
+      this.connect()
       this.setZIndexOffset(editor.tools._lastZIndex + 1)
+    },
+
+    connect: function () {
+      this.editor.editLayer.addLayer(this)
     },
 
     onAdd: function (map) {
@@ -1087,8 +1091,22 @@
 
     addHooks: function () {
       L.Editable.BaseEditor.prototype.addHooks.call(this)
-      if (this.feature) this.initVertexMarkers()
+      if (this.feature) {
+        this.initVertexMarkers()
+        this.map.on('moveend', this.onMoveEnd, this)
+      }
       return this
+    },
+
+    removeHooks: function () {
+      L.Editable.BaseEditor.prototype.removeHooks.call(this)
+      if (this.feature) {
+        this.map.off('moveend', this.onMoveEnd, this)
+      }
+    },
+
+    onMoveEnd: function () {
+      this.initVertexMarkers()
     },
 
     initVertexMarkers: function (latlngs) {
@@ -1115,6 +1133,10 @@
     },
 
     addVertexMarker: function (latlng, latlngs) {
+      if (latlng.__vertex) {
+        latlng.__vertex.connect()
+        return latlng.__vertex
+      }
       return new this.tools.options.vertexMarkerClass(latlng, latlngs, this)
     },
 
@@ -1130,7 +1152,9 @@
     },
 
     addVertexMarkers: function (latlngs) {
+      const bounds = this.map.getBounds()
       for (const latlng of latlngs) {
+        if (!bounds.contains(latlng)) continue
         this.addVertexMarker(latlng, latlngs)
       }
     },

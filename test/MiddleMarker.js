@@ -1,7 +1,4 @@
 describe('L.MiddleMarker', () => {
-  let mouse
-  let polyline
-
   before(function () {
     this.map = map
   })
