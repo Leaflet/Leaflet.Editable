@@ -44,9 +44,9 @@ happen.drag = (fromX, fromY, toX, toY, then, delay) => {
     }
   }, delay || 600)
 }
-happen.drawingClick = function (x, y) {
-  this.at('mousedown', x, y)
-  this.at('mouseup', x, y)
+happen.drawingClick = (x, y) => {
+  happen.at('mousedown', x, y)
+  happen.at('mouseup', x, y)
 }
 chai.Assertion.addMethod('nearLatLng', function (expected, delta) {
   delta = delta || 1e-4
