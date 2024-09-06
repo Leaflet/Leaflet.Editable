@@ -23,7 +23,6 @@ describe('L.Editable.VertexMarker', () => {
       map.zoomOut(1, {animate: false})
       assert.ok(latlngs[0].__vertex)
       assert.equal(qsa('.leaflet-vertex-icon').length, 4)
-      map.zoomIn()
       layer.remove()
     })
   })
