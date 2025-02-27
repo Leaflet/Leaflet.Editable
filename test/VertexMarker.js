@@ -42,6 +42,25 @@ describe('L.Editable.VertexMarker', () => {
     })
   })
 
+  describe('#delete', () => {
+    it('should delete vertex', function () {
+      let called = 0
+      const call = () => {
+        called++
+      }
+      const latlngs = [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)]
+      const layer = L.polyline(latlngs).addTo(this.map)
+      layer.on('editable:edited', call)
+      layer.enableEdit()
+      layer._latlngs[1].__vertex.delete()
+      assert.equal(called, 1)
+      layer.off('editable:edited', call)
+      layer.disableEdit()
+      assert.deepEqual(layer._latlngs, [p2ll(100, 150), p2ll(200, 100)])
+      layer.remove()
+    })
+  })
+
   describe('#continue', () => {
     it('should continue backward on first index', function () {
       const latlngs = [p2ll(100, 150), p2ll(150, 200), p2ll(200, 100)]
