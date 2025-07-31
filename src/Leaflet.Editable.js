@@ -687,10 +687,13 @@
     // 🍂method continue()
     // Continue the vertex LatLngs from this vertex. Only active for first and last vertices of a Polyline.
     continue: function () {
-      if (!this.editor.continueBackward) return // Only for PolylineEditor
       const index = this.getIndex()
-      if (index === 0) this.editor.continueBackward(this.latlngs)
-      else if (index === this.getLastIndex()) this.editor.continueForward(this.latlngs)
+      if (index === 0 && this.editor.continueBackward)
+        this.editor.continueBackward(this.latlngs)
+      else if (index === this.getLastIndex() && this.editor.continueForward)
+        this.editor.continueForward(this.latlngs)
+      else if (this.editor.continueHere)
+        this.editor.continueHere(this.latlngs, index)
     },
   })
 
@@ -1641,6 +1644,32 @@
   L.Editable.PolygonEditor = L.Editable.PathEditor.extend({
     CLOSED: true,
     MIN_VERTEX: 3,
+
+    // 🍂method continueHere(latlngs: Array, index: int)
+    // Set up drawing tools to continue the line forward,
+    // after rotating the line end to the clicked vertex.
+    continueHere: function (latlngs, index) {
+      if (this.drawing()) return
+      latlngs = latlngs || this.getDefaultLatLngs()
+      this.rotateHere(latlngs, index)
+      this.refresh()
+      this.setDrawnLatLngs(latlngs)
+      if (latlngs.length > 0) {
+        this.tools.attachForwardLineGuide()
+        this.tools.anchorForwardLineGuide(latlngs[latlngs.length - 1])
+      }
+      this.startDrawingForward()
+    },
+
+    // Make index the end of latlngs.
+    rotateHere: function (latlngs, index) {
+      const old = [...latlngs]
+      const len = latlngs.length
+      for (let i = 0; i < len; i++) {
+        // goal: latlngs[len-1] = old[index]
+        latlngs[i] = old[(i + index + 1) % len]
+      }
+    },
 
     newPointForward: function (latlng) {
       L.Editable.PathEditor.prototype.newPointForward.call(this, latlng)
